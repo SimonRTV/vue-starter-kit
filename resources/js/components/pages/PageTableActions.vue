@@ -3,15 +3,7 @@ import { Link, router } from '@inertiajs/vue3';
 import { Edit3, Eye, MoreHorizontal, Trash2 } from '@lucide/vue';
 import { ref } from 'vue';
 import PageController from '@/actions/App/Http/Controllers/PageController';
-import {
-    AlertDialog,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { ConfirmationAction } from '@/components/application';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -22,7 +14,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Spinner } from '@/components/ui/spinner';
 import type { PageSummary } from '@/types';
 
 const props = defineProps<{
@@ -89,31 +80,14 @@ function deletePage(): void {
             </DropdownMenuContent>
         </DropdownMenu>
 
-        <AlertDialog v-model:open="deleteOpen">
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>
-                        Delete “{{ page.title }}”?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                        This permanently removes the page and cannot be undone.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel :disabled="processing">
-                        Cancel
-                    </AlertDialogCancel>
-                    <Button
-                        type="button"
-                        variant="destructive"
-                        :disabled="processing"
-                        @click="deletePage"
-                    >
-                        <Spinner v-if="processing" data-icon="inline-start" />
-                        {{ processing ? 'Deleting…' : 'Delete page' }}
-                    </Button>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+        <ConfirmationAction
+            v-model:open="deleteOpen"
+            :title="'Delete “' + page.title + '”?'"
+            description="This permanently removes the page and cannot be undone."
+            confirm-label="Delete page"
+            pending-label="Deleting…"
+            :processing="processing"
+            @confirm="deletePage"
+        />
     </div>
 </template>

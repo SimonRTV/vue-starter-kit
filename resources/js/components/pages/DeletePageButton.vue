@@ -3,18 +3,8 @@ import { router } from '@inertiajs/vue3';
 import { Trash2 } from '@lucide/vue';
 import { ref } from 'vue';
 import PageController from '@/actions/App/Http/Controllers/PageController';
-import {
-    AlertDialog,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { ConfirmationAction } from '@/components/application';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import type { PageSummary } from '@/types';
 
 const props = defineProps<{
@@ -41,34 +31,20 @@ function deletePage(): void {
 </script>
 
 <template>
-    <AlertDialog v-model:open="isOpen">
-        <AlertDialogTrigger as-child>
+    <ConfirmationAction
+        v-model:open="isOpen"
+        :title="'Delete “' + page.title + '”?'"
+        description="This permanently removes the page and cannot be undone."
+        confirm-label="Delete page"
+        pending-label="Deleting…"
+        :processing="processing"
+        @confirm="deletePage"
+    >
+        <template #trigger>
             <Button variant="destructive">
                 <Trash2 data-icon="inline-start" />
                 Delete page
             </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-            <AlertDialogHeader>
-                <AlertDialogTitle>Delete “{{ page.title }}”?</AlertDialogTitle>
-                <AlertDialogDescription>
-                    This permanently removes the page and cannot be undone.
-                </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-                <AlertDialogCancel :disabled="processing">
-                    Cancel
-                </AlertDialogCancel>
-                <Button
-                    type="button"
-                    variant="destructive"
-                    :disabled="processing"
-                    @click="deletePage"
-                >
-                    <Spinner v-if="processing" data-icon="inline-start" />
-                    {{ processing ? 'Deleting…' : 'Delete page' }}
-                </Button>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-    </AlertDialog>
+        </template>
+    </ConfirmationAction>
 </template>

@@ -20,6 +20,16 @@ This keeps the DataTable reusable without teaching it about specific models such
 | [`resources/js/composables/useServerDataTable.ts`](resources/js/composables/useServerDataTable.ts)                         | Converts Laravel pagination and sorting props into TanStack state and performs partial Inertia visits.     |
 | [`resources/js/types/pagination.ts`](resources/js/types/pagination.ts)                                                     | Defines the shared `Pagination<TData>` response type.                                                      |
 
+Application-level components compose the table into a consistent resource screen:
+
+| File                                                                                                                       | Responsibility                                                                                    |
+| -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [`resources/js/components/application/PageHeader.vue`](resources/js/components/application/PageHeader.vue)                 | Standard page title, description, badge, metadata, and action layout.                             |
+| [`resources/js/components/application/ResourceTable.vue`](resources/js/components/application/ResourceTable.vue)           | Card shell that composes `DataTable`, its toolbar, filtered empty state, and initial empty state. |
+| [`resources/js/components/application/EmptyState.vue`](resources/js/components/application/EmptyState.vue)                 | Standard icon, title, description, and actions for an empty resource.                             |
+| [`resources/js/components/application/ConfirmationAction.vue`](resources/js/components/application/ConfirmationAction.vue) | Pending-safe confirmation dialog for consequential resource actions.                              |
+| [`resources/js/components/application/FormLayout.vue`](resources/js/components/application/FormLayout.vue)                 | Standard form Card with heading, fields, and responsive actions.                                  |
+
 The Page implementation shows the resource-owned parts:
 
 - [`resources/js/components/pages/pageColumns.ts`](resources/js/components/pages/pageColumns.ts)
@@ -369,7 +379,7 @@ Create `resources/js/components/products/ProductDataTable.vue`. This component o
 import { watchDebounced } from '@vueuse/core';
 import { ref, watch } from 'vue';
 import ProductController from '@/actions/App/Http/Controllers/ProductController';
-import { DataTable } from '@/components/data-table';
+import { ResourceTable } from '@/components/application';
 import { productColumns } from '@/components/products/productColumns';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -475,7 +485,9 @@ watch(
 </script>
 
 <template>
-    <DataTable
+    <ResourceTable
+        title="All products"
+        description="Search, filter, sort, and manage every product."
         :columns="productColumns"
         :data="products.data"
         :pagination="pagination"
@@ -531,11 +543,11 @@ watch(
                 </Field>
             </FieldGroup>
         </template>
-    </DataTable>
+    </ResourceTable>
 </template>
 ```
 
-Behavior provided by `useServerDataTable()`:
+`ResourceTable` composes the lower-level `DataTable` with the standard Card layout. Behavior provided by `useServerDataTable()`:
 
 - Pagination and sorting use the Laravel paginator and normalized filters as the source of truth.
 - Inertia only reloads the props named in `only`.
@@ -565,7 +577,7 @@ defineProps<{
 </template>
 ```
 
-## DataTable customization API
+## ResourceTable customization API
 
 ### Props
 
@@ -581,6 +593,7 @@ defineProps<{
 | `item-label` / `items-label` | Singular and plural labels used in the result count.                                     |
 | `empty-label`                | Footer text when the filtered result count is zero.                                      |
 | `empty-message`              | Message rendered inside the empty table body.                                            |
+| `show-table`                 | Set to `false` to render the initial `empty` slot instead of the table.                  |
 
 ### Events
 
@@ -591,10 +604,11 @@ defineProps<{
 
 ### Slots
 
-| Slot      | Purpose                                                            |
-| --------- | ------------------------------------------------------------------ |
-| `toolbar` | Resource-specific search, filters, bulk controls, or reset button. |
-| `empty`   | Optional replacement for the default empty-table message.          |
+| Slot            | Purpose                                                                |
+| --------------- | ---------------------------------------------------------------------- |
+| `toolbar`       | Resource-specific search, filters, bulk controls, or reset button.     |
+| `filteredEmpty` | Optional replacement for the empty table-body message after filtering. |
+| `empty`         | Initial empty state rendered when `show-table` is `false`.             |
 
 ## Adding common customizations
 

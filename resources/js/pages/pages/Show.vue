@@ -2,6 +2,7 @@
 import { Head, Link, setLayoutProps } from '@inertiajs/vue3';
 import { Edit3 } from '@lucide/vue';
 import PageController from '@/actions/App/Http/Controllers/PageController';
+import { PageHeader } from '@/components/application';
 import DeletePageButton from '@/components/pages/DeletePageButton.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -51,29 +52,20 @@ setLayoutProps({
         <main
             class="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
         >
-            <header
-                class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
-            >
-                <div class="flex min-w-0 flex-col gap-2">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <h1
-                            class="truncate text-2xl font-semibold tracking-tight sm:text-3xl"
-                        >
-                            {{ page.title }}
-                        </h1>
-                        <Badge
-                            :variant="
-                                page.is_published ? 'default' : 'secondary'
-                            "
-                        >
-                            {{ page.is_published ? 'Published' : 'Draft' }}
-                        </Badge>
-                    </div>
+            <PageHeader :title="page.title">
+                <template #badge>
+                    <Badge
+                        :variant="page.is_published ? 'default' : 'secondary'"
+                    >
+                        {{ page.is_published ? 'Published' : 'Draft' }}
+                    </Badge>
+                </template>
+                <template #meta>
                     <p class="font-mono text-sm text-muted-foreground">
                         /{{ page.slug }}
                     </p>
-                </div>
-                <div class="flex flex-wrap gap-2">
+                </template>
+                <template #actions>
                     <Button variant="outline" as-child>
                         <Link :href="PageController.edit(page.id)">
                             <Edit3 data-icon="inline-start" />
@@ -81,8 +73,8 @@ setLayoutProps({
                         </Link>
                     </Button>
                     <DeletePageButton :page="page" />
-                </div>
-            </header>
+                </template>
+            </PageHeader>
 
             <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
                 <Card class="min-w-0">

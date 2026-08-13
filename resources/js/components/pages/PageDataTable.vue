@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { Search, X } from '@lucide/vue';
+import { Link } from '@inertiajs/vue3';
+import { FileText, Plus, Search, X } from '@lucide/vue';
 import { watchDebounced } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
 import PageController from '@/actions/App/Http/Controllers/PageController';
-import { DataTable } from '@/components/data-table';
+import { EmptyState, ResourceTable } from '@/components/application';
 import { pageColumns } from '@/components/pages/pageColumns';
 import { Button } from '@/components/ui/button';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
@@ -75,6 +76,12 @@ const hasCustomView = computed(
         props.filters.direction !== 'desc' ||
         props.filters.per_page !== 10,
 );
+const shouldShowTable = computed(
+    () =>
+        props.pages.total > 0 ||
+        props.filters.search !== null ||
+        props.filters.status !== null,
+);
 
 function updateStatus(value: unknown): void {
     if (value !== 'all' && value !== 'draft' && value !== 'published') {
@@ -125,7 +132,9 @@ watch(
 </script>
 
 <template>
-    <DataTable
+    <ResourceTable
+        title="All pages"
+        description="Search, filter, sort, and manage every page."
         :columns="pageColumns"
         :data="pages.data"
         :pagination="pagination"
@@ -136,6 +145,7 @@ watch(
         items-label="pages"
         empty-label="No pages found"
         empty-message="No pages match your filters."
+        :show-table="shouldShowTable"
         @update:pagination="updatePagination"
         @update:sorting="updateSorting"
     >
@@ -199,5 +209,22 @@ watch(
                 </Button>
             </FieldGroup>
         </template>
-    </DataTable>
+
+        <template #empty>
+            <EmptyState
+                title="No pages yet"
+                description="Create your first page to start building your content library."
+                :icon="FileText"
+            >
+                <template #actions>
+                    <Button as-child>
+                        <Link :href="PageController.create()">
+                            <Plus data-icon="inline-start" />
+                            Create page
+                        </Link>
+                    </Button>
+                </template>
+            </EmptyState>
+        </template>
+    </ResourceTable>
 </template>
