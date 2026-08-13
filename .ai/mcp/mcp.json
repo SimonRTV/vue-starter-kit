@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "laravel-boost": {
+      "command": "/Users/srapin/Library/Application Support/Herd/bin/php83",
+      "args": [
+        "/Users/srapin/Sites/vue-starter-kit/artisan",
+        "boost:mcp"
+      ]
+    }
+  }
+}

@@ -10,13 +10,25 @@ use Symfony\Component\HttpFoundation\Response;
 class HandleAppearance
 {
     /**
+     * @var list<string>
+     */
+    private const array ADMIN_THEMES = ['neutral', 'ocean', 'forest'];
+
+    /**
      * Handle an incoming request.
      *
      * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        View::share('appearance', $request->cookie('appearance') ?? 'system');
+        $adminTheme = $request->cookie('admin_theme');
+
+        View::share([
+            'appearance' => $request->cookie('appearance') ?? 'system',
+            'adminTheme' => in_array($adminTheme, self::ADMIN_THEMES, true)
+                ? $adminTheme
+                : 'neutral',
+        ]);
 
         return $next($request);
     }
