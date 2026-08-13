@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Page;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -37,5 +38,18 @@ class DatabaseSeederTest extends TestCase
             $this->assertTrue(Hash::check('password', $seededUser->password));
             $this->assertNull($seededUser->two_factor_confirmed_at);
         }
+    }
+
+    public function test_it_creates_sample_pages(): void
+    {
+        $this->seed();
+
+        $seededPages = Page::query()->get()->keyBy('slug');
+
+        $this->assertCount(4, $seededPages);
+        $this->assertTrue($seededPages->get('about-us')->is_published);
+        $this->assertNotNull($seededPages->get('about-us')->published_at);
+        $this->assertFalse($seededPages->get('services')->is_published);
+        $this->assertNull($seededPages->get('services')->published_at);
     }
 }
