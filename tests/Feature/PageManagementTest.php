@@ -4,14 +4,24 @@ namespace Tests\Feature;
 
 use App\Models\Page;
 use App\Models\User;
+use App\Policies\PagePolicy;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
 class PageManagementTest extends TestCase
 {
     use LazilyRefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+    }
 
     public function test_guests_are_redirected_to_login(): void
     {
@@ -19,9 +29,37 @@ class PageManagementTest extends TestCase
             ->assertRedirect(route('login'));
     }
 
-    public function test_authenticated_users_can_view_the_page_list(): void
+    public function test_users_without_view_permission_cannot_access_page_management(): void
     {
         $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('pages.index'))
+            ->assertForbidden();
+    }
+
+    public function test_page_navigation_ability_is_shared_from_the_server(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('auth.can.managePages', false),
+            );
+
+        $this->grantPermissions($user, [PagePolicy::VIEW]);
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('auth.can.managePages', true),
+            );
+    }
+
+    public function test_authenticated_users_can_view_the_page_list(): void
+    {
+        $user = $this->authorizedUser();
         $olderPage = Page::factory()->draft()->create([
             'title' => 'Older page',
             'updated_at' => now()->subDay(),
@@ -54,7 +92,7 @@ class PageManagementTest extends TestCase
 
     public function test_page_list_can_be_searched_filtered_and_sorted_on_the_server(): void
     {
-        $user = User::factory()->create();
+        $user = $this->authorizedUser();
         $matchingPage = Page::factory()->published()->create([
             'title' => 'Alpha handbook',
             'slug' => 'company-handbook',
@@ -92,7 +130,7 @@ class PageManagementTest extends TestCase
 
     public function test_page_list_is_paginated_by_the_server(): void
     {
-        $user = User::factory()->create();
+        $user = $this->authorizedUser();
 
         Page::factory()
             ->count(12)
@@ -124,7 +162,7 @@ class PageManagementTest extends TestCase
 
     public function test_page_list_rejects_unsupported_query_parameters(): void
     {
-        $user = User::factory()->create();
+        $user = $this->authorizedUser();
 
         $this->actingAs($user)
             ->getJson(route('pages.index', [
@@ -146,7 +184,7 @@ class PageManagementTest extends TestCase
 
     public function test_page_list_redirects_an_out_of_range_page_to_the_last_page(): void
     {
-        $user = User::factory()->create();
+        $user = $this->authorizedUser();
         Page::factory()->published()->count(12)->create();
 
         $this->actingAs($user)
@@ -162,7 +200,7 @@ class PageManagementTest extends TestCase
 
     public function test_authenticated_users_can_view_the_create_page(): void
     {
-        $user = User::factory()->create();
+        $user = $this->authorizedUser();
 
         $this->actingAs($user)
             ->get(route('pages.create'))
@@ -172,7 +210,7 @@ class PageManagementTest extends TestCase
 
     public function test_authenticated_users_can_create_a_published_page(): void
     {
-        $user = User::factory()->create();
+        $user = $this->authorizedUser();
 
         $response = $this->actingAs($user)->post(route('pages.store'), [
             'title' => 'Company history',
@@ -196,7 +234,7 @@ class PageManagementTest extends TestCase
 
     public function test_page_creation_validates_required_unique_and_boolean_fields(): void
     {
-        $user = User::factory()->create();
+        $user = $this->authorizedUser();
         Page::factory()->create(['slug' => 'existing-page']);
 
         $response = $this
@@ -215,7 +253,7 @@ class PageManagementTest extends TestCase
 
     public function test_authenticated_users_can_view_a_page(): void
     {
-        $user = User::factory()->create();
+        $user = $this->authorizedUser();
         $managedPage = Page::factory()->published()->create([
             'body' => 'Full page content.',
         ]);
@@ -233,7 +271,7 @@ class PageManagementTest extends TestCase
 
     public function test_authenticated_users_can_publish_and_unpublish_a_page(): void
     {
-        $user = User::factory()->create();
+        $user = $this->authorizedUser();
         $managedPage = Page::factory()->draft()->create([
             'title' => 'Launch',
             'slug' => 'launch',
@@ -279,7 +317,7 @@ class PageManagementTest extends TestCase
 
     public function test_authenticated_users_can_delete_a_page(): void
     {
-        $user = User::factory()->create();
+        $user = $this->authorizedUser();
         $managedPage = Page::factory()->create();
 
         $response = $this
@@ -288,5 +326,28 @@ class PageManagementTest extends TestCase
 
         $response->assertRedirect(route('pages.index'));
         $this->assertModelMissing($managedPage);
+    }
+
+    private function authorizedUser(): User
+    {
+        $user = User::factory()->create();
+
+        $this->grantPermissions($user, PagePolicy::PERMISSIONS);
+
+        return $user;
+    }
+
+    /**
+     * @param  list<string>  $permissions
+     */
+    private function grantPermissions(User $user, array $permissions): void
+    {
+        $permissionModels = collect($permissions)
+            ->map(fn (string $permission): Permission => Permission::query()->firstOrCreate([
+                'name' => $permission,
+                'guard_name' => 'web',
+            ]));
+
+        $user->givePermissionTo($permissionModels);
     }
 }

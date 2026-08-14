@@ -26,9 +26,9 @@ const props = withDefaults(
     {
         processing: false,
         pageSizeOptions: () => [10, 25, 50],
-        itemLabel: 'item',
-        itemsLabel: 'items',
-        emptyLabel: 'No items found',
+        itemLabel: 'élément',
+        itemsLabel: 'éléments',
+        emptyLabel: 'Aucun élément trouvé',
     },
 );
 
@@ -100,7 +100,7 @@ function goToNextPage(): void {
     >
         <div class="flex items-center gap-3 text-sm text-muted-foreground">
             <span v-if="rowCount">
-                Showing {{ firstVisibleRow }}–{{ lastVisibleRow }} of
+                Affichage de {{ firstVisibleRow }} à {{ lastVisibleRow }} sur
                 {{ rowCount }}
                 {{ rowCount === 1 ? itemLabel : itemsLabel }}
             </span>
@@ -111,7 +111,7 @@ function goToNextPage(): void {
                 aria-live="polite"
             >
                 <Spinner />
-                Updating…
+                Mise à jour…
             </span>
         </div>
 
@@ -120,7 +120,7 @@ function goToNextPage(): void {
         >
             <Field orientation="horizontal" class="w-auto gap-2">
                 <FieldLabel :for="pageSizeId" class="whitespace-nowrap">
-                    Rows per page
+                    Lignes par page
                 </FieldLabel>
                 <Select
                     :model-value="String(pagination.pageSize)"
@@ -144,7 +144,7 @@ function goToNextPage(): void {
             </Field>
 
             <span class="text-sm text-muted-foreground">
-                Page {{ pagination.pageIndex + 1 }} of {{ pageCount }}
+                Page {{ pagination.pageIndex + 1 }} sur {{ pageCount }}
             </span>
 
             <div class="flex gap-2">
@@ -154,7 +154,7 @@ function goToNextPage(): void {
                     :disabled="processing || !canGoToPreviousPage"
                     @click="goToPreviousPage"
                 >
-                    Previous
+                    Précédent
                 </Button>
                 <Button
                     variant="outline"
@@ -162,7 +162,7 @@ function goToNextPage(): void {
                     :disabled="processing || !canGoToNextPage"
                     @click="goToNextPage"
                 >
-                    Next
+                    Suivant
                 </Button>
             </div>
         </div>

@@ -33,13 +33,13 @@ defineOptions({
         >
             <PageHeader
                 title="Pages"
-                description="Create, publish, and maintain your site content."
+                description="Créez, publiez et maintenez le contenu de votre site."
             >
                 <template #actions>
                     <Button as-child>
                         <Link :href="PageController.create()">
                             <Plus data-icon="inline-start" />
-                            New page
+                            Nouvelle page
                         </Link>
                     </Button>
                 </template>

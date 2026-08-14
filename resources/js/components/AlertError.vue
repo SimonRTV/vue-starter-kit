@@ -9,7 +9,7 @@ type Props = {
 };
 
 const props = withDefaults(defineProps<Props>(), {
-    title: 'Something went wrong.',
+    title: 'Une erreur est survenue.',
 });
 
 const uniqueErrors = computed(() => Array.from(new Set(props.errors)));

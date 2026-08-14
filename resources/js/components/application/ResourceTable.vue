@@ -36,10 +36,10 @@ withDefaults(
     {
         processing: false,
         pageSizeOptions: () => [10, 25, 50],
-        itemLabel: 'item',
-        itemsLabel: 'items',
-        emptyLabel: 'No items found',
-        emptyMessage: 'No results match your filters.',
+        itemLabel: 'élément',
+        itemsLabel: 'éléments',
+        emptyLabel: 'Aucun élément trouvé',
+        emptyMessage: 'Aucun résultat ne correspond à vos filtres.',
         showTable: true,
     },
 );

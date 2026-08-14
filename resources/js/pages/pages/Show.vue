@@ -22,10 +22,10 @@ const props = defineProps<{
 
 function formatDate(value: string | null): string {
     if (!value) {
-        return 'Not published';
+        return 'Non publiée';
     }
 
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat('fr-CH', {
         dateStyle: 'long',
         timeStyle: 'short',
     }).format(new Date(value));
@@ -57,7 +57,7 @@ setLayoutProps({
                     <Badge
                         :variant="page.is_published ? 'default' : 'secondary'"
                     >
-                        {{ page.is_published ? 'Published' : 'Draft' }}
+                        {{ page.is_published ? 'Publiée' : 'Brouillon' }}
                     </Badge>
                 </template>
                 <template #meta>
@@ -69,7 +69,7 @@ setLayoutProps({
                     <Button variant="outline" as-child>
                         <Link :href="PageController.edit(page.id)">
                             <Edit3 data-icon="inline-start" />
-                            Edit page
+                            Modifier la page
                         </Link>
                     </Button>
                     <DeletePageButton :page="page" />
@@ -79,7 +79,7 @@ setLayoutProps({
             <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
                 <Card class="min-w-0">
                     <CardHeader>
-                        <CardTitle>Content</CardTitle>
+                        <CardTitle>Contenu</CardTitle>
                         <CardDescription v-if="page.excerpt">
                             {{ page.excerpt }}
                         </CardDescription>
@@ -92,28 +92,32 @@ setLayoutProps({
                             {{ page.body }}
                         </p>
                         <p v-else class="text-sm text-muted-foreground">
-                            This page does not have any content yet.
+                            Cette page ne contient encore aucun contenu.
                         </p>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Details</CardTitle>
+                        <CardTitle>Détails</CardTitle>
                         <CardDescription>
-                            Publication and editing information.
+                            Informations de publication et de modification.
                         </CardDescription>
                     </CardHeader>
                     <CardContent class="flex flex-col gap-4 text-sm">
                         <div class="flex flex-col gap-1">
-                            <span class="text-muted-foreground">Status</span>
+                            <span class="text-muted-foreground">Statut</span>
                             <span class="font-medium">
-                                {{ page.is_published ? 'Published' : 'Draft' }}
+                                {{
+                                    page.is_published ? 'Publiée' : 'Brouillon'
+                                }}
                             </span>
                         </div>
                         <Separator />
                         <div class="flex flex-col gap-1">
-                            <span class="text-muted-foreground">Published</span>
+                            <span class="text-muted-foreground"
+                                >Publication</span
+                            >
                             <span class="font-medium">
                                 {{ formatDate(page.published_at) }}
                             </span>
@@ -121,7 +125,7 @@ setLayoutProps({
                         <Separator />
                         <div class="flex flex-col gap-1">
                             <span class="text-muted-foreground">
-                                Last updated
+                                Dernière modification
                             </span>
                             <span class="font-medium">
                                 {{ formatDate(page.updated_at) }}

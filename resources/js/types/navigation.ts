@@ -10,5 +10,11 @@ export type NavItem = {
     title: string;
     href: NonNullable<InertiaLinkProps['href']>;
     icon?: LucideIcon;
+    isExternal?: boolean;
     isActive?: boolean;
+};
+
+export type SidebarFooterLink = {
+    title: string;
+    url: string;
 };

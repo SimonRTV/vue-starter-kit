@@ -12,7 +12,7 @@ defineOptions({
                 href: PageController.index(),
             },
             {
-                title: 'New page',
+                title: 'Nouvelle page',
                 href: PageController.create(),
             },
         ],
@@ -22,14 +22,14 @@ defineOptions({
 
 <template>
     <div class="flex flex-1 flex-col">
-        <Head title="New page" />
+        <Head title="Nouvelle page" />
 
         <main
             class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
         >
             <PageHeader
-                title="New page"
-                description="Add a page and choose whether to publish it immediately."
+                title="Nouvelle page"
+                description="Ajoutez une page et choisissez de la publier immédiatement ou non."
             />
 
             <PageForm />

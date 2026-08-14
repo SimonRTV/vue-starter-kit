@@ -20,7 +20,7 @@ setLayoutProps({
             href: PageController.show(props.page.id),
         },
         {
-            title: 'Edit',
+            title: 'Modifier',
             href: PageController.edit(props.page.id),
         },
     ],
@@ -29,14 +29,14 @@ setLayoutProps({
 
 <template>
     <div class="flex flex-1 flex-col">
-        <Head :title="'Edit ' + page.title" />
+        <Head :title="'Modifier ' + page.title" />
 
         <main
             class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
         >
             <PageHeader
-                :title="'Edit ' + page.title"
-                description="Update the page content, URL, or publication status."
+                :title="'Modifier ' + page.title"
+                description="Modifiez le contenu, l’URL ou le statut de publication de la page."
             />
 
             <PageForm :page="page" />

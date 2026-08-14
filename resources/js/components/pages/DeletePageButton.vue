@@ -33,17 +33,17 @@ function deletePage(): void {
 <template>
     <ConfirmationAction
         v-model:open="isOpen"
-        :title="'Delete “' + page.title + '”?'"
-        description="This permanently removes the page and cannot be undone."
-        confirm-label="Delete page"
-        pending-label="Deleting…"
+        :title="'Supprimer « ' + page.title + ' » ?'"
+        description="Cette page sera supprimée définitivement. Cette action est irréversible."
+        confirm-label="Supprimer la page"
+        pending-label="Suppression…"
         :processing="processing"
         @confirm="deletePage"
     >
         <template #trigger>
             <Button variant="destructive">
                 <Trash2 data-icon="inline-start" />
-                Delete page
+                Supprimer la page
             </Button>
         </template>
     </ConfirmationAction>

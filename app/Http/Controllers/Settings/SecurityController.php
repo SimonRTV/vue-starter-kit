@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Actions\Users\RecordUserManagementEvent;
+use App\Actions\Users\RevokeUserSessions;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\PasswordUpdateRequest;
 use App\Http\Requests\Settings\TwoFactorAuthenticationRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
@@ -13,6 +16,11 @@ use Laravel\Fortify\Features;
 
 class SecurityController extends Controller
 {
+    public function __construct(
+        private RevokeUserSessions $revokeUserSessions,
+        private RecordUserManagementEvent $recordEvent,
+    ) {}
+
     /**
      * Show the user's security settings page.
      */
@@ -55,9 +63,18 @@ class SecurityController extends Controller
      */
     public function update(PasswordUpdateRequest $request): RedirectResponse
     {
-        $request->user()->update([
+        /** @var User $user */
+        $user = $request->user();
+        $user->update([
             'password' => $request->password,
         ]);
+        $this->revokeUserSessions->handle($user, $request->session()->getId());
+        $this->recordEvent->handle(
+            $user,
+            $user,
+            'password_changed',
+            __('Changed the account password and revoked other sessions.'),
+        );
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Password updated.')]);
 

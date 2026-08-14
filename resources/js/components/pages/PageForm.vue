@@ -46,12 +46,12 @@ const cancelTarget = computed(() =>
 );
 
 const submitLabel = computed(() =>
-    props.page ? 'Save changes' : 'Create page',
+    props.page ? 'Enregistrer les modifications' : 'Créer la page',
 );
 const formDescription = computed(() =>
     props.page
-        ? 'Changes are applied as soon as you save the form.'
-        : 'Give the page a clear title, URL slug, and content.',
+        ? 'Les modifications sont appliquées dès l’enregistrement du formulaire.'
+        : 'Donnez à la page un titre clair, un identifiant URL et du contenu.',
 );
 
 watch(title, (value) => {
@@ -71,10 +71,10 @@ watch(title, (value) => {
 
 <template>
     <Form v-bind="formAttributes" v-slot="{ errors, processing }">
-        <FormLayout title="Page details" :description="formDescription">
+        <FormLayout title="Détails de la page" :description="formDescription">
             <FieldGroup>
                 <Field :data-invalid="errors.title ? true : undefined">
-                    <FieldLabel for="title">Title</FieldLabel>
+                    <FieldLabel for="title">Titre</FieldLabel>
                     <Input
                         id="title"
                         v-model="title"
@@ -82,7 +82,7 @@ watch(title, (value) => {
                         required
                         autofocus
                         autocomplete="off"
-                        placeholder="About our company"
+                        placeholder="À propos de notre entreprise"
                         :aria-invalid="Boolean(errors.title)"
                     />
                     <FieldError v-if="errors.title">
@@ -91,19 +91,19 @@ watch(title, (value) => {
                 </Field>
 
                 <Field :data-invalid="errors.slug ? true : undefined">
-                    <FieldLabel for="slug">Slug</FieldLabel>
+                    <FieldLabel for="slug">Identifiant URL</FieldLabel>
                     <Input
                         id="slug"
                         v-model="slug"
                         name="slug"
                         required
                         autocomplete="off"
-                        placeholder="about-our-company"
+                        placeholder="a-propos-de-notre-entreprise"
                         :aria-invalid="Boolean(errors.slug)"
                         @input="slugWasEdited = true"
                     />
                     <FieldDescription>
-                        Used in the public URL for this page.
+                        Utilisé dans l’URL publique de cette page.
                     </FieldDescription>
                     <FieldError v-if="errors.slug">
                         {{ errors.slug }}
@@ -111,17 +111,18 @@ watch(title, (value) => {
                 </Field>
 
                 <Field :data-invalid="errors.excerpt ? true : undefined">
-                    <FieldLabel for="excerpt">Excerpt</FieldLabel>
+                    <FieldLabel for="excerpt">Résumé</FieldLabel>
                     <Textarea
                         id="excerpt"
                         v-model="excerpt"
                         name="excerpt"
                         rows="3"
-                        placeholder="A short summary of this page"
+                        placeholder="Un court résumé de cette page"
                         :aria-invalid="Boolean(errors.excerpt)"
                     />
                     <FieldDescription>
-                        Optional. Keep it concise for listings and previews.
+                        Facultatif. Restez concis pour les listes et les
+                        aperçus.
                     </FieldDescription>
                     <FieldError v-if="errors.excerpt">
                         {{ errors.excerpt }}
@@ -129,13 +130,13 @@ watch(title, (value) => {
                 </Field>
 
                 <Field :data-invalid="errors.body ? true : undefined">
-                    <FieldLabel for="body">Content</FieldLabel>
+                    <FieldLabel for="body">Contenu</FieldLabel>
                     <Textarea
                         id="body"
                         v-model="body"
                         name="body"
                         rows="14"
-                        placeholder="Write the page content…"
+                        placeholder="Rédigez le contenu de la page…"
                         :aria-invalid="Boolean(errors.body)"
                     />
                     <FieldError v-if="errors.body">
@@ -145,20 +146,20 @@ watch(title, (value) => {
 
                 <Field :data-invalid="errors.is_published ? true : undefined">
                     <FieldLabel for="publication-status">
-                        Publication status
+                        Statut de publication
                     </FieldLabel>
                     <Select v-model="publicationStatus">
                         <SelectTrigger
                             id="publication-status"
                             :aria-invalid="Boolean(errors.is_published)"
                         >
-                            <SelectValue placeholder="Choose a status" />
+                            <SelectValue placeholder="Choisir un statut" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectItem value="draft">Draft</SelectItem>
+                                <SelectItem value="draft">Brouillon</SelectItem>
                                 <SelectItem value="published">
-                                    Published
+                                    Publiée
                                 </SelectItem>
                             </SelectGroup>
                         </SelectContent>
@@ -169,8 +170,8 @@ watch(title, (value) => {
                         :value="publicationStatus === 'published' ? '1' : '0'"
                     />
                     <FieldDescription>
-                        Published pages receive a publication timestamp
-                        automatically.
+                        Les pages publiées reçoivent automatiquement une date de
+                        publication.
                     </FieldDescription>
                     <FieldError v-if="errors.is_published">
                         {{ errors.is_published }}
@@ -180,11 +181,11 @@ watch(title, (value) => {
 
             <template #actions>
                 <Button variant="outline" as-child>
-                    <Link :href="cancelTarget">Cancel</Link>
+                    <Link :href="cancelTarget">Annuler</Link>
                 </Button>
                 <Button type="submit" :disabled="processing">
                     <Spinner v-if="processing" data-icon="inline-start" />
-                    {{ processing ? 'Saving…' : submitLabel }}
+                    {{ processing ? 'Enregistrement…' : submitLabel }}
                 </Button>
             </template>
         </FormLayout>

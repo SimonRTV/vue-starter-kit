@@ -46,7 +46,7 @@ function deletePage(): void {
                 <Button
                     variant="ghost"
                     size="icon-sm"
-                    :aria-label="'Actions for ' + page.title"
+                    :aria-label="'Actions pour ' + page.title"
                 >
                     <MoreHorizontal />
                 </Button>
@@ -57,13 +57,13 @@ function deletePage(): void {
                     <DropdownMenuItem :as-child="true">
                         <Link :href="PageController.show(page.id)">
                             <Eye />
-                            View
+                            Consulter
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem :as-child="true">
                         <Link :href="PageController.edit(page.id)">
                             <Edit3 />
-                            Edit
+                            Modifier
                         </Link>
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
@@ -74,7 +74,7 @@ function deletePage(): void {
                         @click="deleteOpen = true"
                     >
                         <Trash2 />
-                        Delete
+                        Supprimer
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
             </DropdownMenuContent>
@@ -82,10 +82,10 @@ function deletePage(): void {
 
         <ConfirmationAction
             v-model:open="deleteOpen"
-            :title="'Delete “' + page.title + '”?'"
-            description="This permanently removes the page and cannot be undone."
-            confirm-label="Delete page"
-            pending-label="Deleting…"
+            :title="'Supprimer « ' + page.title + ' » ?'"
+            description="Cette page sera supprimée définitivement. Cette action est irréversible."
+            confirm-label="Supprimer la page"
+            pending-label="Suppression…"
             :processing="processing"
             @confirm="deletePage"
         />

@@ -1,7 +1,16 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, FileText, FolderGit2, LayoutGrid } from '@lucide/vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import {
+    ExternalLink,
+    FileText,
+    LayoutGrid,
+    ShieldCheck,
+    Users,
+} from '@lucide/vue';
+import { computed } from 'vue';
 import PageController from '@/actions/App/Http/Controllers/PageController';
+import RoleController from '@/actions/App/Http/Controllers/RoleController';
+import UserController from '@/actions/App/Http/Controllers/UserController';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -18,31 +27,54 @@ import {
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
+const page = usePage();
+const mainNavItems = computed<NavItem[]>(() => [
     {
-        title: 'Dashboard',
+        title: 'Tableau de bord',
         href: dashboard(),
         icon: LayoutGrid,
     },
-    {
-        title: 'Pages',
-        href: PageController.index(),
-        icon: FileText,
-    },
-];
+    ...(page.props.auth.can.managePages
+        ? [
+              {
+                  title: 'Pages',
+                  href: PageController.index(),
+                  icon: FileText,
+              },
+          ]
+        : []),
+    ...(page.props.auth.can.manageUsers
+        ? [
+              {
+                  title: 'Utilisateurs',
+                  href: UserController.index(),
+                  icon: Users,
+              },
+          ]
+        : []),
+    ...(page.props.auth.can.manageRoles
+        ? [
+              {
+                  title: 'Rôles',
+                  href: RoleController.index(),
+                  icon: ShieldCheck,
+              },
+          ]
+        : []),
+]);
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
-];
+const footerNavItems = computed<NavItem[]>(() =>
+    page.props.navigation.sidebarFooterLinks.map((link) => {
+        const isExternal = /^https?:\/\//i.test(link.url);
+
+        return {
+            title: link.title,
+            href: link.url,
+            icon: isExternal ? ExternalLink : undefined,
+            isExternal,
+        };
+    }),
+);
 </script>
 
 <template>

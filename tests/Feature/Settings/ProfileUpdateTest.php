@@ -3,7 +3,9 @@
 namespace Tests\Feature\Settings;
 
 use App\Models\User;
+use App\Policies\RolePolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class ProfileUpdateTest extends TestCase
@@ -61,6 +63,20 @@ class ProfileUpdateTest extends TestCase
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
 
+    public function test_profile_email_addresses_are_normalized(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->patch(route('profile.update'), [
+                'name' => $user->name,
+                'email' => '  Mixed.Case@Example.COM ',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('mixed.case@example.com', $user->refresh()->email);
+    }
+
     public function test_user_can_delete_their_account()
     {
         $user = User::factory()->create();
@@ -95,5 +111,38 @@ class ProfileUpdateTest extends TestCase
             ->assertRedirect(route('profile.edit'));
 
         $this->assertNotNull($user->fresh());
+    }
+
+    public function test_the_final_administrator_cannot_unverify_or_delete_their_account_through_settings(): void
+    {
+        $administratorRole = Role::query()->create([
+            'name' => RolePolicy::ADMINISTRATOR_ROLE,
+            'guard_name' => 'web',
+        ]);
+        $administrator = User::factory()->create();
+        $administrator->assignRole($administratorRole);
+
+        $this->actingAs($administrator)
+            ->from(route('profile.edit'))
+            ->patch(route('profile.update'), [
+                'name' => $administrator->name,
+                'email' => 'new-administrator@example.com',
+            ])
+            ->assertRedirect(route('profile.edit'))
+            ->assertSessionHasErrors('email');
+
+        $this->assertNotNull($administrator->refresh()->email_verified_at);
+        $this->assertNotSame('new-administrator@example.com', $administrator->email);
+
+        $this->actingAs($administrator)
+            ->from(route('profile.edit'))
+            ->delete(route('profile.destroy'), [
+                'password' => 'password',
+            ])
+            ->assertRedirect(route('profile.edit'))
+            ->assertSessionHasErrors('user');
+
+        $this->assertModelExists($administrator);
+        $this->assertAuthenticatedAs($administrator);
     }
 }

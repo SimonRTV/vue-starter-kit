@@ -12,6 +12,8 @@ This Vue starter kit utilizes Vue 3 and the Composition API, TypeScript, Tailwin
 
 Documentation for all Laravel starter kits can be found on the [Laravel website](https://laravel.com/docs/starter-kits).
 
+Project-specific permission synchronization is documented in [PERMISSIONS.md](PERMISSIONS.md).
+
 ## Contributing
 
 Thank you for considering contributing to our starter kit! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).

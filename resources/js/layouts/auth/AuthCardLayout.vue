@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import AppLogoFull from '@/components/AppLogoFull.vue';
 import {
     Card,
     CardContent,
@@ -23,11 +23,13 @@ defineProps<{
         <div class="flex w-full max-w-md flex-col gap-6">
             <Link
                 :href="home()"
-                class="flex items-center gap-2 self-center font-medium"
+                class="flex w-full items-center justify-center self-center font-medium"
             >
-                <div class="flex h-9 w-9 items-center justify-center">
-                    <AppLogoIcon
-                        class="size-9 fill-current text-black dark:text-white"
+                <div
+                    class="flex h-12 w-full max-w-56 items-center justify-center"
+                >
+                    <AppLogoFull
+                        class="h-12 w-full fill-current text-foreground"
                     />
                 </div>
             </Link>

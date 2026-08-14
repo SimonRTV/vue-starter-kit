@@ -24,12 +24,38 @@ class AuthenticationTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->post(route('login.store'), [
-            'email' => $user->email,
+            'email' => strtoupper($user->email),
             'password' => 'password',
         ]);
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
+        $this->assertNotNull($user->refresh()->last_login_at);
+    }
+
+    public function test_disabled_users_cannot_authenticate(): void
+    {
+        $user = User::factory()->disabled()->create();
+
+        $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertGuest();
+        $this->assertNull($user->refresh()->last_login_at);
+    }
+
+    public function test_existing_sessions_for_disabled_users_are_rejected(): void
+    {
+        $user = User::factory()->disabled()->create();
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertRedirect(route('login'))
+            ->assertSessionHasErrors('email');
+
+        $this->assertGuest();
     }
 
     public function test_users_with_two_factor_enabled_are_redirected_to_two_factor_challenge()
@@ -83,7 +109,7 @@ class AuthenticationTest extends TestCase
         RateLimiter::increment(md5('login'.implode('|', [$user->email, '127.0.0.1'])), amount: 5);
 
         $response = $this->post(route('login.store'), [
-            'email' => $user->email,
+            'email' => '  '.$user->email.'  ',
             'password' => 'wrong-password',
         ]);
 

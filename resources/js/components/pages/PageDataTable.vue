@@ -133,8 +133,8 @@ watch(
 
 <template>
     <ResourceTable
-        title="All pages"
-        description="Search, filter, sort, and manage every page."
+        title="Toutes les pages"
+        description="Recherchez, filtrez, triez et gérez toutes les pages."
         :columns="pageColumns"
         :data="pages.data"
         :pagination="pagination"
@@ -143,8 +143,8 @@ watch(
         :processing="processing"
         item-label="page"
         items-label="pages"
-        empty-label="No pages found"
-        empty-message="No pages match your filters."
+        empty-label="Aucune page trouvée"
+        empty-message="Aucune page ne correspond à vos filtres."
         :show-table="shouldShowTable"
         @update:pagination="updatePagination"
         @update:sorting="updateSorting"
@@ -155,7 +155,7 @@ watch(
             >
                 <Field class="w-full sm:max-w-sm">
                     <FieldLabel for="page-search" class="sr-only">
-                        Search pages
+                        Rechercher des pages
                     </FieldLabel>
                     <div class="relative">
                         <Search
@@ -166,7 +166,7 @@ watch(
                             id="page-search"
                             v-model="search"
                             class="pl-9"
-                            placeholder="Search pages…"
+                            placeholder="Rechercher des pages…"
                             autocomplete="off"
                             maxlength="100"
                         />
@@ -175,24 +175,26 @@ watch(
 
                 <Field>
                     <FieldLabel for="page-status" class="sr-only">
-                        Filter by status
+                        Filtrer par statut
                     </FieldLabel>
                     <Select
                         :model-value="status"
                         @update:model-value="updateStatus"
                     >
                         <SelectTrigger id="page-status" class="w-full">
-                            <SelectValue placeholder="All statuses" />
+                            <SelectValue placeholder="Tous les statuts" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
                                 <SelectItem value="all">
-                                    All statuses
+                                    Tous les statuts
                                 </SelectItem>
                                 <SelectItem value="published">
-                                    Published
+                                    Publiées
                                 </SelectItem>
-                                <SelectItem value="draft">Draft</SelectItem>
+                                <SelectItem value="draft"
+                                    >Brouillons</SelectItem
+                                >
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -205,22 +207,22 @@ watch(
                     @click="reset"
                 >
                     <X data-icon="inline-start" />
-                    Reset
+                    Réinitialiser
                 </Button>
             </FieldGroup>
         </template>
 
         <template #empty>
             <EmptyState
-                title="No pages yet"
-                description="Create your first page to start building your content library."
+                title="Aucune page"
+                description="Créez votre première page pour commencer votre bibliothèque de contenu."
                 :icon="FileText"
             >
                 <template #actions>
                     <Button as-child>
                         <Link :href="PageController.create()">
                             <Plus data-icon="inline-start" />
-                            Create page
+                            Créer une page
                         </Link>
                     </Button>
                 </template>

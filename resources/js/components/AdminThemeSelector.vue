@@ -8,20 +8,20 @@ const { adminTheme, updateAdminTheme } = useAdminTheme();
 const themes = [
     {
         value: 'neutral',
-        label: 'Neutral',
-        description: 'A clean monochrome workspace.',
+        label: 'Neutre',
+        description: 'Un espace de travail monochrome et épuré.',
         Icon: Palette,
     },
     {
         value: 'ocean',
-        label: 'Ocean',
-        description: 'A focused blue admin palette.',
+        label: 'Océan',
+        description: 'Une palette bleue conçue pour la concentration.',
         Icon: Waves,
     },
     {
         value: 'forest',
-        label: 'Forest',
-        description: 'A calm green workspace.',
+        label: 'Forêt',
+        description: 'Un espace de travail vert et apaisant.',
         Icon: Leaf,
     },
 ] as const;
@@ -37,10 +37,11 @@ function selectTheme(value: unknown): void {
     <section aria-labelledby="admin-theme-label" class="flex flex-col gap-3">
         <div class="flex flex-col gap-1">
             <h2 id="admin-theme-label" class="text-sm font-medium">
-                Admin theme
+                Thème d’administration
             </h2>
             <p class="text-sm text-muted-foreground">
-                Choose the color palette used across the admin interface.
+                Choisissez la palette de couleurs de l’interface
+                d’administration.
             </p>
         </div>
 

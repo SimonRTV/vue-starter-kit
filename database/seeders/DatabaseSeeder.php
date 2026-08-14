@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Policies\RolePolicy;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,10 +16,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(PageSeeder::class);
+        $this->call([
+            UserManagementSeeder::class,
+            ApplicationSettingSeeder::class,
+            PageSeeder::class,
+        ]);
 
         $sampleUsers = [
-            ['name' => 'Test User', 'email' => 'test@example.com'],
+            ['name' => 'Utilisateur test', 'email' => 'test@example.com'],
             ['name' => 'Alice', 'email' => 'alice@example.com'],
             ['name' => 'Bob', 'email' => 'bob@example.com'],
             ['name' => 'Charlie', 'email' => 'charlie@example.com'],
@@ -27,7 +32,11 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($sampleUsers as $sampleUser) {
-            User::factory()->create($sampleUser);
+            $user = User::factory()->create($sampleUser);
+
+            if ($sampleUser['email'] === 'test@example.com') {
+                $user->assignRole(RolePolicy::ADMINISTRATOR_ROLE);
+            }
         }
     }
 }

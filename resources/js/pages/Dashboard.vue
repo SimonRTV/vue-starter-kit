@@ -42,64 +42,64 @@ type DashboardStat = {
 const page = usePage();
 
 const firstName = computed(
-    () => page.props.auth.user.name.trim().split(/\s+/)[0] || 'there',
+    () => page.props.auth.user.name.trim().split(/\s+/)[0] || 'vous',
 );
 
 const stats: DashboardStat[] = [
     {
-        label: 'Total revenue',
-        value: '$124,563',
-        change: '+12.5%',
-        detail: 'Compared with last month',
+        label: 'Chiffre d’affaires total',
+        value: '124 563 $',
+        change: '+12,5 %',
+        detail: 'Par rapport au mois dernier',
         icon: DollarSign,
     },
     {
-        label: 'New customers',
-        value: '1,429',
-        change: '+8.2%',
-        detail: '108 joined this week',
+        label: 'Nouveaux clients',
+        value: '1 429',
+        change: '+8,2 %',
+        detail: '108 arrivés cette semaine',
         icon: Users,
     },
     {
-        label: 'Active projects',
+        label: 'Projets actifs',
         value: '24',
         change: '+3',
-        detail: '7 are due this month',
+        detail: '7 à livrer ce mois-ci',
         icon: BriefcaseBusiness,
     },
     {
-        label: 'Conversion rate',
-        value: '4.8%',
-        change: '+0.6%',
-        detail: 'Up from 4.2% last month',
+        label: 'Taux de conversion',
+        value: '4,8 %',
+        change: '+0,6 %',
+        detail: 'Contre 4,2 % le mois dernier',
         icon: TrendingUp,
     },
 ];
 
 const revenueByMonth = [
-    { month: 'Feb', amount: '$42k', height: 42 },
-    { month: 'Mar', amount: '$55k', height: 55 },
-    { month: 'Apr', amount: '$49k', height: 49 },
-    { month: 'May', amount: '$67k', height: 67 },
-    { month: 'Jun', amount: '$58k', height: 58 },
-    { month: 'Jul', amount: '$76k', height: 76 },
-    { month: 'Aug', amount: '$86k', height: 86, current: true },
+    { month: 'Fév.', amount: '42 k$', height: 42 },
+    { month: 'Mars', amount: '55 k$', height: 55 },
+    { month: 'Avr.', amount: '49 k$', height: 49 },
+    { month: 'Mai', amount: '67 k$', height: 67 },
+    { month: 'Juin', amount: '58 k$', height: 58 },
+    { month: 'Juil.', amount: '76 k$', height: 76 },
+    { month: 'Août', amount: '86 k$', height: 86, current: true },
 ];
 
 const goals = [
     {
-        label: 'Monthly revenue',
-        value: '$86k of $100k',
+        label: 'Chiffre d’affaires mensuel',
+        value: '86 k$ sur 100 k$',
         progress: 86,
     },
     {
-        label: 'New customers',
-        value: '1,429 of 1,800',
+        label: 'Nouveaux clients',
+        value: '1 429 sur 1 800',
         progress: 79,
     },
     {
-        label: 'Projects delivered',
-        value: '18 of 24',
+        label: 'Projets livrés',
+        value: '18 sur 24',
         progress: 75,
     },
 ];
@@ -108,48 +108,48 @@ const recentActivity = [
     {
         initials: 'OM',
         name: 'Olivia Martin',
-        action: 'closed the Website redesign project',
-        time: '8 minutes ago',
+        action: 'a clôturé le projet de refonte du site web',
+        time: 'il y a 8 minutes',
     },
     {
         initials: 'JL',
         name: 'Jackson Lee',
-        action: 'added Northstar Labs as a new client',
-        time: '32 minutes ago',
+        action: 'a ajouté Northstar Labs comme nouveau client',
+        time: 'il y a 32 minutes',
     },
     {
         initials: 'SK',
         name: 'Sofia Kim',
-        action: 'shared the Q3 campaign report',
-        time: '1 hour ago',
+        action: 'a partagé le rapport de campagne du 3e trimestre',
+        time: 'il y a 1 heure',
     },
     {
         initials: 'MW',
         name: 'Marcus Wright',
-        action: 'completed 6 onboarding tasks',
-        time: '3 hours ago',
+        action: 'a terminé 6 tâches d’intégration',
+        time: 'il y a 3 heures',
     },
 ];
 
 const schedule = [
     {
         date: '14',
-        month: 'Aug',
-        title: 'Design review',
+        month: 'Août',
+        title: 'Revue de conception',
         time: '10:00–10:45',
-        type: 'Team',
+        type: 'Équipe',
     },
     {
         date: '14',
-        month: 'Aug',
-        title: 'Weekly team sync',
+        month: 'Août',
+        title: 'Synchronisation hebdomadaire',
         time: '13:30–14:00',
-        type: 'Internal',
+        type: 'Interne',
     },
     {
         date: '15',
-        month: 'Aug',
-        title: 'Northstar Labs kickoff',
+        month: 'Août',
+        title: 'Lancement de Northstar Labs',
         time: '09:30–10:30',
         type: 'Client',
     },
@@ -159,7 +159,7 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Dashboard',
+                title: 'Tableau de bord',
                 href: dashboard(),
             },
         ],
@@ -169,7 +169,7 @@ defineOptions({
 
 <template>
     <div class="@container/main flex flex-1 flex-col">
-        <Head title="Dashboard" />
+        <Head title="Tableau de bord" />
 
         <main
             class="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
@@ -182,15 +182,16 @@ defineOptions({
                         <h1
                             class="text-2xl font-semibold tracking-tight sm:text-3xl"
                         >
-                            Good morning, {{ firstName }}
+                            Bonjour, {{ firstName }}
                         </h1>
                         <Badge variant="outline">
                             <Sparkles />
-                            Sample data
+                            Données d’exemple
                         </Badge>
                     </div>
                     <p class="text-sm text-muted-foreground sm:text-base">
-                        Here’s what’s happening across your workspace today.
+                        Voici ce qui se passe aujourd’hui dans votre espace de
+                        travail.
                     </p>
                 </div>
                 <div
@@ -200,12 +201,12 @@ defineOptions({
                         class="size-4 text-primary"
                         aria-hidden="true"
                     />
-                    <span>All systems operational</span>
+                    <span>Tous les systèmes sont opérationnels</span>
                 </div>
             </header>
 
             <section
-                aria-label="Business overview"
+                aria-label="Vue d’ensemble de l’activité"
                 class="grid gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4"
             >
                 <Card v-for="stat in stats" :key="stat.label" class="min-w-0">
@@ -240,26 +241,29 @@ defineOptions({
             </section>
 
             <section
-                aria-label="Performance overview"
+                aria-label="Vue d’ensemble des performances"
                 class="grid gap-6 @5xl/main:grid-cols-12"
             >
                 <Card class="min-w-0 @5xl/main:col-span-8">
                     <CardHeader>
-                        <CardTitle>Revenue overview</CardTitle>
+                        <CardTitle
+                            >Vue d’ensemble du chiffre d’affaires</CardTitle
+                        >
                         <CardDescription>
-                            Monthly recurring revenue for the last 7 months
+                            Chiffre d’affaires mensuel récurrent des 7 derniers
+                            mois
                         </CardDescription>
                         <CardAction>
                             <Badge variant="secondary">
                                 <TrendingUp />
-                                12.5%
+                                12,5 %
                             </Badge>
                         </CardAction>
                     </CardHeader>
                     <CardContent>
                         <div
                             role="img"
-                            aria-label="Monthly revenue increased from 42 thousand dollars in February to 86 thousand dollars in August"
+                            aria-label="Le chiffre d’affaires mensuel est passé de 42 000 dollars en février à 86 000 dollars en août"
                             class="flex h-64 items-end gap-2 sm:gap-4"
                         >
                             <div
@@ -304,10 +308,10 @@ defineOptions({
                             />
                             <div class="flex flex-col">
                                 <span class="text-xs text-muted-foreground">
-                                    Average growth
+                                    Croissance moyenne
                                 </span>
                                 <span class="text-sm font-medium"
-                                    >8.4% monthly</span
+                                    >8,4 % par mois</span
                                 >
                             </div>
                         </div>
@@ -318,9 +322,11 @@ defineOptions({
                             />
                             <div class="flex flex-col">
                                 <span class="text-xs text-muted-foreground">
-                                    Average order
+                                    Panier moyen
                                 </span>
-                                <span class="text-sm font-medium">$248.60</span>
+                                <span class="text-sm font-medium"
+                                    >248,60 $</span
+                                >
                             </div>
                         </div>
                     </CardFooter>
@@ -328,9 +334,9 @@ defineOptions({
 
                 <Card class="min-w-0 @5xl/main:col-span-4">
                     <CardHeader>
-                        <CardTitle>Quarterly goals</CardTitle>
+                        <CardTitle>Objectifs trimestriels</CardTitle>
                         <CardDescription>
-                            Progress across your key targets
+                            Progression de vos principaux objectifs
                         </CardDescription>
                         <CardAction>
                             <div
@@ -356,7 +362,7 @@ defineOptions({
                                 <span
                                     class="text-xs text-muted-foreground tabular-nums"
                                 >
-                                    {{ goal.progress }}%
+                                    {{ goal.progress }} %
                                 </span>
                             </div>
                             <div
@@ -384,8 +390,8 @@ defineOptions({
                                 aria-hidden="true"
                             />
                             <p class="text-muted-foreground">
-                                You’re on track to reach all three targets this
-                                quarter.
+                                Vous êtes en bonne voie pour atteindre les trois
+                                objectifs ce trimestre.
                             </p>
                         </div>
                     </CardFooter>
@@ -393,14 +399,14 @@ defineOptions({
             </section>
 
             <section
-                aria-label="Workspace details"
+                aria-label="Détails de l’espace de travail"
                 class="grid gap-6 @5xl/main:grid-cols-12"
             >
                 <Card class="min-w-0 @5xl/main:col-span-7">
                     <CardHeader>
-                        <CardTitle>Recent activity</CardTitle>
+                        <CardTitle>Activité récente</CardTitle>
                         <CardDescription>
-                            The latest updates from your team
+                            Les dernières nouvelles de votre équipe
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -439,9 +445,9 @@ defineOptions({
 
                 <Card class="min-w-0 @5xl/main:col-span-5">
                     <CardHeader>
-                        <CardTitle>Upcoming schedule</CardTitle>
+                        <CardTitle>Prochaines échéances</CardTitle>
                         <CardDescription>
-                            Your next meetings and milestones
+                            Vos prochaines réunions et étapes clés
                         </CardDescription>
                         <CardAction>
                             <div

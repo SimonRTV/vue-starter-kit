@@ -13,31 +13,31 @@ class PageSeeder extends Seeder
     public function run(): void
     {
         Page::factory()->published()->create([
-            'title' => 'About us',
-            'slug' => 'about-us',
-            'excerpt' => 'Learn more about our team, values, and mission.',
-            'body' => 'We build thoughtful products that help teams do their best work.',
+            'title' => 'À propos',
+            'slug' => 'a-propos',
+            'excerpt' => 'Découvrez notre équipe, nos valeurs et notre mission.',
+            'body' => 'Nous créons des produits soigneusement conçus qui aident les équipes à donner le meilleur d’elles-mêmes.',
         ]);
 
         Page::factory()->published()->create([
             'title' => 'Contact',
             'slug' => 'contact',
-            'excerpt' => 'Find the best way to get in touch with our team.',
-            'body' => 'Send us a message and a member of our team will get back to you.',
+            'excerpt' => 'Découvrez la meilleure façon de contacter notre équipe.',
+            'body' => 'Envoyez-nous un message et un membre de notre équipe vous répondra.',
         ]);
 
         Page::factory()->published()->create([
-            'title' => 'Privacy policy',
-            'slug' => 'privacy-policy',
-            'excerpt' => 'How we collect, use, and protect your information.',
-            'body' => 'This privacy policy explains how information is handled when you use our services.',
+            'title' => 'Politique de confidentialité',
+            'slug' => 'politique-de-confidentialite',
+            'excerpt' => 'Comment nous recueillons, utilisons et protégeons vos informations.',
+            'body' => 'Cette politique de confidentialité explique comment vos informations sont traitées lorsque vous utilisez nos services.',
         ]);
 
         Page::factory()->draft()->create([
             'title' => 'Services',
             'slug' => 'services',
-            'excerpt' => 'An overview of the services we provide.',
-            'body' => 'This draft page is ready for your service details.',
+            'excerpt' => 'Un aperçu des services que nous proposons.',
+            'body' => 'Cette page brouillon est prête à accueillir le détail de vos services.',
         ]);
     }
 }

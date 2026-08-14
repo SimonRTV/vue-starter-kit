@@ -4,6 +4,7 @@ namespace Tests\Feature\Settings;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
@@ -80,7 +81,17 @@ class SecurityTest extends TestCase
 
     public function test_password_can_be_updated()
     {
+        config(['session.driver' => 'database']);
+
         $user = User::factory()->create();
+        DB::table('sessions')->insert([
+            'id' => 'other-device-session',
+            'user_id' => $user->id,
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'Other device',
+            'payload' => '',
+            'last_activity' => time(),
+        ]);
 
         $response = $this
             ->actingAs($user)
@@ -96,6 +107,11 @@ class SecurityTest extends TestCase
             ->assertRedirect(route('security.edit'));
 
         $this->assertTrue(Hash::check('new-password', $user->refresh()->password));
+        $this->assertDatabaseMissing('sessions', ['id' => 'other-device-session']);
+        $this->assertDatabaseHas('user_management_events', [
+            'user_id' => $user->id,
+            'action' => 'password_changed',
+        ]);
     }
 
     public function test_correct_password_must_be_provided_to_update_password()

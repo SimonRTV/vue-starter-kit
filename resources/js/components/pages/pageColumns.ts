@@ -15,7 +15,7 @@ function formatDate(value: string | null): string {
         return '—';
     }
 
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat('fr-CH', {
         dateStyle: 'medium',
         timeStyle: 'short',
     }).format(new Date(value));
@@ -43,7 +43,7 @@ export const pageColumns = columnHelper.columns([
             ]),
     }),
     columnHelper.accessor('is_published', {
-        header: ({ column }) => renderDataTableSortHeader('Status', column),
+        header: ({ column }) => renderDataTableSortHeader('Statut', column),
         cell: ({ row }) =>
             h(
                 Badge,
@@ -52,21 +52,22 @@ export const pageColumns = columnHelper.columns([
                         ? 'default'
                         : 'secondary',
                 },
-                () => (row.original.is_published ? 'Published' : 'Draft'),
+                () => (row.original.is_published ? 'Publiée' : 'Brouillon'),
             ),
     }),
     columnHelper.accessor('published_at', {
-        header: ({ column }) => renderDataTableSortHeader('Published', column),
+        header: ({ column }) =>
+            renderDataTableSortHeader('Publication', column),
         cell: ({ row }) => formatDate(row.original.published_at),
     }),
     columnHelper.accessor('updated_at', {
         header: ({ column }) =>
-            renderDataTableSortHeader('Last updated', column),
+            renderDataTableSortHeader('Dernière modification', column),
         cell: ({ row }) => formatDate(row.original.updated_at),
     }),
     columnHelper.display({
         id: 'actions',
-        header: () => h('span', { class: 'sr-only' }, 'Page actions'),
+        header: () => h('span', { class: 'sr-only' }, 'Actions de la page'),
         cell: ({ row }) => h(PageTableActions, { page: row.original }),
         enableSorting: false,
     }),

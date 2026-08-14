@@ -24,8 +24,8 @@ const props = withDefaults(
         processing?: boolean;
     }>(),
     {
-        pendingLabel: 'Working…',
-        cancelLabel: 'Cancel',
+        pendingLabel: 'Traitement…',
+        cancelLabel: 'Annuler',
         confirmVariant: 'destructive',
         processing: false,
     },
