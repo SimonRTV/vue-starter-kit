@@ -3,17 +3,26 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_returns_a_successful_response(): void
+    public function test_homepage_renders_the_public_branded_experience(): void
     {
         $response = $this->get(route('home'));
 
-        $response->assertOk();
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Welcome')
+                ->where('name', config('app.name'))
+                ->where('auth.user', null)
+                ->where('branding.iconUrl', null)
+                ->where('branding.fullLogoUrl', null),
+            );
     }
 
     public function test_layout_includes_the_complete_favicon_set(): void
