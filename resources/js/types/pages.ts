@@ -32,4 +32,13 @@ export type PageDetail = PageSummary & {
     created_at: string | null;
 };
 
+export type PublicPage = {
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    body: string | null;
+    published_at: string;
+    updated_at: string | null;
+};
+
 export type PagePagination = Pagination<PageSummary>;

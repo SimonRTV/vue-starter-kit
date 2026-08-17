@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link, setLayoutProps } from '@inertiajs/vue3';
+import { Link, setLayoutProps } from '@inertiajs/vue3';
 import { Edit3, LockKeyhole, ShieldAlert } from '@lucide/vue';
 import { computed } from 'vue';
 import RoleController from '@/actions/App/Http/Controllers/RoleController';
@@ -123,8 +123,6 @@ setLayoutProps({
 
 <template>
     <div class="flex flex-1 flex-col">
-        <Head :title="roleName" />
-
         <main
             class="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
         >

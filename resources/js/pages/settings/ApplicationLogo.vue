@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head, router } from '@inertiajs/vue3';
+import { Form, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import ApplicationLogoController from '@/actions/App/Http/Controllers/Settings/ApplicationLogoController';
 import ConfirmationAction from '@/components/application/ConfirmationAction.vue';
@@ -70,8 +70,6 @@ function resetFullLogo(): void {
 
 <template>
     <div class="flex flex-col gap-12">
-        <Head title="Paramètres de l’application" />
-
         <h1 class="sr-only">Paramètres de l’application</h1>
 
         <Form

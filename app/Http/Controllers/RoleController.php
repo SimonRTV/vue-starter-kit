@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Laravel\Head\Facades\Head;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -49,6 +50,8 @@ class RoleController extends Controller
             return to_route('roles.index', $request->canonicalQuery($roles->lastPage()));
         }
 
+        Head::title('Rôles');
+
         return Inertia::render('roles/Index', [
             'roles' => $roles,
             'filters' => $filters,
@@ -64,6 +67,7 @@ class RoleController extends Controller
     public function create(): Response
     {
         Gate::authorize('create', Role::class);
+        Head::title('Nouveau rôle');
 
         return Inertia::render('roles/Create', [
             'permissions' => $this->permissionOptions(),
@@ -96,6 +100,7 @@ class RoleController extends Controller
         $actor = $request->user();
         $role->loadMissing('permissions:id,name,guard_name')
             ->loadCount(['permissions', 'users']);
+        Head::title($role->name);
 
         return Inertia::render('roles/Show', [
             'role' => $this->detail($role, $actor),
@@ -113,6 +118,7 @@ class RoleController extends Controller
         $actor = $request->user();
         $role->loadMissing('permissions:id,name,guard_name')
             ->loadCount(['permissions', 'users']);
+        Head::title('Modifier '.$role->name);
 
         return Inertia::render('roles/Edit', [
             'role' => $this->detail($role, $actor),

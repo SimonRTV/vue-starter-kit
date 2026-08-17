@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, setLayoutProps } from '@inertiajs/vue3';
+import { setLayoutProps } from '@inertiajs/vue3';
 import PageController from '@/actions/App/Http/Controllers/PageController';
 import { PageHeader } from '@/components/application';
 import PageForm from '@/components/pages/PageForm.vue';
@@ -29,8 +29,6 @@ setLayoutProps({
 
 <template>
     <div class="flex flex-1 flex-col">
-        <Head :title="'Modifier ' + page.title" />
-
         <main
             class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
         >

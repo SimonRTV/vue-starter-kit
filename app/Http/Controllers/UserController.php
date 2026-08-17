@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
+use Laravel\Head\Facades\Head;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -54,6 +55,8 @@ class UserController extends Controller
             return to_route('users.index', $request->canonicalQuery($users->lastPage()));
         }
 
+        Head::title('Utilisateurs');
+
         return Inertia::render('users/Index', [
             'users' => $users,
             'filters' => $filters,
@@ -73,6 +76,7 @@ class UserController extends Controller
 
         /** @var User $actor */
         $actor = $request->user();
+        Head::title('Nouvel utilisateur');
 
         return Inertia::render('users/Create', [
             'roles' => $this->roleOptions($actor),
@@ -106,6 +110,7 @@ class UserController extends Controller
         /** @var User $actor */
         $actor = $request->user();
         $user->loadMissing(['permissions:id,name,guard_name', 'roles.permissions:id,name,guard_name']);
+        Head::title($user->name);
 
         return Inertia::render('users/Show', [
             'user' => $this->detail($user, $actor),
@@ -122,6 +127,7 @@ class UserController extends Controller
         /** @var User $actor */
         $actor = $request->user();
         $user->loadMissing(['permissions:id,name,guard_name', 'roles.permissions:id,name,guard_name']);
+        Head::title('Modifier '.$user->name);
 
         return Inertia::render('users/Edit', [
             'user' => $this->detail($user, $actor),

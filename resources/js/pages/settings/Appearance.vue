@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
 import AdminThemeSelector from '@/components/AdminThemeSelector.vue';
 import AppearanceTabs from '@/components/AppearanceTabs.vue';
 import Heading from '@/components/Heading.vue';
@@ -18,8 +17,6 @@ defineOptions({
 </script>
 
 <template>
-    <Head title="Paramètres d’apparence" />
-
     <h1 class="sr-only">Paramètres d’apparence</h1>
 
     <div class="flex flex-col gap-8">

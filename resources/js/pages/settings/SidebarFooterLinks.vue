@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, useForm } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 import { ArrowDown, ArrowUp, Link2, Plus, Trash2 } from '@lucide/vue';
 import SidebarFooterLinkController from '@/actions/App/Http/Controllers/Settings/SidebarFooterLinkController';
 import EmptyState from '@/components/application/EmptyState.vue';
@@ -92,8 +92,6 @@ function reset(): void {
 </script>
 
 <template>
-    <Head title="Menu latéral" />
-
     <h1 class="sr-only">Menu latéral</h1>
 
     <form @submit.prevent="submit">

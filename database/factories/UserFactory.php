@@ -28,6 +28,8 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'appearance' => 'system',
+            'admin_theme' => 'neutral',
             'disabled_at' => null,
             'invitation_sent_at' => null,
             'last_login_at' => null,

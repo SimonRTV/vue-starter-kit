@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-admin-theme="{{ $adminTheme ?? 'neutral' }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-admin-theme="{{ $adminTheme ?? 'neutral' }}" data-appearance="{{ $appearance ?? 'system' }}" data-appearance-surface="{{ $appearanceSurface ?? 'frontend' }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        @head
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
@@ -26,21 +27,10 @@
             }
         </style>
 
-        <meta name="theme-color" content="#ff2d20">
-        <meta name="apple-mobile-web-app-title" content="{{ config('app.name', 'Laravel') }}">
-
-        <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml" sizes="any">
-        <link rel="icon" href="{{ asset('favicon-96x96.png') }}" type="image/png" sizes="96x96">
-        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
-        <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" sizes="180x180">
-        <link rel="manifest" href="{{ asset('site.webmanifest') }}">
-
         @fonts
 
         @vite(['resources/css/app.css', 'resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
-        <x-inertia::head>
-            <title>{{ config('app.name', 'Laravel') }}</title>
-        </x-inertia::head>
+        <x-inertia::head />
     </head>
     <body class="font-sans antialiased">
         <x-inertia::app />

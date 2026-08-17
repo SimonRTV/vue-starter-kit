@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import {
     ArrowRight,
     Check,
@@ -11,6 +11,7 @@ import {
 } from '@lucide/vue';
 import { ref } from 'vue';
 import AppLogoFull from '@/components/AppLogoFull.vue';
+import FrontendAppearanceSwitch from '@/components/FrontendAppearanceSwitch.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -73,13 +74,6 @@ const workflowSteps = [
 
 <template>
     <div class="min-h-screen overflow-x-hidden bg-background text-foreground">
-        <Head title="Welcome">
-            <meta
-                name="description"
-                content="A flexible, thoughtful workspace for bringing people, priorities, and progress together."
-            />
-        </Head>
-
         <header
             class="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur-xl"
         >
@@ -108,72 +102,85 @@ const workflowSteps = [
                     </a>
                 </nav>
 
-                <div class="hidden items-center gap-2 md:flex">
-                    <Button v-if="$page.props.auth.user" as-child>
+                <div class="flex items-center gap-2">
+                    <FrontendAppearanceSwitch />
+                    <Button
+                        v-if="$page.props.auth.user"
+                        as-child
+                        class="hidden md:inline-flex"
+                    >
                         <Link :href="dashboard()" prefetch>
                             Dashboard
                             <ArrowRight data-icon="inline-end" />
                         </Link>
                     </Button>
-                    <Button v-else as-child variant="ghost">
+                    <Button
+                        v-else
+                        as-child
+                        variant="ghost"
+                        class="hidden md:inline-flex"
+                    >
                         <Link :href="login()" prefetch>Log in</Link>
                     </Button>
-                </div>
 
-                <Sheet v-model:open="isMobileMenuOpen">
-                    <SheetTrigger as-child>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            class="md:hidden"
-                            aria-label="Open navigation menu"
-                        >
-                            <Menu />
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent class="w-full sm:max-w-sm">
-                        <SheetHeader>
-                            <SheetTitle>Menu</SheetTitle>
-                            <SheetDescription>
-                                Explore the platform or access your workspace.
-                            </SheetDescription>
-                        </SheetHeader>
-
-                        <nav
-                            aria-label="Mobile navigation"
-                            class="flex flex-1 flex-col gap-2 px-4"
-                        >
-                            <a
-                                v-for="item in navigationItems"
-                                :key="item.href"
-                                :href="item.href"
-                                class="rounded-lg px-3 py-3 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                @click.prevent="navigateToSection(item.href)"
-                            >
-                                {{ item.label }}
-                            </a>
-                        </nav>
-
-                        <div class="p-4">
+                    <Sheet v-model:open="isMobileMenuOpen">
+                        <SheetTrigger as-child>
                             <Button
-                                v-if="$page.props.auth.user"
-                                as-child
-                                class="w-full"
+                                variant="ghost"
+                                size="icon"
+                                class="md:hidden"
+                                aria-label="Open navigation menu"
                             >
-                                <Link :href="dashboard()">
-                                    Open dashboard
-                                    <ArrowRight data-icon="inline-end" />
-                                </Link>
+                                <Menu />
                             </Button>
-                            <Button v-else as-child class="w-full">
-                                <Link :href="login()">
-                                    Log in
-                                    <ArrowRight data-icon="inline-end" />
-                                </Link>
-                            </Button>
-                        </div>
-                    </SheetContent>
-                </Sheet>
+                        </SheetTrigger>
+                        <SheetContent class="w-full sm:max-w-sm">
+                            <SheetHeader>
+                                <SheetTitle>Menu</SheetTitle>
+                                <SheetDescription>
+                                    Explore the platform or access your
+                                    workspace.
+                                </SheetDescription>
+                            </SheetHeader>
+
+                            <nav
+                                aria-label="Mobile navigation"
+                                class="flex flex-1 flex-col gap-2 px-4"
+                            >
+                                <a
+                                    v-for="item in navigationItems"
+                                    :key="item.href"
+                                    :href="item.href"
+                                    class="rounded-lg px-3 py-3 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                    @click.prevent="
+                                        navigateToSection(item.href)
+                                    "
+                                >
+                                    {{ item.label }}
+                                </a>
+                            </nav>
+
+                            <div class="p-4">
+                                <Button
+                                    v-if="$page.props.auth.user"
+                                    as-child
+                                    class="w-full"
+                                >
+                                    <Link :href="dashboard()">
+                                        Open dashboard
+                                        <ArrowRight data-icon="inline-end" />
+                                    </Link>
+                                </Button>
+                                <Button v-else as-child class="w-full">
+                                    <Link :href="login()">
+                                        Log in
+                                        <ArrowRight data-icon="inline-end" />
+                                    </Link>
+                                </Button>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                </div>
             </div>
         </header>
 
@@ -254,7 +261,7 @@ const workflowSteps = [
                             class="absolute -inset-5 rounded-[2rem] bg-muted/70 blur-2xl"
                         />
                         <div
-                            class="relative rounded-[1.75rem] border border-border/70 bg-muted/35 p-3 shadow-2xl shadow-foreground/5 sm:p-5"
+                            class="relative animate-in rounded-[1.75rem] border border-border/70 bg-muted/35 p-3 shadow-2xl shadow-foreground/5 duration-1000 fade-in slide-in-from-top-8 sm:p-5 delay-150"
                         >
                             <Card>
                                 <CardHeader>

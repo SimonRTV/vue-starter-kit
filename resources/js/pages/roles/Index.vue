@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { ShieldPlus } from '@lucide/vue';
 import RoleController from '@/actions/App/Http/Controllers/RoleController';
 import { PageHeader } from '@/components/application';
@@ -31,8 +31,6 @@ defineOptions({
 
 <template>
     <div class="flex flex-1 flex-col">
-        <Head title="Rôles" />
-
         <main
             class="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
         >

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, setLayoutProps } from '@inertiajs/vue3';
+import { setLayoutProps } from '@inertiajs/vue3';
 import RoleController from '@/actions/App/Http/Controllers/RoleController';
 import { PageHeader } from '@/components/application';
 import RoleForm from '@/components/roles/RoleForm.vue';
@@ -33,8 +33,6 @@ setLayoutProps({
 
 <template>
     <div class="flex flex-1 flex-col">
-        <Head :title="'Modifier ' + roleName" />
-
         <main
             class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
         >

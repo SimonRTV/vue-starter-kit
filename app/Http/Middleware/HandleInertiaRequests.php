@@ -7,6 +7,8 @@ use App\Models\Page;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Laravel\Head\Facades\Head;
+use Laravel\Head\HeadManager;
 use Spatie\Permission\Models\Role;
 
 class HandleInertiaRequests extends Middleware
@@ -44,6 +46,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'name' => config('app.name'),
+            HeadManager::INERTIA_PROP => fn (): array => Head::toInertiaElements(),
             'branding' => [
                 'iconUrl' => ApplicationSetting::iconUrl(),
                 'fullLogoUrl' => ApplicationSetting::fullLogoUrl(),

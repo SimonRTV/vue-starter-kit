@@ -1,5 +1,7 @@
+import { useHttp, usePage } from '@inertiajs/vue3';
 import type { Ref } from 'vue';
 import { onMounted, ref } from 'vue';
+import AppearanceController from '@/actions/App/Http/Controllers/Settings/AppearanceController';
 import type { AdminTheme } from '@/types';
 
 export type { AdminTheme };
@@ -11,6 +13,7 @@ export type UseAdminThemeReturn = {
 
 const defaultAdminTheme: AdminTheme = 'neutral';
 const adminThemes: readonly AdminTheme[] = ['neutral', 'ocean', 'forest'];
+const adminTheme = ref<AdminTheme>(defaultAdminTheme);
 
 export function isAdminTheme(value: unknown): value is AdminTheme {
     return (
@@ -18,7 +21,7 @@ export function isAdminTheme(value: unknown): value is AdminTheme {
     );
 }
 
-function applyAdminTheme(value: AdminTheme): void {
+export function applyAdminTheme(value: AdminTheme): void {
     if (typeof document === 'undefined') {
         return;
     }
@@ -26,48 +29,46 @@ function applyAdminTheme(value: AdminTheme): void {
     document.documentElement.dataset.adminTheme = value;
 }
 
-function getStoredAdminTheme(): AdminTheme {
-    if (typeof window === 'undefined') {
-        return defaultAdminTheme;
-    }
-
-    const storedTheme = localStorage.getItem('admin_theme');
-
-    if (isAdminTheme(storedTheme)) {
-        return storedTheme;
-    }
-
-    const documentTheme = document.documentElement.dataset.adminTheme;
-
-    return isAdminTheme(documentTheme) ? documentTheme : defaultAdminTheme;
-}
-
-function setCookie(name: string, value: string, days = 365): void {
-    if (typeof document === 'undefined') {
-        return;
-    }
-
-    const maxAge = days * 24 * 60 * 60;
-
-    document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
-}
-
-export function initializeAdminTheme(): void {
-    applyAdminTheme(getStoredAdminTheme());
-}
-
-const adminTheme = ref<AdminTheme>(defaultAdminTheme);
-
 export function useAdminTheme(): UseAdminThemeReturn {
-    onMounted(() => {
-        adminTheme.value = getStoredAdminTheme();
+    const page = usePage();
+    const request = useHttp<{ admin_theme: AdminTheme }>({
+        admin_theme: defaultAdminTheme,
     });
 
+    onMounted(() => {
+        const userAdminTheme = page.props.auth.user?.admin_theme;
+        const initialAdminTheme = isAdminTheme(userAdminTheme)
+            ? userAdminTheme
+            : defaultAdminTheme;
+
+        adminTheme.value = initialAdminTheme;
+        request.admin_theme = initialAdminTheme;
+        applyAdminTheme(initialAdminTheme);
+    });
+
+    async function persistAdminTheme(
+        value: AdminTheme,
+        previousAdminTheme: AdminTheme,
+    ): Promise<void> {
+        request.admin_theme = value;
+
+        try {
+            await request.submit(AppearanceController.update());
+        } catch {
+            if (adminTheme.value === value) {
+                adminTheme.value = previousAdminTheme;
+                request.admin_theme = previousAdminTheme;
+                applyAdminTheme(previousAdminTheme);
+            }
+        }
+    }
+
     function updateAdminTheme(value: AdminTheme): void {
+        const previousAdminTheme = adminTheme.value;
+
         adminTheme.value = value;
-        localStorage.setItem('admin_theme', value);
-        setCookie('admin_theme', value);
         applyAdminTheme(value);
+        void persistAdminTheme(value, previousAdminTheme);
     }
 
     return {

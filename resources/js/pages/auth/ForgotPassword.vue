@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
+import { Form } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -23,8 +23,6 @@ defineProps<{
 </script>
 
 <template>
-    <Head title="Mot de passe oublié" />
-
     <div
         v-if="status"
         class="mb-4 text-center text-sm font-medium text-green-600"

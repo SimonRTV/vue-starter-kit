@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, usePage } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import {
     ArrowUpRight,
     BriefcaseBusiness,
@@ -169,8 +169,6 @@ defineOptions({
 
 <template>
     <div class="@container/main flex flex-1 flex-col">
-        <Head title="Tableau de bord" />
-
         <main
             class="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
         >

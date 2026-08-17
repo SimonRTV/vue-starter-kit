@@ -16,7 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->encryptCookies(except: ['appearance', 'admin_theme', 'sidebar_state']);
+        $middleware->encryptCookies(except: [
+            'appearance',
+            'admin_theme',
+            'frontend_appearance',
+            'sidebar_state',
+        ]);
 
         $middleware->web(append: [
             HandleAppearance::class,

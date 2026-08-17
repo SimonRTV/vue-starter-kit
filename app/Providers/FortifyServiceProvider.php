@@ -12,8 +12,10 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
+use Inertia\Response;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
+use Laravel\Head\Facades\Head;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -60,28 +62,38 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function configureViews(): void
     {
-        Fortify::loginView(fn (Request $request) => Inertia::render('auth/Login', [
+        Fortify::loginView(fn (Request $request): Response => $this->authenticationView('auth/Login', 'Connexion', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/ResetPassword', [
+        Fortify::resetPasswordView(fn (Request $request): Response => $this->authenticationView('auth/ResetPassword', 'Réinitialiser le mot de passe', [
             'email' => $request->email,
             'token' => $request->route('token'),
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
         ]));
 
-        Fortify::requestPasswordResetLinkView(fn (Request $request) => Inertia::render('auth/ForgotPassword', [
+        Fortify::requestPasswordResetLinkView(fn (Request $request): Response => $this->authenticationView('auth/ForgotPassword', 'Mot de passe oublié', [
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::verifyEmailView(fn (Request $request) => Inertia::render('auth/VerifyEmail', [
+        Fortify::verifyEmailView(fn (Request $request): Response => $this->authenticationView('auth/VerifyEmail', 'Vérification de l’adresse e-mail', [
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/TwoFactorChallenge'));
+        Fortify::twoFactorChallengeView(fn (): Response => $this->authenticationView('auth/TwoFactorChallenge', 'Authentification à deux facteurs'));
 
-        Fortify::confirmPasswordView(fn () => Inertia::render('auth/ConfirmPassword'));
+        Fortify::confirmPasswordView(fn (): Response => $this->authenticationView('auth/ConfirmPassword', 'Confirmer le mot de passe'));
+    }
+
+    /**
+     * @param  array<string, mixed>  $props
+     */
+    private function authenticationView(string $component, string $title, array $props = []): Response
+    {
+        Head::title($title)->hiddenFromRobots();
+
+        return Inertia::render($component, $props);
     }
 
     /**

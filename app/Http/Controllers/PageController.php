@@ -14,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
+use Laravel\Head\Facades\Head;
 
 class PageController extends Controller
 {
@@ -38,6 +39,8 @@ class PageController extends Controller
             return to_route('pages.index', $request->canonicalQuery($pages->lastPage()));
         }
 
+        Head::title('Pages');
+
         return Inertia::render('pages/Index', [
             'pages' => $pages,
             'filters' => $filters,
@@ -50,6 +53,7 @@ class PageController extends Controller
     public function create(): Response
     {
         Gate::authorize('create', Page::class);
+        Head::title('Nouvelle page');
 
         return Inertia::render('pages/Create');
     }
@@ -72,6 +76,7 @@ class PageController extends Controller
     public function show(Page $page): Response
     {
         Gate::authorize('view', $page);
+        Head::title($page->title);
 
         return Inertia::render('pages/Show', ['page' => $this->detail($page)]);
     }
@@ -82,6 +87,7 @@ class PageController extends Controller
     public function edit(Page $page): Response
     {
         Gate::authorize('update', $page);
+        Head::title('Modifier '.$page->title);
 
         return Inertia::render('pages/Edit', ['page' => $this->detail($page)]);
     }

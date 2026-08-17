@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\ApplicationLogoController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
@@ -7,28 +8,36 @@ use App\Http\Controllers\Settings\SidebarFooterLinkController;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->group(function () {
+Route::withHead(robots: 'none')->middleware(['auth'])->group(function () {
     Route::redirect('settings', '/settings/profile');
 
-    Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('settings/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit')
+        ->withHead(title: 'Paramètres du profil');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(function () {
     Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('settings/security', [SecurityController::class, 'edit'])
         ->middleware(RequirePassword::class)
-        ->name('security.edit');
+        ->name('security.edit')
+        ->withHead(title: 'Paramètres de sécurité');
 
     Route::put('settings/password', [SecurityController::class, 'update'])
         ->middleware('throttle:6,1')
         ->name('user-password.update');
 
-    Route::inertia('settings/appearance', 'settings/Appearance')->name('appearance.edit');
+    Route::get('settings/appearance', [AppearanceController::class, 'edit'])
+        ->name('appearance.edit')
+        ->withHead(title: 'Paramètres d’apparence');
+    Route::patch('settings/appearance', [AppearanceController::class, 'update'])
+        ->name('appearance.update');
 
     Route::get('settings/application-logo', [ApplicationLogoController::class, 'edit'])
-        ->name('application-logo.edit');
+        ->name('application-logo.edit')
+        ->withHead(title: 'Paramètres de l’application');
     Route::post('settings/application-logo', [ApplicationLogoController::class, 'update'])
         ->name('application-logo.update');
     Route::delete('settings/application-logo', [ApplicationLogoController::class, 'destroy'])
@@ -39,7 +48,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('application-logo.full.destroy');
 
     Route::get('settings/sidebar-menu', [SidebarFooterLinkController::class, 'edit'])
-        ->name('sidebar-footer-links.edit');
+        ->name('sidebar-footer-links.edit')
+        ->withHead(title: 'Menu latéral');
     Route::put('settings/sidebar-menu', [SidebarFooterLinkController::class, 'update'])
         ->name('sidebar-footer-links.update');
 });

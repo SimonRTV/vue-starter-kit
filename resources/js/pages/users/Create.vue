@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
 import UserController from '@/actions/App/Http/Controllers/UserController';
 import { PageHeader } from '@/components/application';
 import UserForm from '@/components/users/UserForm.vue';
@@ -28,8 +27,6 @@ defineOptions({
 
 <template>
     <div class="flex flex-1 flex-col">
-        <Head title="Nouvel utilisateur" />
-
         <main
             class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
         >

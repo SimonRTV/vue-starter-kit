@@ -24,6 +24,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $disabled_at
  * @property Carbon|null $invitation_sent_at
  * @property Carbon|null $last_login_at
+ * @property string $appearance
+ * @property string $admin_theme
  * @property string $password
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
@@ -32,12 +34,22 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password', 'email_verified_at'])]
+#[Fillable(['name', 'email', 'password', 'email_verified_at', 'appearance', 'admin_theme'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+
+    /**
+     * The model's default values for attributes.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'appearance' => 'system',
+        'admin_theme' => 'neutral',
+    ];
 
     public static function normalizeEmail(string $email): string
     {
