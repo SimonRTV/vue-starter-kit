@@ -5,6 +5,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | Applies to | Rule file |
 | --- | --- |
 | {app/Models/ApplicationSetting.php,app/Policies/ApplicationSettingPolicy.php,app/Http/Controllers/Settings/ApplicationLogoController.php,app/Http/Middleware/HandleInertiaRequests.php,resources/js/components/AppLogoIcon.vue,resources/js/components/AppLogoFull.vue,resources/js/pages/settings/ApplicationLogo.vue,resources/js/layouts/auth/**} | .ai/rules/auth.md |
+| {app/Console/Commands/MakeAdmin.php,app/Actions/Users/CreateAdministrator.php,tests/Feature/Console/Commands/MakeAdminTest.php,README.md} | .ai/rules/commands.md |
 | {app/Http/Middleware/HandleInertiaRequests.php,resources/js/components/AppSidebar.vue} | .ai/rules/components.md |
 | {app/Models/ApplicationSetting.php,app/Actions/ApplicationSettings/UpdateSidebarFooterLinks.php,app/Http/Requests/Settings/UpdateSidebarFooterLinksRequest.php,resources/js/components/AppSidebar.vue,resources/js/pages/settings/SidebarFooterLinks.vue,resources/js/types/navigation.ts,tests/Feature/Settings/SidebarFooterLinkTest.php} | .ai/rules/feature-settings.md |
 | resources/js/pages/settings/SidebarFooterLinks.vue | .ai/rules/js-pages-settings.md |
