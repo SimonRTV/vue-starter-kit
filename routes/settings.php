@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\ApplicationLogoController;
+use App\Http\Controllers\Settings\FrontendNavigationController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use App\Http\Controllers\Settings\SidebarFooterLinkController;
@@ -52,6 +53,12 @@ Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(functio
         ->withHead(title: 'Menu latéral');
     Route::put('settings/sidebar-menu', [SidebarFooterLinkController::class, 'update'])
         ->name('sidebar-footer-links.update');
+
+    Route::get('settings/frontend-navigation', [FrontendNavigationController::class, 'edit'])
+        ->name('frontend-navigation.edit')
+        ->withHead(title: 'Navigation publique');
+    Route::put('settings/frontend-navigation', [FrontendNavigationController::class, 'update'])
+        ->name('frontend-navigation.update');
 });
 
 Route::get('.well-known/passkey-endpoints', function () {

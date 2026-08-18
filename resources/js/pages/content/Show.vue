@@ -1,39 +1,18 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import {
-    ArrowLeft,
-    ArrowRight,
-    CalendarDays,
-    ChevronRight,
-    Clock3,
-    Menu,
-} from '@lucide/vue';
+import { ArrowLeft, CalendarDays, ChevronRight, Clock3 } from '@lucide/vue';
 import { computed } from 'vue';
-import AppLogoFull from '@/components/AppLogoFull.vue';
-import FrontendAppearanceSwitch from '@/components/FrontendAppearanceSwitch.vue';
+import FrontendFooter from '@/components/frontend/FrontendFooter.vue';
+import FrontendHeader from '@/components/frontend/FrontendHeader.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from '@/components/ui/sheet';
-import { dashboard, home, login } from '@/routes';
+import { home } from '@/routes';
 import type { PublicPage } from '@/types';
 
 const props = defineProps<{
     page: PublicPage;
 }>();
-
-const navigationItems = [
-    { label: 'Features', hash: '#features' },
-    { label: 'How it works', hash: '#workflow' },
-    { label: 'About', hash: '#about' },
-] as const;
 
 const paragraphs = computed(() =>
     (props.page.body ?? '')
@@ -41,10 +20,6 @@ const paragraphs = computed(() =>
         .map((paragraph) => paragraph.trim())
         .filter(Boolean),
 );
-
-function homepageSectionUrl(hash: string): string {
-    return `${home.url()}${hash}`;
-}
 
 function formatDate(value: string): string {
     return new Intl.DateTimeFormat('en', {
@@ -55,124 +30,7 @@ function formatDate(value: string): string {
 
 <template>
     <div class="min-h-screen overflow-x-hidden bg-background text-foreground">
-        <header
-            class="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur-xl"
-        >
-            <div
-                class="mx-auto flex h-18 max-w-7xl items-center justify-between gap-6 px-5 sm:px-8 lg:px-10"
-            >
-                <Link
-                    :href="home()"
-                    class="inline-flex min-w-0 items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                    :aria-label="`${$page.props.name} home`"
-                >
-                    <AppLogoFull class="h-8 w-auto max-w-40 text-foreground" />
-                </Link>
-
-                <nav
-                    aria-label="Primary navigation"
-                    class="hidden items-center gap-8 md:flex"
-                >
-                    <Link
-                        :href="home()"
-                        class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                    >
-                        Home
-                    </Link>
-                    <a
-                        v-for="item in navigationItems"
-                        :key="item.hash"
-                        :href="homepageSectionUrl(item.hash)"
-                        class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                    >
-                        {{ item.label }}
-                    </a>
-                </nav>
-
-                <div class="flex items-center gap-2">
-                    <FrontendAppearanceSwitch />
-                    <Button
-                        v-if="$page.props.auth.user"
-                        as-child
-                        class="hidden md:inline-flex"
-                    >
-                        <Link :href="dashboard()" prefetch>
-                            Dashboard
-                            <ArrowRight data-icon="inline-end" />
-                        </Link>
-                    </Button>
-                    <Button
-                        v-else
-                        as-child
-                        variant="ghost"
-                        class="hidden md:inline-flex"
-                    >
-                        <Link :href="login()" prefetch>Log in</Link>
-                    </Button>
-
-                    <Sheet>
-                        <SheetTrigger as-child>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                class="md:hidden"
-                                aria-label="Open navigation menu"
-                            >
-                                <Menu />
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent class="w-full sm:max-w-sm">
-                            <SheetHeader>
-                                <SheetTitle>Menu</SheetTitle>
-                                <SheetDescription>
-                                    Explore the platform or access your
-                                    workspace.
-                                </SheetDescription>
-                            </SheetHeader>
-
-                            <nav
-                                aria-label="Mobile navigation"
-                                class="flex flex-1 flex-col gap-2 px-4"
-                            >
-                                <Link
-                                    :href="home()"
-                                    class="rounded-lg px-3 py-3 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                >
-                                    Home
-                                </Link>
-                                <a
-                                    v-for="item in navigationItems"
-                                    :key="item.hash"
-                                    :href="homepageSectionUrl(item.hash)"
-                                    class="rounded-lg px-3 py-3 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                >
-                                    {{ item.label }}
-                                </a>
-                            </nav>
-
-                            <div class="p-4">
-                                <Button
-                                    v-if="$page.props.auth.user"
-                                    as-child
-                                    class="w-full"
-                                >
-                                    <Link :href="dashboard()">
-                                        Open dashboard
-                                        <ArrowRight data-icon="inline-end" />
-                                    </Link>
-                                </Button>
-                                <Button v-else as-child class="w-full">
-                                    <Link :href="login()">
-                                        Log in
-                                        <ArrowRight data-icon="inline-end" />
-                                    </Link>
-                                </Button>
-                            </div>
-                        </SheetContent>
-                    </Sheet>
-                </div>
-            </div>
-        </header>
+        <FrontendHeader />
 
         <main>
             <section
@@ -269,45 +127,6 @@ function formatDate(value: string): string {
             </section>
         </main>
 
-        <footer class="border-t border-border/70">
-            <div
-                class="mx-auto flex max-w-7xl flex-col gap-8 px-5 py-10 sm:px-8 md:flex-row md:items-center md:justify-between lg:px-10"
-            >
-                <Link
-                    :href="home()"
-                    class="inline-flex w-fit items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    :aria-label="`${$page.props.name} home`"
-                >
-                    <AppLogoFull class="h-7 w-auto max-w-36 text-foreground" />
-                </Link>
-
-                <nav
-                    aria-label="Footer navigation"
-                    class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground"
-                >
-                    <Link
-                        :href="home()"
-                        class="transition-colors hover:text-foreground"
-                    >
-                        Home
-                    </Link>
-                    <a
-                        v-for="item in navigationItems"
-                        :key="item.hash"
-                        :href="homepageSectionUrl(item.hash)"
-                        class="transition-colors hover:text-foreground"
-                    >
-                        {{ item.label }}
-                    </a>
-                    <Link
-                        v-if="!$page.props.auth.user"
-                        :href="login()"
-                        class="transition-colors hover:text-foreground"
-                    >
-                        Log in
-                    </Link>
-                </nav>
-            </div>
-        </footer>
+        <FrontendFooter />
     </div>
 </template>

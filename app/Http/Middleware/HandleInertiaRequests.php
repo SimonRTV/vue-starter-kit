@@ -52,6 +52,7 @@ class HandleInertiaRequests extends Middleware
                 'fullLogoUrl' => ApplicationSetting::fullLogoUrl(),
             ],
             'navigation' => [
+                'frontend' => ApplicationSetting::frontendNavigation(),
                 'sidebarFooterLinks' => ApplicationSetting::sidebarFooterLinks(),
             ],
             'auth' => [

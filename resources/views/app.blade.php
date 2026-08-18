@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-admin-theme="{{ $adminTheme ?? 'neutral' }}" data-appearance="{{ $appearance ?? 'system' }}" data-appearance-surface="{{ $appearanceSurface ?? 'frontend' }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-admin-theme="{{ $adminTheme ?? 'neutral' }}" data-appearance="{{ $appearance ?? 'system' }}" data-appearance-surface="{{ $appearanceSurface ?? 'frontend' }}" @class(['dark' => ($appearance ?? 'system') == 'dark', 'scroll-smooth'])>
     <head>
         <meta charset="utf-8">
 

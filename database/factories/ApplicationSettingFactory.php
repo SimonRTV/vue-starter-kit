@@ -40,6 +40,26 @@ class ApplicationSettingFactory extends Factory
     }
 
     /**
+     * @param  list<array{
+     *     type: 'link'|'group',
+     *     label: string,
+     *     url: string|null,
+     *     children: list<array{label: string, url: string, description: string}>
+     * }>  $items
+     */
+    public function frontendNavigation(
+        array $items = ApplicationSetting::DEFAULT_FRONTEND_NAVIGATION,
+    ): static {
+        return $this->state(fn (): array => [
+            'key' => ApplicationSetting::FRONTEND_NAVIGATION,
+            'value' => json_encode(
+                $items,
+                JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+            ),
+        ]);
+    }
+
+    /**
      * @param  list<array{title: string, url: string}>  $links
      */
     public function sidebarFooterLinks(

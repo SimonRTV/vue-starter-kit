@@ -18,3 +18,16 @@ export type SidebarFooterLink = {
     title: string;
     url: string;
 };
+
+export type FrontendNavigationChild = {
+    label: string;
+    url: string;
+    description: string;
+};
+
+export type FrontendNavigationItem = {
+    type: 'link' | 'group';
+    label: string;
+    url: string | null;
+    children: FrontendNavigationChild[];
+};

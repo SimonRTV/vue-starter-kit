@@ -8,6 +8,7 @@ import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editApplicationLogo } from '@/routes/application-logo';
+import { edit as editFrontendNavigation } from '@/routes/frontend-navigation';
 import { edit as editProfile } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
 import { edit as editSidebarFooterLinks } from '@/routes/sidebar-footer-links';
@@ -36,6 +37,10 @@ const sidebarNavItems = computed<NavItem[]>(() => [
               {
                   title: 'Menu latéral',
                   href: editSidebarFooterLinks(),
+              },
+              {
+                  title: 'Navigation publique',
+                  href: editFrontendNavigation(),
               },
           ]
         : []),

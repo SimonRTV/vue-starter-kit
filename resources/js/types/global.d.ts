@@ -1,5 +1,8 @@
 import type { Auth } from '@/types/auth';
-import type { SidebarFooterLink } from '@/types/navigation';
+import type {
+    FrontendNavigationItem,
+    SidebarFooterLink,
+} from '@/types/navigation';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -23,6 +26,7 @@ declare module '@inertiajs/core' {
                 fullLogoUrl: string | null;
             };
             navigation: {
+                frontend: FrontendNavigationItem[];
                 sidebarFooterLinks: SidebarFooterLink[];
             };
             auth: Auth;

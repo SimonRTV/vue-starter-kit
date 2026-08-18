@@ -4,14 +4,12 @@ import {
     ArrowRight,
     Check,
     Layers3,
-    Menu,
     ShieldCheck,
     Sparkles,
     Zap,
 } from '@lucide/vue';
-import { ref } from 'vue';
-import AppLogoFull from '@/components/AppLogoFull.vue';
-import FrontendAppearanceSwitch from '@/components/FrontendAppearanceSwitch.vue';
+import FrontendFooter from '@/components/frontend/FrontendFooter.vue';
+import FrontendHeader from '@/components/frontend/FrontendHeader.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,34 +19,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from '@/components/ui/sheet';
-import { dashboard, home, login } from '@/routes';
-
-const navigationItems = [
-    { label: 'Features', href: '#features' },
-    { label: 'How it works', href: '#workflow' },
-    { label: 'About', href: '#about' },
-] as const;
-
-const isMobileMenuOpen = ref(false);
-
-function navigateToSection(href: string): void {
-    isMobileMenuOpen.value = false;
-
-    window.setTimeout(() => {
-        document.querySelector<HTMLElement>(href)?.scrollIntoView({
-            block: 'start',
-        });
-        window.history.replaceState(null, '', href);
-    }, 350);
-}
+import { dashboard, login } from '@/routes';
 
 const workflowSteps = [
     {
@@ -74,115 +45,7 @@ const workflowSteps = [
 
 <template>
     <div class="min-h-screen overflow-x-hidden bg-background text-foreground">
-        <header
-            class="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur-xl"
-        >
-            <div
-                class="mx-auto flex h-18 max-w-7xl items-center justify-between gap-6 px-5 sm:px-8 lg:px-10"
-            >
-                <Link
-                    :href="home()"
-                    class="inline-flex min-w-0 items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                    :aria-label="`${$page.props.name} home`"
-                >
-                    <AppLogoFull class="h-8 w-auto max-w-40 text-foreground" />
-                </Link>
-
-                <nav
-                    aria-label="Primary navigation"
-                    class="hidden items-center gap-8 md:flex"
-                >
-                    <a
-                        v-for="item in navigationItems"
-                        :key="item.href"
-                        :href="item.href"
-                        class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                    >
-                        {{ item.label }}
-                    </a>
-                </nav>
-
-                <div class="flex items-center gap-2">
-                    <FrontendAppearanceSwitch />
-                    <Button
-                        v-if="$page.props.auth.user"
-                        as-child
-                        class="hidden md:inline-flex"
-                    >
-                        <Link :href="dashboard()" prefetch>
-                            Dashboard
-                            <ArrowRight data-icon="inline-end" />
-                        </Link>
-                    </Button>
-                    <Button
-                        v-else
-                        as-child
-                        variant="ghost"
-                        class="hidden md:inline-flex"
-                    >
-                        <Link :href="login()" prefetch>Log in</Link>
-                    </Button>
-
-                    <Sheet v-model:open="isMobileMenuOpen">
-                        <SheetTrigger as-child>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                class="md:hidden"
-                                aria-label="Open navigation menu"
-                            >
-                                <Menu />
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent class="w-full sm:max-w-sm">
-                            <SheetHeader>
-                                <SheetTitle>Menu</SheetTitle>
-                                <SheetDescription>
-                                    Explore the platform or access your
-                                    workspace.
-                                </SheetDescription>
-                            </SheetHeader>
-
-                            <nav
-                                aria-label="Mobile navigation"
-                                class="flex flex-1 flex-col gap-2 px-4"
-                            >
-                                <a
-                                    v-for="item in navigationItems"
-                                    :key="item.href"
-                                    :href="item.href"
-                                    class="rounded-lg px-3 py-3 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                    @click.prevent="
-                                        navigateToSection(item.href)
-                                    "
-                                >
-                                    {{ item.label }}
-                                </a>
-                            </nav>
-
-                            <div class="p-4">
-                                <Button
-                                    v-if="$page.props.auth.user"
-                                    as-child
-                                    class="w-full"
-                                >
-                                    <Link :href="dashboard()">
-                                        Open dashboard
-                                        <ArrowRight data-icon="inline-end" />
-                                    </Link>
-                                </Button>
-                                <Button v-else as-child class="w-full">
-                                    <Link :href="login()">
-                                        Log in
-                                        <ArrowRight data-icon="inline-end" />
-                                    </Link>
-                                </Button>
-                            </div>
-                        </SheetContent>
-                    </Sheet>
-                </div>
-            </div>
-        </header>
+        <FrontendHeader is-home-page />
 
         <main>
             <section class="relative isolate">
@@ -261,7 +124,7 @@ const workflowSteps = [
                             class="absolute -inset-5 rounded-[2rem] bg-muted/70 blur-2xl"
                         />
                         <div
-                            class="relative animate-in rounded-[1.75rem] border border-border/70 bg-muted/35 p-3 shadow-2xl shadow-foreground/5 duration-1000 fade-in slide-in-from-top-8 sm:p-5 delay-150"
+                            class="relative animate-in rounded-[1.75rem] border border-border/70 bg-muted/35 p-3 shadow-2xl shadow-foreground/5 delay-150 duration-1000 fade-in slide-in-from-top-8 sm:p-5"
                         >
                             <Card>
                                 <CardHeader>
@@ -405,7 +268,7 @@ const workflowSteps = [
                     </div>
 
                     <div class="grid gap-5 md:grid-cols-3">
-                        <Card class="h-full">
+                        <Card id="simple-workflows" class="h-full scroll-mt-24">
                             <CardHeader>
                                 <span
                                     class="flex size-11 items-center justify-center rounded-xl bg-secondary"
@@ -429,7 +292,10 @@ const workflowSteps = [
                             </CardContent>
                         </Card>
 
-                        <Card class="h-full">
+                        <Card
+                            id="shared-visibility"
+                            class="h-full scroll-mt-24"
+                        >
                             <CardHeader>
                                 <span
                                     class="flex size-11 items-center justify-center rounded-xl bg-secondary"
@@ -452,7 +318,7 @@ const workflowSteps = [
                             </CardContent>
                         </Card>
 
-                        <Card class="h-full">
+                        <Card id="built-to-grow" class="h-full scroll-mt-24">
                             <CardHeader>
                                 <span
                                     class="flex size-11 items-center justify-center rounded-xl bg-secondary"
@@ -577,39 +443,6 @@ const workflowSteps = [
             </section>
         </main>
 
-        <footer class="border-t border-border/70">
-            <div
-                class="mx-auto flex max-w-7xl flex-col gap-8 px-5 py-10 sm:px-8 md:flex-row md:items-center md:justify-between lg:px-10"
-            >
-                <Link
-                    :href="home()"
-                    class="inline-flex w-fit items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    :aria-label="`${$page.props.name} home`"
-                >
-                    <AppLogoFull class="h-7 w-auto max-w-36 text-foreground" />
-                </Link>
-
-                <nav
-                    aria-label="Footer navigation"
-                    class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground"
-                >
-                    <a
-                        v-for="item in navigationItems"
-                        :key="item.href"
-                        :href="item.href"
-                        class="transition-colors hover:text-foreground"
-                    >
-                        {{ item.label }}
-                    </a>
-                    <Link
-                        v-if="!$page.props.auth.user"
-                        :href="login()"
-                        class="transition-colors hover:text-foreground"
-                    >
-                        Log in
-                    </Link>
-                </nav>
-            </div>
-        </footer>
+        <FrontendFooter is-home-page />
     </div>
 </template>
