@@ -21,7 +21,8 @@ class ExampleTest extends TestCase
                 ->where('name', config('app.name'))
                 ->where('auth.user', null)
                 ->where('branding.iconUrl', null)
-                ->where('branding.fullLogoUrl', null),
+                ->where('branding.fullLogoUrl', null)
+                ->where('branding.darkFullLogoUrl', null),
             );
     }
 

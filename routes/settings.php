@@ -47,6 +47,10 @@ Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(functio
         ->name('application-logo.full.update');
     Route::delete('settings/application-logo/full', [ApplicationLogoController::class, 'destroyFullLogo'])
         ->name('application-logo.full.destroy');
+    Route::post('settings/application-logo/full/dark', [ApplicationLogoController::class, 'updateDarkFullLogo'])
+        ->name('application-logo.full.dark.update');
+    Route::delete('settings/application-logo/full/dark', [ApplicationLogoController::class, 'destroyDarkFullLogo'])
+        ->name('application-logo.full.dark.destroy');
 
     Route::get('settings/sidebar-menu', [SidebarFooterLinkController::class, 'edit'])
         ->name('sidebar-footer-links.edit')

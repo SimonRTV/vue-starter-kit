@@ -3,6 +3,7 @@
 namespace Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
 use Tests\TestCase;
 
@@ -24,5 +25,10 @@ class RegistrationTest extends TestCase
 
         $this->assertGuest();
         $this->assertDatabaseMissing('users', ['email' => 'test@example.com']);
+
+        $this->get(route('login'))
+            ->assertInertia(fn (Assert $page): Assert => $page
+                ->component('auth/Login')
+                ->where('registrationUrl', null));
     }
 }

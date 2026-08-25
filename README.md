@@ -13,7 +13,7 @@ The interface and application messages are French-first. The codebase uses stric
 - Two-factor authentication with recovery codes.
 - Profile, password, passkey, and two-factor management from one security area.
 - Disabled-account enforcement and session revocation.
-- Public registration disabled in favor of administrator-created accounts and secure password setup invitations.
+- Optional public registration, disabled by default, alongside administrator-created accounts and secure password setup invitations.
 - Interactive `make:admin` command for trusted first-administrator provisioning.
 
 ### Users, roles, and permissions
@@ -87,6 +87,7 @@ Review `.env` before using the application. The most important settings are:
 APP_NAME="My Application"
 APP_URL=http://localhost:8000
 APP_LOCALE=fr
+FORTIFY_REGISTRATION_ENABLED=false
 
 DB_CONNECTION=sqlite
 QUEUE_CONNECTION=database
@@ -94,6 +95,8 @@ MAIL_MAILER=log
 ```
 
 `APP_URL` must match the origin used for passkeys. In production, configure a stable `PASSKEYS_USER_HANDLE_SECRET`; changing that value can invalidate the relationship between users and their WebAuthn credentials.
+
+Set `FORTIFY_REGISTRATION_ENABLED=true` to expose the public registration page and account-creation endpoint. Leave it `false` when accounts must only be created by administrators.
 
 Application icons, the optional full authentication logo, and sidebar footer links are managed from the authenticated settings interface rather than environment variables.
 

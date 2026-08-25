@@ -39,6 +39,14 @@ class ApplicationSettingFactory extends Factory
         ]);
     }
 
+    public function darkFullLogo(string $path = 'application/logos/dark-full-logo.png'): static
+    {
+        return $this->state(fn (): array => [
+            'key' => ApplicationSetting::DARK_FULL_LOGO_PATH,
+            'value' => $path,
+        ]);
+    }
+
     /**
      * @param  list<array{
      *     type: 'link'|'group',

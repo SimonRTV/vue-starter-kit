@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Settings;
 use App\Actions\ApplicationSettings\DeleteApplicationLogo;
 use App\Actions\ApplicationSettings\UpdateApplicationLogo;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Settings\UpdateApplicationDarkFullLogoRequest;
 use App\Http\Requests\Settings\UpdateApplicationFullLogoRequest;
 use App\Http\Requests\Settings\UpdateApplicationLogoRequest;
 use App\Models\ApplicationSetting;
@@ -27,6 +28,7 @@ class ApplicationLogoController extends Controller
         return Inertia::render('settings/ApplicationLogo', [
             'iconUrl' => ApplicationSetting::iconUrl(),
             'fullLogoUrl' => ApplicationSetting::fullLogoUrl(),
+            'darkFullLogoUrl' => ApplicationSetting::darkFullLogoUrl(),
         ]);
     }
 
@@ -83,6 +85,35 @@ class ApplicationLogoController extends Controller
         Inertia::flash('toast', [
             'type' => 'success',
             'message' => __('Full application logo removed.'),
+        ]);
+
+        return to_route('application-logo.edit');
+    }
+
+    public function updateDarkFullLogo(UpdateApplicationDarkFullLogoRequest $request): RedirectResponse
+    {
+        $this->updateApplicationLogo->handle(
+            $request->darkFullLogo(),
+            ApplicationSetting::DARK_FULL_LOGO_PATH,
+        );
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => __('Dark-background application logo updated.'),
+        ]);
+
+        return to_route('application-logo.edit');
+    }
+
+    public function destroyDarkFullLogo(): RedirectResponse
+    {
+        Gate::authorize('update', ApplicationSetting::class);
+
+        $this->deleteApplicationLogo->handle(ApplicationSetting::DARK_FULL_LOGO_PATH);
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => __('Dark-background application logo removed.'),
         ]);
 
         return to_route('application-logo.edit');

@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import { computed } from 'vue';
+import AppLogoFull from '@/components/AppLogoFull.vue';
 import { home } from '@/routes';
 
 const page = usePage();
 const name = page.props.name;
+const hasFullLogo = computed(
+    () =>
+        page.props.branding.fullLogoUrl !== null ||
+        page.props.branding.darkFullLogoUrl !== null,
+);
 
 defineProps<{
     title?: string;
@@ -22,10 +28,13 @@ defineProps<{
             <div class="absolute inset-0 bg-zinc-900" />
             <Link
                 :href="home()"
-                class="relative z-20 flex items-center text-lg font-medium"
+                class="relative z-20 flex items-center gap-2 text-lg font-medium"
             >
-                <AppLogoIcon class="mr-2 size-8 fill-current text-white" />
-                {{ name }}
+                <AppLogoFull
+                    background="dark"
+                    class="h-8 w-auto max-w-56 fill-current text-white"
+                />
+                <span v-if="!hasFullLogo">{{ name }}</span>
             </Link>
         </div>
         <div class="lg:p-8">

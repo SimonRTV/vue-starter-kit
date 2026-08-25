@@ -94,6 +94,8 @@ class ApplicationSetting extends Model
         ],
     ];
 
+    public const DARK_FULL_LOGO_PATH = 'branding.dark_full_logo_path';
+
     public const FULL_LOGO_PATH = 'branding.full_logo_path';
 
     public const FRONTEND_NAVIGATION = 'navigation.frontend';
@@ -123,6 +125,16 @@ class ApplicationSetting extends Model
     public static function fullLogoUrl(): ?string
     {
         return self::imageUrl(self::fullLogoPath());
+    }
+
+    public static function darkFullLogoPath(): ?string
+    {
+        return self::imagePath(self::DARK_FULL_LOGO_PATH);
+    }
+
+    public static function darkFullLogoUrl(): ?string
+    {
+        return self::imageUrl(self::darkFullLogoPath());
     }
 
     /**

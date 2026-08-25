@@ -24,6 +24,7 @@ declare module '@inertiajs/core' {
             branding: {
                 iconUrl: string | null;
                 fullLogoUrl: string | null;
+                darkFullLogoUrl: string | null;
             };
             navigation: {
                 frontend: FrontendNavigationItem[];

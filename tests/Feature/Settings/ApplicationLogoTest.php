@@ -59,6 +59,16 @@ class ApplicationLogoTest extends TestCase
             ->delete(route('application-logo.full.destroy'))
             ->assertForbidden();
 
+        $this->actingAs($user)
+            ->post(route('application-logo.full.dark.update'), [
+                'dark_full_logo' => UploadedFile::fake()->image('dark-full-logo.png'),
+            ])
+            ->assertForbidden();
+
+        $this->actingAs($user)
+            ->delete(route('application-logo.full.dark.destroy'))
+            ->assertForbidden();
+
         $this->assertSame(0, ApplicationSetting::query()->count());
         Storage::disk('public')->assertDirectoryEmpty('application/logos');
     }
@@ -92,8 +102,10 @@ class ApplicationLogoTest extends TestCase
                 ->component('settings/ApplicationLogo')
                 ->where('iconUrl', null)
                 ->where('fullLogoUrl', null)
+                ->where('darkFullLogoUrl', null)
                 ->where('branding.iconUrl', null)
-                ->where('branding.fullLogoUrl', null),
+                ->where('branding.fullLogoUrl', null)
+                ->where('branding.darkFullLogoUrl', null),
             );
     }
 
@@ -125,6 +137,7 @@ class ApplicationLogoTest extends TestCase
                     Storage::disk('public')->url($applicationSetting->value),
                 )
                 ->where('branding.fullLogoUrl', null)
+                ->where('branding.darkFullLogoUrl', null)
                 ->where('auth.can.manageApplicationSettings', false),
             );
     }
@@ -219,7 +232,8 @@ class ApplicationLogoTest extends TestCase
                 ->where(
                     'branding.fullLogoUrl',
                     Storage::disk('public')->url($applicationSetting->value),
-                ),
+                )
+                ->where('branding.darkFullLogoUrl', null),
             );
     }
 
@@ -294,6 +308,121 @@ class ApplicationLogoTest extends TestCase
         $this->assertNull($fullLogoSetting->refresh()->value);
         Storage::disk('public')->assertExists($iconPath);
         Storage::disk('public')->assertMissing($fullLogoPath);
+    }
+
+    public function test_an_administrator_can_upload_a_dark_background_full_logo(): void
+    {
+        Storage::fake('public');
+        $administrator = $this->administrator();
+
+        $this->actingAs($administrator)
+            ->post(route('application-logo.full.dark.update'), [
+                'dark_full_logo' => UploadedFile::fake()->image('dark-full-logo.png', 1200, 400),
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('application-logo.edit'));
+
+        $applicationSetting = ApplicationSetting::query()->sole();
+
+        $this->assertSame(ApplicationSetting::DARK_FULL_LOGO_PATH, $applicationSetting->key);
+        $this->assertNotNull($applicationSetting->value);
+        Storage::disk('public')->assertExists($applicationSetting->value);
+
+        $regularUser = User::factory()->create();
+
+        $this->actingAs($regularUser)
+            ->get(route('dashboard'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('branding.iconUrl', null)
+                ->where('branding.fullLogoUrl', null)
+                ->where(
+                    'branding.darkFullLogoUrl',
+                    Storage::disk('public')->url($applicationSetting->value),
+                ),
+            );
+    }
+
+    public function test_dark_background_full_logo_upload_requires_a_valid_image(): void
+    {
+        Storage::fake('public');
+        $administrator = $this->administrator();
+
+        $this->actingAs($administrator)
+            ->from(route('application-logo.edit'))
+            ->post(route('application-logo.full.dark.update'), [
+                'dark_full_logo' => UploadedFile::fake()->create(
+                    'dark-full-logo.pdf',
+                    100,
+                    'application/pdf',
+                ),
+            ])
+            ->assertRedirect(route('application-logo.edit'))
+            ->assertSessionHasErrors('dark_full_logo');
+
+        $this->assertSame(0, ApplicationSetting::query()->count());
+    }
+
+    public function test_replacing_the_dark_background_full_logo_preserves_other_branding(): void
+    {
+        Storage::fake('public');
+        $administrator = $this->administrator();
+        $iconPath = 'application/logos/icon.png';
+        $fullLogoPath = 'application/logos/full-logo.png';
+        $oldDarkFullLogoPath = 'application/logos/old-dark-full-logo.png';
+        $iconSetting = ApplicationSetting::factory()->icon($iconPath)->create();
+        $fullLogoSetting = ApplicationSetting::factory()->fullLogo($fullLogoPath)->create();
+        $darkFullLogoSetting = ApplicationSetting::factory()
+            ->darkFullLogo($oldDarkFullLogoPath)
+            ->create();
+        Storage::disk('public')->put($iconPath, 'icon');
+        Storage::disk('public')->put($fullLogoPath, 'full logo');
+        Storage::disk('public')->put($oldDarkFullLogoPath, 'old dark full logo');
+
+        $this->actingAs($administrator)
+            ->post(route('application-logo.full.dark.update'), [
+                'dark_full_logo' => UploadedFile::fake()->image('new-dark-full-logo.webp', 1200, 400),
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('application-logo.edit'));
+
+        $darkFullLogoSetting->refresh();
+
+        $this->assertSame($iconPath, $iconSetting->refresh()->value);
+        $this->assertSame($fullLogoPath, $fullLogoSetting->refresh()->value);
+        $this->assertNotSame($oldDarkFullLogoPath, $darkFullLogoSetting->value);
+        Storage::disk('public')->assertExists($iconPath);
+        Storage::disk('public')->assertExists($fullLogoPath);
+        Storage::disk('public')->assertMissing($oldDarkFullLogoPath);
+        Storage::disk('public')->assertExists($darkFullLogoSetting->value);
+    }
+
+    public function test_removing_the_dark_background_full_logo_preserves_other_branding(): void
+    {
+        Storage::fake('public');
+        $administrator = $this->administrator();
+        $iconPath = 'application/logos/icon.png';
+        $fullLogoPath = 'application/logos/full-logo.png';
+        $darkFullLogoPath = 'application/logos/dark-full-logo.png';
+        $iconSetting = ApplicationSetting::factory()->icon($iconPath)->create();
+        $fullLogoSetting = ApplicationSetting::factory()->fullLogo($fullLogoPath)->create();
+        $darkFullLogoSetting = ApplicationSetting::factory()
+            ->darkFullLogo($darkFullLogoPath)
+            ->create();
+        Storage::disk('public')->put($iconPath, 'icon');
+        Storage::disk('public')->put($fullLogoPath, 'full logo');
+        Storage::disk('public')->put($darkFullLogoPath, 'dark full logo');
+
+        $this->actingAs($administrator)
+            ->delete(route('application-logo.full.dark.destroy'))
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('application-logo.edit'));
+
+        $this->assertSame($iconPath, $iconSetting->refresh()->value);
+        $this->assertSame($fullLogoPath, $fullLogoSetting->refresh()->value);
+        $this->assertNull($darkFullLogoSetting->refresh()->value);
+        Storage::disk('public')->assertExists($iconPath);
+        Storage::disk('public')->assertExists($fullLogoPath);
+        Storage::disk('public')->assertMissing($darkFullLogoPath);
     }
 
     private function administrator(): User

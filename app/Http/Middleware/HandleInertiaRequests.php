@@ -50,6 +50,7 @@ class HandleInertiaRequests extends Middleware
             'branding' => [
                 'iconUrl' => ApplicationSetting::iconUrl(),
                 'fullLogoUrl' => ApplicationSetting::fullLogoUrl(),
+                'darkFullLogoUrl' => ApplicationSetting::darkFullLogoUrl(),
             ],
             'navigation' => [
                 'frontend' => ApplicationSetting::frontendNavigation(),

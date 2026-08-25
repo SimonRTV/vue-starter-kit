@@ -23,6 +23,8 @@
     "Created the account and assigned its initial access.": "Le compte a été créé et ses accès initiaux ont été attribués.",
     "Default application logo restored.": "Le logo par défaut de l’application a été restauré.",
     "Default application icon restored.": "L’icône par défaut de l’application a été restaurée.",
+    "Dark-background application logo removed.": "Le logo de l’application pour fond sombre a été supprimé.",
+    "Dark-background application logo updated.": "Le logo de l’application pour fond sombre a été mis à jour.",
     "Delete": "Supprimer",
     "Delete roles that are not assigned to users.": "Supprimer les rôles qui ne sont attribués à aucun utilisateur.",
     "Delete, restore, and permanently delete pages.": "Supprimer, restaurer et supprimer définitivement des pages.",

@@ -34,4 +34,22 @@ class WelcomeHeaderTest extends TestCase
         $this->assertStringNotContainsString('icon:', $navigationChild);
         $this->assertStringContainsString('v-if="description"', $navigationChild);
     }
+
+    public function test_full_logo_automatically_selects_the_dark_background_variant(): void
+    {
+        $logo = file_get_contents(
+            dirname(__DIR__, 2).'/resources/js/components/AppLogoFull.vue',
+        );
+        $splitAuthLayout = file_get_contents(
+            dirname(__DIR__, 2).'/resources/js/layouts/auth/AuthSplitLayout.vue',
+        );
+
+        $this->assertIsString($logo);
+        $this->assertIsString($splitAuthLayout);
+        $this->assertStringContainsString('page.props.branding.darkFullLogoUrl', $logo);
+        $this->assertStringContainsString("background?: 'auto' | 'light' | 'dark'", $logo);
+        $this->assertStringContainsString("'dark:hidden'", $logo);
+        $this->assertStringContainsString("'hidden dark:block'", $logo);
+        $this->assertStringContainsString('background="dark"', $splitAuthLayout);
+    }
 }
