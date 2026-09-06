@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { usePage } from '@inertiajs/vue3';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
+import NotificationBell from '@/components/NotificationBell.vue';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { BreadcrumbItem } from '@/types';
+
+const page = usePage();
 
 withDefaults(
     defineProps<{
@@ -22,6 +26,15 @@ withDefaults(
             <template v-if="breadcrumbs && breadcrumbs.length > 0">
                 <Breadcrumbs :breadcrumbs="breadcrumbs" />
             </template>
+        </div>
+        <div
+            v-if="
+                page.props.features.notifications &&
+                page.props.auth.user?.email_verified_at
+            "
+            class="ml-auto"
+        >
+            <NotificationBell />
         </div>
     </header>
 </template>

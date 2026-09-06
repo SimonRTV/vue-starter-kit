@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasMediaAttachments;
 use Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,17 +14,20 @@ use Illuminate\Support\Carbon;
  * @property string $title
  * @property string $slug
  * @property string|null $excerpt
+ * @property string $body_format
  * @property string|null $body
  * @property bool $is_published
  * @property Carbon|null $published_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['title', 'slug', 'excerpt', 'body', 'is_published', 'published_at'])]
+#[Fillable(['title', 'slug', 'excerpt', 'body', 'body_format', 'is_published', 'published_at'])]
 class Page extends Model
 {
     /** @use HasFactory<PageFactory> */
     use HasFactory;
+
+    use HasMediaAttachments;
 
     /**
      * The model's default values for attributes.
@@ -32,6 +36,7 @@ class Page extends Model
      */
     protected $attributes = [
         'is_published' => false,
+        'body_format' => 'text',
     ];
 
     /**

@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Actions\{{plural}};
+
+use App\Models\{{model}};
+
+class Delete{{model}}
+{
+    public function handle({{model}} ${{variable}}): void
+    {
+        ${{variable}}->delete();
+    }
+}

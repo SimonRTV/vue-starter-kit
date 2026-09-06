@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
 import {
+    History,
     ExternalLink,
     FileText,
     LayoutGrid,
@@ -8,6 +9,8 @@ import {
     Users,
 } from '@lucide/vue';
 import { computed } from 'vue';
+import { index as activityIndex } from '@/actions/App/Http/Controllers/ActivityController';
+import { index as mediaIndex } from '@/actions/App/Http/Controllers/MediaController';
 import PageController from '@/actions/App/Http/Controllers/PageController';
 import RoleController from '@/actions/App/Http/Controllers/RoleController';
 import UserController from '@/actions/App/Http/Controllers/UserController';
@@ -34,6 +37,23 @@ const mainNavItems = computed<NavItem[]>(() => [
         href: dashboard(),
         icon: LayoutGrid,
     },
+    ...(page.props.auth.can.viewActivity
+        ? [
+              {
+                  title: 'Journal d’activité',
+                  href: activityIndex(),
+                  icon: History,
+              },
+          ]
+        : []),
+    ...(page.props.auth.can.manageMedia
+        ? [{ title: 'Médiathèque', href: mediaIndex(), icon: FileText }]
+        : []),
+    ...page.props.navigation.resources.map((resource) => ({
+        title: resource.title,
+        href: resource.url,
+        icon: FileText,
+    })),
     ...(page.props.auth.can.managePages
         ? [
               {

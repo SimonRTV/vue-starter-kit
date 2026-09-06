@@ -1,12 +1,25 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\BulkPageController;
+use App\Http\Controllers\MediaController;
+use App\Http\Controllers\MediaFileController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PageAttachmentController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TableExportController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\EnsureFeatureEnabled;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
-Route::inertia('/', 'Welcome')
+Route::get('/', function () {
+    return config('starter.features.public_site')
+        ? Inertia::render('Welcome')
+        : to_route('dashboard');
+})
     ->name('home')
     ->withHead(
         title: 'Welcome',
@@ -14,14 +27,57 @@ Route::inertia('/', 'Welcome')
         robots: 'all',
     );
 Route::get('content/{page:slug}', PublicPageController::class)
+    ->middleware([EnsureFeatureEnabled::class.':starter.features.public_site', EnsureFeatureEnabled::class.':starter.features.pages'])
     ->name('content.show')
     ->withHead(robots: 'all');
+
+Route::middleware(EnsureFeatureEnabled::class.':starter.features.media')->group(function () {
+    Route::get('files/{media}/download', [MediaFileController::class, 'download'])->name('media-files.download');
+    Route::get('files/{media}/thumbnail', [MediaFileController::class, 'thumbnail'])->name('media-files.thumbnail');
+});
 
 Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')
         ->name('dashboard')
         ->withHead(title: 'Tableau de bord');
-    Route::resource('pages', PageController::class);
+    Route::middleware(EnsureFeatureEnabled::class.':starter.features.media')->group(function () {
+        Route::resource('media', MediaController::class)->parameters(['media' => 'media'])->only(['index', 'update', 'destroy']);
+        Route::post('media', [MediaController::class, 'store'])->middleware('throttle:30,1')->name('media.store');
+        Route::post('pages/{page}/attachments', [PageAttachmentController::class, 'store'])
+            ->middleware(EnsureFeatureEnabled::class.':starter.features.pages')->name('page-attachments.store');
+        Route::delete('pages/{page}/attachments/{media}', [PageAttachmentController::class, 'destroy'])
+            ->middleware(EnsureFeatureEnabled::class.':starter.features.pages')->name('page-attachments.destroy');
+    });
+
+    Route::get('pages-export', [TableExportController::class, 'pages'])
+        ->middleware([EnsureFeatureEnabled::class.':starter.features.pages', 'throttle:10,1'])->name('table-exports.pages');
+    Route::get('users-export', [TableExportController::class, 'users'])->middleware('throttle:10,1')->name('table-exports.users');
+    Route::get('roles-export', [TableExportController::class, 'roles'])->middleware('throttle:10,1')->name('table-exports.roles');
+    Route::patch('pages-bulk', BulkPageController::class)
+        ->middleware(EnsureFeatureEnabled::class.':starter.features.pages')->name('pages.bulk');
+
+    Route::resource('pages', PageController::class)
+        ->middleware(EnsureFeatureEnabled::class.':starter.features.pages');
+
+    /** @var array<string, array{controller: class-string, model: class-string, label: string, enabled: bool}> $resources */
+    $resources = config('resources', []);
+
+    foreach ($resources as $name => $resource) {
+        Route::resource($name, $resource['controller'])
+            ->middleware(EnsureFeatureEnabled::class.':resources.'.$name.'.enabled');
+    }
+    Route::get('activity', [ActivityController::class, 'index'])
+        ->middleware(EnsureFeatureEnabled::class.':starter.features.activity')->name('activity.index');
+
+    Route::middleware(EnsureFeatureEnabled::class.':starter.features.notifications')->group(function () {
+        Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::patch('notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+        Route::patch('notifications/{notification}', [NotificationController::class, 'update'])->whereUuid('notification')->name('notifications.update');
+        Route::delete('notifications/{notification}', [NotificationController::class, 'destroy'])->whereUuid('notification')->name('notifications.destroy');
+        Route::get('settings/notifications', [NotificationController::class, 'preferences'])->name('notifications.preferences');
+        Route::put('settings/notifications', [NotificationController::class, 'updatePreferences'])->name('notifications.preferences.update');
+    });
+
     Route::resource('roles', RoleController::class);
     Route::post('users/{user}/disable', [UserController::class, 'disable'])->name('users.disable');
     Route::delete('users/{user}/disable', [UserController::class, 'enable'])->name('users.enable');

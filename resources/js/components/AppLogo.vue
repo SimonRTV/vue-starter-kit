@@ -5,7 +5,7 @@ import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { cn } from '@/lib/utils';
 
 const page = usePage();
-const name = page.props.name;
+const name = computed(() => page.props.name);
 const hasCustomIcon = computed(() => Boolean(page.props.branding.iconUrl));
 </script>
 

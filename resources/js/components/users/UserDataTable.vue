@@ -3,8 +3,10 @@ import { Link } from '@inertiajs/vue3';
 import { UserPlus, Users, X } from '@lucide/vue';
 import { watchDebounced } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
+import { users as exportTable } from '@/actions/App/Http/Controllers/TableExportController';
 import UserController from '@/actions/App/Http/Controllers/UserController';
 import { EmptyState, ResourceTable } from '@/components/application';
+import TableViewTools from '@/components/data-table/TableViewTools.vue';
 import { Button } from '@/components/ui/button';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -212,6 +214,14 @@ watch(
         @update:sorting="updateSorting"
     >
         <template #toolbar>
+            <TableViewTools
+                table-key="users"
+                :filters="filters"
+                :url="(query) => UserController.index.url({ query })"
+                :export-url="exportTable.url({ query: filters })"
+                :total="users.total"
+                :disabled="processing"
+            />
             <FieldGroup
                 class="grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_11rem_11rem_11rem_auto] lg:items-end"
             >

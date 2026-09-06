@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import { FileText, Plus, Search, X } from '@lucide/vue';
 import { watchDebounced } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
+import BulkPageController from '@/actions/App/Http/Controllers/BulkPageController';
 import PageController from '@/actions/App/Http/Controllers/PageController';
+import { pages as exportTable } from '@/actions/App/Http/Controllers/TableExportController';
+import { ConfirmationAction } from '@/components/application';
 import { EmptyState, ResourceTable } from '@/components/application';
+import TableViewTools from '@/components/data-table/TableViewTools.vue';
 import { pageColumns } from '@/components/pages/pageColumns';
 import { Button } from '@/components/ui/button';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
@@ -39,7 +43,33 @@ type PageIndexQuery = {
 const props = defineProps<{
     pages: PagePagination;
     filters: PageIndexFilters;
+    canBulkUpdate: boolean;
 }>();
+
+const selectedIds = ref<string[]>([]);
+const bulk = useForm<{ ids: string[]; action: 'publish' | 'unpublish' }>({
+    ids: [],
+    action: 'publish',
+});
+const confirmBulk = ref(false);
+function requestBulk(action: 'publish' | 'unpublish'): void {
+    bulk.action = action;
+    bulk.clearErrors();
+    confirmBulk.value = true;
+}
+function submitBulk(): void {
+    bulk.ids = [...selectedIds.value];
+    bulk.patch(BulkPageController.url(), {
+        preserveScroll: true,
+        onSuccess: () => {
+            selectedIds.value = [];
+            confirmBulk.value = false;
+        },
+        onError: () => {
+            confirmBulk.value = false;
+        },
+    });
+}
 
 const search = ref(props.filters.search ?? '');
 const status = ref<PageStatus | 'all'>(props.filters.status ?? 'all');
@@ -140,7 +170,9 @@ watch(
         :pagination="pagination"
         :sorting="sorting"
         :row-count="pages.total"
-        :processing="processing"
+        :processing="processing || bulk.processing"
+        :selectable="canBulkUpdate"
+        v-model:selected-ids="selectedIds"
         item-label="page"
         items-label="pages"
         empty-label="Aucune page trouvée"
@@ -149,7 +181,59 @@ watch(
         @update:pagination="updatePagination"
         @update:sorting="updateSorting"
     >
+        <template #bulk-actions>
+            <Button
+                type="button"
+                size="sm"
+                :disabled="processing || bulk.processing"
+                @click="requestBulk('publish')"
+                >Publier</Button
+            >
+            <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                :disabled="processing || bulk.processing"
+                @click="requestBulk('unpublish')"
+                >Passer en brouillon</Button
+            >
+            <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                :disabled="processing || bulk.processing"
+                @click="selectedIds = []"
+                >Désélectionner</Button
+            >
+        </template>
         <template #toolbar>
+            <p
+                v-if="bulk.errors.ids"
+                role="alert"
+                class="text-sm text-destructive"
+            >
+                {{ bulk.errors.ids }}
+            </p>
+            <ConfirmationAction
+                v-model:open="confirmBulk"
+                :title="
+                    bulk.action === 'publish'
+                        ? 'Publier les pages sélectionnées ?'
+                        : 'Passer les pages en brouillon ?'
+                "
+                :description="`${selectedIds.length} page(s) seront modifiées. ${bulk.action === 'publish' ? 'Les pages pourront être consultées sur le site public.' : 'Les pages ne seront plus accessibles sur le site public.'}`"
+                confirm-label="Confirmer"
+                :processing="bulk.processing"
+                @confirm="submitBulk"
+            />
+            <TableViewTools
+                table-key="pages"
+                :filters="filters"
+                :url="(query) => PageController.index.url({ query })"
+                :export-url="exportTable.url({ query: filters })"
+                :total="pages.total"
+                :disabled="processing"
+            />
             <FieldGroup
                 class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_11rem_auto] sm:items-end"
             >

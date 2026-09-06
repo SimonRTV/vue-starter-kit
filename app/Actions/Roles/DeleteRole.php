@@ -2,6 +2,9 @@
 
 namespace App\Actions\Roles;
 
+use App\Actions\Activity\RecordActivity;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
@@ -25,6 +28,11 @@ class DeleteRole
                 ]);
             }
 
+            $actor = Auth::user();
+            app(RecordActivity::class)->handle('roles', (string) $lockedRole->getKey(), 'deleted', [
+                'name' => ['before' => $lockedRole->name, 'after' => null],
+                'permissions' => ['before' => $lockedRole->permissions()->orderBy('name')->pluck('name')->all(), 'after' => null],
+            ], $actor instanceof User ? $actor : null);
             $lockedRole->delete();
         });
     }

@@ -1,0 +1,6 @@
+export type {{model}}Record = {
+    id: number;
+    title: string;
+    description: string | null;
+    can: { update: boolean; delete: boolean };
+};

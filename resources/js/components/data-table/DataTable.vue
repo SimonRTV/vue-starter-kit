@@ -5,7 +5,7 @@ import type {
     PaginationState,
     SortingState,
 } from '@tanstack/vue-table';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import { dataTableFeatures } from '@/components/data-table/dataTableFeatures';
 import type { DataTableFeatures } from '@/components/data-table/dataTableFeatures';
 import DataTablePagination from '@/components/data-table/DataTablePagination.vue';
@@ -29,6 +29,8 @@ const props = withDefaults(
         sorting: SortingState;
         rowCount: number;
         processing?: boolean;
+        selectable?: boolean;
+        selectedIds?: string[];
         pageSizeOptions?: readonly number[];
         itemLabel?: string;
         itemsLabel?: string;
@@ -37,6 +39,8 @@ const props = withDefaults(
     }>(),
     {
         processing: false,
+        selectable: false,
+        selectedIds: () => [],
         pageSizeOptions: () => [10, 25, 50],
         itemLabel: 'élément',
         itemsLabel: 'éléments',
@@ -46,9 +50,28 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
+    'update:selectedIds': [ids: string[]];
     'update:pagination': [pagination: PaginationState];
     'update:sorting': [sorting: SortingState];
 }>();
+
+const allSelected = computed(
+    () =>
+        props.data.length > 0 &&
+        props.data.every((row) => props.selectedIds.includes(String(row.id))),
+);
+function toggleRow(id: string): void {
+    emit(
+        'update:selectedIds',
+        props.selectedIds.includes(id)
+            ? props.selectedIds.filter((value) => value !== id)
+            : [...props.selectedIds, id],
+    );
+}
+watch(
+    () => props.data,
+    () => emit('update:selectedIds', []),
+);
 
 const rows = computed(() => props.data);
 const columns = computed(() => props.columns);
@@ -89,6 +112,15 @@ const table = useTable({
     <div class="flex flex-col gap-4">
         <slot name="toolbar" />
 
+        <div
+            v-if="selectable && selectedIds.length"
+            class="flex flex-wrap items-center gap-3 rounded-md border bg-muted/30 p-3"
+        >
+            <span class="text-sm"
+                >{{ selectedIds.length }} sélectionné(s) sur cette page</span
+            >
+            <slot name="bulk-actions" />
+        </div>
         <div class="rounded-md border">
             <Table>
                 <TableHeader>
@@ -96,6 +128,26 @@ const table = useTable({
                         v-for="headerGroup in table.getHeaderGroups()"
                         :key="headerGroup.id"
                     >
+                        <TableHead v-if="selectable" class="w-10">
+                            <input
+                                type="checkbox"
+                                aria-label="Sélectionner toutes les lignes de cette page"
+                                class="size-4 accent-primary"
+                                :checked="allSelected"
+                                :indeterminate="
+                                    selectedIds.length > 0 && !allSelected
+                                "
+                                :disabled="processing || data.length === 0"
+                                @change="
+                                    emit(
+                                        'update:selectedIds',
+                                        allSelected
+                                            ? []
+                                            : data.map((row) => String(row.id)),
+                                    )
+                                "
+                            />
+                        </TableHead>
                         <TableHead
                             v-for="header in headerGroup.headers"
                             :key="header.id"
@@ -122,6 +174,16 @@ const table = useTable({
                             v-for="row in table.getRowModel().rows"
                             :key="row.id"
                         >
+                            <TableCell v-if="selectable">
+                                <input
+                                    type="checkbox"
+                                    :aria-label="`Sélectionner la ligne ${row.id}`"
+                                    class="size-4 accent-primary"
+                                    :checked="selectedIds.includes(row.id)"
+                                    :disabled="processing"
+                                    @change="toggleRow(row.id)"
+                                />
+                            </TableCell>
                             <TableCell
                                 v-for="cell in row.getAllCells()"
                                 :key="cell.id"
@@ -130,7 +192,10 @@ const table = useTable({
                             </TableCell>
                         </TableRow>
                     </template>
-                    <TableEmpty v-else :colspan="columns.length">
+                    <TableEmpty
+                        v-else
+                        :colspan="columns.length + (selectable ? 1 : 0)"
+                    >
                         <slot name="empty">{{ emptyMessage }}</slot>
                     </TableEmpty>
                 </TableBody>

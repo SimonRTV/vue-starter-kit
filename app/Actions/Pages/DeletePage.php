@@ -3,6 +3,7 @@
 namespace App\Actions\Pages;
 
 use App\Models\Page;
+use Illuminate\Support\Facades\DB;
 
 class DeletePage
 {
@@ -11,6 +12,10 @@ class DeletePage
      */
     public function handle(Page $page): void
     {
-        $page->delete();
+        DB::transaction(function () use ($page): void {
+            $locked = Page::query()->lockForUpdate()->findOrFail($page->id);
+            $locked->attachments()->detach();
+            $locked->delete();
+        });
     }
 }

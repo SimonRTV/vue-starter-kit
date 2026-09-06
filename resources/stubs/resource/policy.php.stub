@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Policies;
+
+use App\Models\{{model}};
+use App\Models\User;
+
+class {{model}}Policy
+{
+    public const VIEW = '{{route}}.view';
+    public const CREATE = '{{route}}.create';
+    public const UPDATE = '{{route}}.update';
+    public const DELETE = '{{route}}.delete';
+
+    /** @var list<string> */
+    public const PERMISSIONS = [self::VIEW, self::CREATE, self::UPDATE, self::DELETE];
+
+    /** @var list<string> */
+    public const SENSITIVE_PERMISSIONS = [self::DELETE];
+
+    public function viewAny(User $user): bool
+    {
+        return $user->can(self::VIEW);
+    }
+
+    public function view(User $user, {{model}} ${{variable}}): bool
+    {
+        return $user->can(self::VIEW);
+    }
+
+    public function create(User $user): bool
+    {
+        return $user->can(self::CREATE);
+    }
+
+    public function update(User $user, {{model}} ${{variable}}): bool
+    {
+        return $user->can(self::UPDATE);
+    }
+
+    public function delete(User $user, {{model}} ${{variable}}): bool
+    {
+        return $user->can(self::DELETE);
+    }
+}

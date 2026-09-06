@@ -3,6 +3,8 @@
 namespace Tests\Feature\Console\Commands;
 
 use App\Models\User;
+use App\Policies\ActivityPolicy;
+use App\Policies\MediaPolicy;
 use App\Policies\PagePolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
@@ -39,6 +41,8 @@ class MakeAdminTest extends TestCase
             ->sole();
         $policyPermissions = collect([
             ...PagePolicy::PERMISSIONS,
+            ...MediaPolicy::PERMISSIONS,
+            ...ActivityPolicy::PERMISSIONS,
             ...RolePolicy::PERMISSIONS,
             ...UserPolicy::PERMISSIONS,
         ])->unique()->sort()->values()->all();

@@ -1,0 +1,29 @@
+<script setup lang="ts">
+import { Link, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { index, edit, destroy } from '@/actions/App/Http/Controllers/{{model}}Controller';
+import { PageHeader, ConfirmationAction } from '@/components/application';
+import { Button } from '@/components/ui/button';
+import type { {{model}}Record } from '@/types/{{route}}';
+const props = defineProps<{ record: {{model}}Record }>();
+const open = ref(false);
+const processing = ref(false);
+defineOptions({ layout: { breadcrumbs: [{ title: '{{label}}', href: index() }] } });
+function remove(): void {
+    router.delete(destroy(props.record.id), { onStart: () => { processing.value = true; }, onSuccess: () => { open.value = false; }, onFinish: () => { processing.value = false; } });
+}
+</script>
+
+<template>
+    <div class="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
+        <PageHeader :title="record.title">
+            <template #actions>
+                <Button v-if="record.can.update" as-child variant="outline"><Link :href="edit(record.id)">Modifier</Link></Button>
+                <ConfirmationAction v-if="record.can.delete" v-model:open="open" title="Supprimer cet élément ?" description="Cette suppression est définitive." confirm-label="Supprimer" :processing="processing" @confirm="remove">
+                    <template #trigger><Button variant="destructive">Supprimer</Button></template>
+                </ConfirmationAction>
+            </template>
+        </PageHeader>
+        <p class="whitespace-pre-wrap">{{ record.description || 'Aucune description.' }}</p>
+    </div>
+</template>

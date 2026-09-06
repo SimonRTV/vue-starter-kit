@@ -1,0 +1,14 @@
+<script setup lang="ts">
+import { index } from '@/actions/App/Http/Controllers/{{model}}Controller';
+import { PageHeader } from '@/components/application';
+import ResourceForm from '@/components/{{route}}/{{model}}Form.vue';
+
+defineOptions({ layout: { breadcrumbs: [{ title: '{{label}}', href: index() }] } });
+</script>
+
+<template>
+    <div class="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
+        <PageHeader title="Créer" />
+        <ResourceForm  />
+    </div>
+</template>

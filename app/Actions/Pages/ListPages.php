@@ -16,6 +16,17 @@ class ListPages
      */
     public function handle(array $filters): LengthAwarePaginator
     {
+        return $this->query($filters)->paginate($filters['per_page'])->withQueryString();
+    }
+
+    /**
+     * List pages using validated server-side filters.
+     *
+     * @param  array{search: string|null, status: 'draft'|'published'|null, sort: 'title'|'is_published'|'published_at'|'updated_at', direction: 'asc'|'desc', per_page: 10|25|50}  $filters
+     * @return Builder<Page>
+     */
+    public function query(array $filters): Builder
+    {
         $query = Page::query()
             ->select(['id', 'title', 'slug', 'is_published', 'published_at', 'updated_at']);
 
@@ -35,8 +46,6 @@ class ListPages
 
         return $query
             ->orderBy($filters['sort'], $filters['direction'])
-            ->orderBy('id', $filters['direction'])
-            ->paginate($filters['per_page'])
-            ->withQueryString();
+            ->orderBy('id', $filters['direction']);
     }
 }

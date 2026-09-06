@@ -3,9 +3,11 @@
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\ApplicationLogoController;
 use App\Http\Controllers\Settings\FrontendNavigationController;
+use App\Http\Controllers\Settings\GeneralSettingsController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use App\Http\Controllers\Settings\SidebarFooterLinkController;
+use App\Http\Middleware\EnsureFeatureEnabled;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +38,12 @@ Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(functio
     Route::patch('settings/appearance', [AppearanceController::class, 'update'])
         ->name('appearance.update');
 
+    Route::get('settings/general', [GeneralSettingsController::class, 'edit'])
+        ->name('general-settings.edit')
+        ->withHead(title: 'Informations générales');
+    Route::put('settings/general', [GeneralSettingsController::class, 'update'])
+        ->name('general-settings.update');
+
     Route::get('settings/application-logo', [ApplicationLogoController::class, 'edit'])
         ->name('application-logo.edit')
         ->withHead(title: 'Paramètres de l’application');
@@ -59,9 +67,11 @@ Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(functio
         ->name('sidebar-footer-links.update');
 
     Route::get('settings/frontend-navigation', [FrontendNavigationController::class, 'edit'])
+        ->middleware(EnsureFeatureEnabled::class.':starter.features.public_site')
         ->name('frontend-navigation.edit')
         ->withHead(title: 'Navigation publique');
     Route::put('settings/frontend-navigation', [FrontendNavigationController::class, 'update'])
+        ->middleware(EnsureFeatureEnabled::class.':starter.features.public_site')
         ->name('frontend-navigation.update');
 });
 

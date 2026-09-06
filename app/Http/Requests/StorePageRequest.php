@@ -29,7 +29,8 @@ class StorePageRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255', Rule::unique(Page::class)],
             'excerpt' => ['nullable', 'string', 'max:500'],
-            'body' => ['nullable', 'string'],
+            'body' => ['nullable', 'string', 'max:200000'],
+            'body_format' => ['sometimes', 'required', Rule::in(['text', 'html'])],
             'is_published' => ['required', 'boolean'],
         ];
     }
@@ -37,7 +38,7 @@ class StorePageRequest extends FormRequest
     /**
      * Get the validated page attributes.
      *
-     * @return array{title: string, slug: string, excerpt: string|null, body: string|null, is_published: bool}
+     * @return array{title: string, slug: string, excerpt: string|null, body: string|null, body_format: string, is_published: bool}
      */
     public function pageAttributes(): array
     {
@@ -49,6 +50,7 @@ class StorePageRequest extends FormRequest
             'excerpt' => Arr::get($validated, 'excerpt') === null
                 ? null
                 : Arr::string($validated, 'excerpt'),
+            'body_format' => Arr::get($validated, 'body_format', 'text'),
             'body' => Arr::get($validated, 'body') === null
                 ? null
                 : Arr::string($validated, 'body'),

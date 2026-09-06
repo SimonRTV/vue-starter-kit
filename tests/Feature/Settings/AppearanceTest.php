@@ -141,8 +141,10 @@ class AppearanceTest extends TestCase
         $darkResponse
             ->assertOk()
             ->assertSee('data-admin-theme="neutral"', false)
-            ->assertSee('data-appearance="dark"', false)
-            ->assertSee('class="dark"', false);
+            ->assertSee('data-appearance="dark"', false);
+
+        $this->assertSame(1, preg_match('/<html\b[^>]*\bclass="([^"]*)"/i', $darkResponse->getContent(), $matches));
+        $this->assertContains('dark', preg_split('/\s+/', trim($matches[1])));
     }
 
     public function test_invalid_frontend_appearance_falls_back_to_system(): void

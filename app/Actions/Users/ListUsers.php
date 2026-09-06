@@ -16,6 +16,17 @@ class ListUsers
      */
     public function handle(array $filters): LengthAwarePaginator
     {
+        return $this->query($filters)->paginate($filters['per_page'])->withQueryString();
+    }
+
+    /**
+     * List users using validated server-side filters.
+     *
+     * @param  array{search: string|null, role: string|null, verification: 'verified'|'unverified'|null, status: 'active'|'disabled'|null, sort: 'name'|'email'|'email_verified_at'|'disabled_at'|'last_login_at'|'created_at'|'updated_at', direction: 'asc'|'desc', per_page: 10|25|50}  $filters
+     * @return Builder<User>
+     */
+    public function query(array $filters): Builder
+    {
         $query = User::query()
             ->select([
                 'id',
@@ -62,8 +73,6 @@ class ListUsers
 
         return $query
             ->orderBy($filters['sort'], $filters['direction'])
-            ->orderBy('id', $filters['direction'])
-            ->paginate($filters['per_page'])
-            ->withQueryString();
+            ->orderBy('id', $filters['direction']);
     }
 }

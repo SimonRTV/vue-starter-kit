@@ -2,6 +2,9 @@
 
 namespace App\Actions\Roles;
 
+use App\Actions\Activity\RecordActivity;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
@@ -20,6 +23,12 @@ class CreateRole
                 'guard_name' => 'web',
             ]);
             $role->syncPermissions($permissionNames);
+
+            $actor = Auth::user();
+            app(RecordActivity::class)->handle('roles', (string) $role->getKey(), 'created', [
+                'name' => ['before' => null, 'after' => $role->name],
+                'permissions' => ['before' => null, 'after' => $role->permissions()->orderBy('name')->pluck('name')->all()],
+            ], $actor instanceof User ? $actor : null);
 
             return $role;
         });

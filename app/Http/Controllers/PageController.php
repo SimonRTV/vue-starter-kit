@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Media\MediaLibrary;
 use App\Actions\Pages\CreatePage;
 use App\Actions\Pages\DeletePage;
 use App\Actions\Pages\ListPages;
+use App\Actions\Pages\PageContent;
 use App\Actions\Pages\UpdatePage;
 use App\Http\Requests\IndexPageRequest;
 use App\Http\Requests\StorePageRequest;
 use App\Http\Requests\UpdatePageRequest;
+use App\Models\Media;
 use App\Models\Page;
+use App\Policies\PagePolicy;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -44,6 +48,7 @@ class PageController extends Controller
         return Inertia::render('pages/Index', [
             'pages' => $pages,
             'filters' => $filters,
+            'canBulkUpdate' => auth()->user()?->can(PagePolicy::UPDATE) ?? false,
         ]);
     }
 
@@ -84,12 +89,17 @@ class PageController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Page $page): Response
+    public function edit(Page $page, MediaLibrary $library): Response
     {
         Gate::authorize('update', $page);
         Head::title('Modifier '.$page->title);
 
-        return Inertia::render('pages/Edit', ['page' => $this->detail($page)]);
+        return Inertia::render('pages/Edit', [
+            'page' => $this->detail($page),
+            'attachments' => config('starter.features.media')
+                ? $page->attachments()->get()->filter(fn (Media $media): bool => Gate::allows('view', $media))->map(fn (Media $media): array => $library->item($media))->values()
+                : [],
+        ]);
     }
 
     /**
@@ -135,7 +145,7 @@ class PageController extends Controller
     }
 
     /**
-     * @return array{id: int, title: string, slug: string, excerpt: string|null, body: string|null, is_published: bool, status: string, published_at: string|null, created_at: string|null, updated_at: string|null}
+     * @return array{id: int, title: string, slug: string, excerpt: string|null, body: string|null, body_html: string, is_published: bool, status: string, published_at: string|null, created_at: string|null, updated_at: string|null}
      */
     private function detail(Page $page): array
     {
@@ -143,6 +153,7 @@ class PageController extends Controller
             ...$this->summary($page),
             'excerpt' => $page->excerpt,
             'body' => $page->body,
+            'body_html' => app(PageContent::class)->render($page->body, $page->body_format),
             'created_at' => $page->created_at?->toISOString(),
         ];
     }

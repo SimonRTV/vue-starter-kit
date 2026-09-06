@@ -63,6 +63,15 @@ composer setup
 php artisan storage:link
 ```
 
+Choose your project preset before continuing (see [Project presets and modules](#project-presets-and-modules)):
+
+```bash
+php artisan starter:setup --list
+php artisan starter:setup --preset=website --name="My Application" --dry-run
+```
+
+Remove `--dry-run` to apply the configuration.
+
 Create the first administrator:
 
 ```bash
@@ -99,6 +108,61 @@ MAIL_MAILER=log
 Set `FORTIFY_REGISTRATION_ENABLED=true` to expose the public registration page and account-creation endpoint. Leave it `false` when accounts must only be created by administrators.
 
 Application icons, the optional full authentication logo, and sidebar footer links are managed from the authenticated settings interface rather than environment variables.
+
+## Project presets and modules
+
+Use `starter:setup` after installing a new project or when changing the built-in modules of an existing project. Run commands from the project root. Instructions are also available directly in Artisan:
+
+```bash
+php artisan starter:setup --help
+php artisan starter:setup --list
+```
+
+| Preset     | Page management | Public pages | Media | Activity log | Notifications |
+| ---------- | --------------- | ------------ | ----- | ------------ | ------------- |
+| `website`  | Yes             | Yes          | Yes   | Yes          | Yes           |
+| `portal`   | Yes             | No           | Yes   | Yes          | Yes           |
+| `business` | No              | No           | Yes   | Yes          | Yes           |
+
+Preview a configuration, then apply the same command without `--dry-run`:
+
+```bash
+php artisan starter:setup --preset=portal --name="Client Portal" --locale=fr --timezone=Europe/Zurich --dry-run
+php artisan starter:setup --preset=portal --name="Client Portal" --locale=fr --timezone=Europe/Zurich
+```
+
+**Passing `--preset` resets every built-in module flag to that preset's defaults**, then applies any `--enable` and `--disable` overrides. Omit `--preset` to preserve other choices on an existing project:
+
+```bash
+php artisan starter:setup --enable=pages --enable=public_site --disable=activity
+php artisan starter:setup --disable=public_site --disable=pages --dry-run
+```
+
+Repeat the option for each module; comma-separated lists are not supported. Available module keys are `pages`, `public_site`, `media`, `activity`, and `notifications`. Public pages require page management, so enable `pages` with `public_site`, or disable both together. Unknown modules, conflicting overrides, and missing dependencies are rejected before writing.
+
+With no options, the command makes no changes. `--list` shows the currently loaded configuration and takes precedence over other options. `--dry-run` shows proposed settings without writing. Applying setup updates the environment file (using `.env.example` if none exists), preserves unrelated settings, and clears the configuration cache. Environment variables supplied by your server still take precedence over the file.
+
+`--name`, `--locale`, and `--timezone` set `APP_NAME`, `APP_LOCALE`, and `APP_TIMEZONE`. The interface remains French-first; setting a locale does not generate translations. An application name already saved through admin settings takes precedence over `APP_NAME`; update it there when rebranding an existing installation.
+
+Setup does not migrate, seed, or create accounts. After configuration, apply any pending migrations and synchronize permissions, then rebuild assets as needed:
+
+```bash
+php artisan migrate
+php artisan permissions:sync
+npm run build
+```
+
+Restart long-running workers to load configuration changes. Notification emails require a queue worker; activity retention requires Laravel's scheduler. Use `make:admin` for initial administrator provisioning. Disabling a module hides its navigation and blocks its routes while preserving data and permission assignments. Routes remain registered so Wayfinder imports continue to build.
+
+| Customize                                   | Location                                     |
+| ------------------------------------------- | -------------------------------------------- |
+| Presets, module defaults, dependencies      | `config/starter.php`                         |
+| Generated resource labels and enabled flags | `config/resources.php`                       |
+| Page editing                                | `resources/js/components/pages/PageForm.vue` |
+| Public page presentation                    | `resources/js/pages/content`                 |
+| Upload limits and accepted types            | `config/media.php`                           |
+| Audited models and allowed fields           | `config/activity.php`                        |
+| Notification categories                     | `config/notifications.php`                   |
 
 ## Creating administrators
 
@@ -162,6 +226,93 @@ After adding or changing routes, regenerate the typed route files when they have
 php artisan wayfinder:generate --with-form --no-interaction
 ```
 
+## Generating a resource
+
+Use `starter:resource` when adding a new administrative module. It generates a title/description CRUD starting point with authorization, search, pagination, Vue forms/pages, and tests. The generated files are yours to customize.
+
+```bash
+php artisan starter:resource --help
+php artisan starter:resource ProjectNote --label="Client Notes" --dry-run
+php artisan starter:resource ProjectNote --label="Client Notes"
+```
+
+Use a singular PascalCase model name such as `ProjectNote`. The generator refuses reserved names, existing files, and existing registrations; it does not overwrite an existing resource. Labels accept 1–80 letters, numbers, spaces, underscores, or hyphens and must start with a letter or number. Omit `--label` to derive it from the model name.
+
+The command creates a model, migration, factory, seeder, policy, three Form Requests, four actions, controller, TypeScript types, Vue form and columns, four Vue pages, and a PHPUnit test. It also updates `config/resources.php` for routes and authorized navigation. It does not execute migrations, synchronize permissions, or run the generated seeder.
+
+Pass `--disabled` to scaffold a module before making it accessible:
+
+```bash
+php artisan starter:resource ProjectNote --disabled
+```
+
+Set `enabled` to `true` on its entry in `config/resources.php` when ready, and clear cached configuration. Generated resources are independent of the built-in preset flags and cannot be toggled with `starter:setup --enable`. Changing the registry label changes navigation; edit the generated page labels for matching headings.
+
+Before migrating, adapt the fields in the migration, model, requests, actions, Vue form, types, and tests. Then follow the resource-specific next steps printed by the command:
+
+```bash
+php artisan config:clear
+php artisan route:clear
+php artisan migrate
+php artisan permissions:sync
+php artisan wayfinder:generate --with-form
+vendor/bin/pint --dirty --format agent
+npx prettier --write resources/js/pages/project-notes resources/js/components/project-notes resources/js/types/project-notes.ts
+php artisan test --compact tests/Feature/ProjectNoteManagementTest.php
+npm run build
+```
+
+Permission synchronization grants the new permissions to the protected Administrator role. Assign appropriate permissions to other roles through role management. Media attachments, rich text, notifications, and audit logging are separate integrations; the generator does not automatically wire them into a new resource. For auditing, explicitly allow safe fields in `config/activity.php`.
+
+### Reusing custom templates
+
+Bundled templates live in `resources/stubs/resource`. Edit them to change future generation in this starter, or keep a reusable override directory:
+
+```bash
+mkdir -p resources/stubs/client
+cp resources/stubs/resource/form.vue.stub resources/stubs/client/form.vue.stub
+# Customize the copied template, then preview generation:
+php artisan starter:resource ProjectNote --stubs=resources/stubs/client --dry-run
+```
+
+Use the same filenames as the bundled templates. Only matching files are overridden; missing files fall back to the bundled templates. Relative paths resolve from the working directory. Templates affect newly generated resources only.
+
+| Placeholder     | Example for `ProjectNote`                  |
+| --------------- | ------------------------------------------ |
+| `{{model}}`     | `ProjectNote`                              |
+| `{{plural}}`    | `ProjectNotes`                             |
+| `{{route}}`     | `project-notes`                            |
+| `{{table}}`     | `project_notes`                            |
+| `{{variable}}`  | `projectNote`                              |
+| `{{parameter}}` | `project_note`                             |
+| `{{label}}`     | `Project Notes`, or the supplied `--label` |
+
+## Project health checks
+
+Run the read-only doctor after installing a project, changing configuration, or troubleshooting a deployment:
+
+```bash
+php artisan starter:doctor
+php artisan starter:doctor --help
+```
+
+Each row shows a check, its status, and a suggested next step. Checks cover the encryption key, application URL and production debug setting, module dependencies, default database access, pending migrations, local storage directories, public storage link, frontend build manifest, mail transport configuration, sender address, queue configuration, and scheduler requirements. The database queue table is checked on its configured connection when using the database driver.
+
+`PASS` means the stated check passed, `WARN` requires review, and `FAIL` indicates a setup problem. For automated tooling:
+
+```bash
+php artisan starter:doctor --json
+php artisan starter:doctor --json --strict
+```
+
+JSON contains `checks` (each with `name`, `status`, and `message`), `failures`, and `warnings`. The command exits with **0** if there are no failures, or **1** if a check fails. `--strict` also exits with 1 on warnings. Operational checks remain warnings until verified separately, so strict mode is a review gate rather than proof that services are unhealthy.
+
+The doctor uses loaded configuration, including any configuration cache. It does not send email, dispatch jobs, create files, change configuration, or run migrations. Error output omits database exception details and credentials. Database connection attempts use the driver's configured timeout.
+
+Local storage checks inspect permissions as the CLI user without writing a probe; verify the web/worker user has equivalent access. A build manifest's presence does not validate every asset. Remote storage access, email delivery, queue worker execution, and scheduler execution remain explicitly unverified. Verify those through your hosting provider or service monitoring. In particular, supervise `php artisan queue:work` and run `php artisan schedule:run` every minute when using scheduled tasks; activity retention needs the scheduler when enabled with positive retention days.
+
+Apply suggested fixes separately and rerun the doctor. On an existing installation, preserve its encryption key instead of generating a replacement.
+
 ## Development checks
 
 Run the complete project quality gate:
@@ -212,18 +363,18 @@ Run `php artisan make:admin` separately when initial administrator provisioning 
 
 ## Project map
 
-| Area | Location |
-| --- | --- |
-| Domain actions | `app/Actions` |
-| Console commands | `app/Console/Commands` |
-| Form Requests | `app/Http/Requests` |
-| Policies | `app/Policies` |
-| Inertia pages | `resources/js/pages` |
-| Shared application UI | `resources/js/components/application` |
-| Reusable DataTable | `resources/js/components/data-table` |
-| shadcn-vue primitives | `resources/js/components/ui` |
-| Feature tests | `tests/Feature` |
-| Shared agent conventions | `.ai/rules` |
+| Area                     | Location                              |
+| ------------------------ | ------------------------------------- |
+| Domain actions           | `app/Actions`                         |
+| Console commands         | `app/Console/Commands`                |
+| Form Requests            | `app/Http/Requests`                   |
+| Policies                 | `app/Policies`                        |
+| Inertia pages            | `resources/js/pages`                  |
+| Shared application UI    | `resources/js/components/application` |
+| Reusable DataTable       | `resources/js/components/data-table`  |
+| shadcn-vue primitives    | `resources/js/components/ui`          |
+| Feature tests            | `tests/Feature`                       |
+| Shared agent conventions | `.ai/rules`                           |
 
 ## License
 

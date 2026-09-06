@@ -16,6 +16,8 @@ export type Auth = {
     user: User;
     can: {
         managePages: boolean;
+        viewActivity: boolean;
+        manageMedia: boolean;
         manageUsers: boolean;
         manageRoles: boolean;
         manageApplicationSettings: boolean;

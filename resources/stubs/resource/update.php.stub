@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Actions\{{plural}};
+
+use App\Models\{{model}};
+
+class Update{{model}}
+{
+    /** @param array{title: string, description: string|null} $attributes */
+    public function handle({{model}} ${{variable}}, array $attributes): void
+    {
+        ${{variable}}->update($attributes);
+    }
+}

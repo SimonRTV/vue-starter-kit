@@ -26,6 +26,8 @@ withDefaults(
         sorting: SortingState;
         rowCount: number;
         processing?: boolean;
+        selectable?: boolean;
+        selectedIds?: string[];
         pageSizeOptions?: readonly number[];
         itemLabel?: string;
         itemsLabel?: string;
@@ -35,6 +37,8 @@ withDefaults(
     }>(),
     {
         processing: false,
+        selectable: false,
+        selectedIds: () => [],
         pageSizeOptions: () => [10, 25, 50],
         itemLabel: 'élément',
         itemsLabel: 'éléments',
@@ -45,6 +49,7 @@ withDefaults(
 );
 
 const emit = defineEmits<{
+    'update:selectedIds': [ids: string[]];
     'update:pagination': [pagination: PaginationState];
     'update:sorting': [sorting: SortingState];
 }>();
@@ -70,6 +75,9 @@ const emit = defineEmits<{
                 :sorting="sorting"
                 :row-count="rowCount"
                 :processing="processing"
+                :selectable="selectable"
+                :selected-ids="selectedIds"
+                @update:selected-ids="emit('update:selectedIds', $event)"
                 :page-size-options="pageSizeOptions"
                 :item-label="itemLabel"
                 :items-label="itemsLabel"
@@ -81,6 +89,7 @@ const emit = defineEmits<{
                 <template v-if="$slots.toolbar" #toolbar>
                     <slot name="toolbar" />
                 </template>
+                <template #bulk-actions><slot name="bulk-actions" /></template>
                 <template #empty>
                     <slot name="filteredEmpty">
                         {{ emptyMessage }}

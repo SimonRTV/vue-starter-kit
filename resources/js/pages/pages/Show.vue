@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link, setLayoutProps } from '@inertiajs/vue3';
+import { Link, setLayoutProps, usePage } from '@inertiajs/vue3';
 import { Edit3, Eye } from '@lucide/vue';
 import PageController from '@/actions/App/Http/Controllers/PageController';
 import { PageHeader } from '@/components/application';
@@ -16,6 +16,8 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { show as showPublicPage } from '@/routes/content';
 import type { PageDetail } from '@/types';
+
+const shared = usePage();
 
 const props = defineProps<{
     page: PageDetail;
@@ -65,7 +67,14 @@ setLayoutProps({
                     </p>
                 </template>
                 <template #actions>
-                    <Button v-if="page.is_published" variant="outline" as-child>
+                    <Button
+                        v-if="
+                            page.is_published &&
+                            shared.props.features.public_site
+                        "
+                        variant="outline"
+                        as-child
+                    >
                         <Link :href="showPublicPage(page.slug)" prefetch>
                             <Eye data-icon="inline-start" />
                             Voir la page publique
@@ -90,12 +99,11 @@ setLayoutProps({
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p
-                            v-if="page.body"
-                            class="text-sm leading-7 whitespace-pre-wrap"
-                        >
-                            {{ page.body }}
-                        </p>
+                        <div
+                            v-if="page.body_html"
+                            class="rich-content"
+                            v-html="page.body_html"
+                        />
                         <p v-else class="text-sm text-muted-foreground">
                             Cette page ne contient encore aucun contenu.
                         </p>

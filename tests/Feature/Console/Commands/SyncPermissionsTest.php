@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Console\Commands;
 
+use App\Policies\ActivityPolicy;
+use App\Policies\MediaPolicy;
 use App\Policies\PagePolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
@@ -26,6 +28,8 @@ class SyncPermissionsTest extends TestCase
     {
         $policyPermissions = collect([
             ...PagePolicy::PERMISSIONS,
+            ...MediaPolicy::PERMISSIONS,
+            ...ActivityPolicy::PERMISSIONS,
             ...UserPolicy::PERMISSIONS,
             ...RolePolicy::PERMISSIONS,
         ])->unique()->sort()->values()->all();
@@ -88,6 +92,8 @@ class SyncPermissionsTest extends TestCase
     {
         $declaredPermissionCount = collect([
             ...PagePolicy::PERMISSIONS,
+            ...MediaPolicy::PERMISSIONS,
+            ...ActivityPolicy::PERMISSIONS,
             ...RolePolicy::PERMISSIONS,
             ...UserPolicy::PERMISSIONS,
         ])->unique()->count();

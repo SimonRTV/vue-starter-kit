@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import { ArrowLeft, CalendarDays, ChevronRight, Clock3 } from '@lucide/vue';
-import { computed } from 'vue';
 import FrontendFooter from '@/components/frontend/FrontendFooter.vue';
 import FrontendHeader from '@/components/frontend/FrontendHeader.vue';
 import { Badge } from '@/components/ui/badge';
@@ -10,16 +9,9 @@ import { Separator } from '@/components/ui/separator';
 import { home } from '@/routes';
 import type { PublicPage } from '@/types';
 
-const props = defineProps<{
+defineProps<{
     page: PublicPage;
 }>();
-
-const paragraphs = computed(() =>
-    (props.page.body ?? '')
-        .split(/\n{2,}/)
-        .map((paragraph) => paragraph.trim())
-        .filter(Boolean),
-);
 
 function formatDate(value: string): string {
     return new Intl.DateTimeFormat('en', {
@@ -86,17 +78,10 @@ function formatDate(value: string): string {
             <section class="px-5 py-16 sm:px-8 sm:py-24 lg:px-10">
                 <article class="mx-auto flex max-w-3xl flex-col gap-8">
                     <div
-                        v-if="paragraphs.length"
-                        class="flex flex-col gap-6 text-base leading-8 break-words text-foreground/90 sm:text-lg sm:leading-9"
-                    >
-                        <p
-                            v-for="(paragraph, index) in paragraphs"
-                            :key="index"
-                            class="whitespace-pre-line"
-                        >
-                            {{ paragraph }}
-                        </p>
-                    </div>
+                        v-if="page.body_html"
+                        class="rich-content text-lg"
+                        v-html="page.body_html"
+                    />
                     <p v-else class="text-lg leading-8 text-muted-foreground">
                         No additional content is available for this page yet.
                     </p>
@@ -123,6 +108,30 @@ function formatDate(value: string): string {
                             </Link>
                         </Button>
                     </div>
+                    <section
+                        v-if="page.attachments.length"
+                        class="space-y-4"
+                        aria-label="Pièces jointes"
+                    >
+                        <h2 class="text-xl font-semibold">Pièces jointes</h2>
+                        <ul class="space-y-3">
+                            <li v-for="file in page.attachments" :key="file.id">
+                                <a
+                                    :href="file.download_url"
+                                    class="flex items-center gap-3 rounded-lg border p-4 hover:bg-muted"
+                                    ><img
+                                        v-if="file.thumbnail_url"
+                                        :src="file.thumbnail_url"
+                                        :alt="file.alt_text ?? ''"
+                                        class="size-16 rounded object-contain"
+                                    /><span
+                                        class="font-medium underline underline-offset-4"
+                                        >{{ file.title }}</span
+                                    ></a
+                                >
+                            </li>
+                        </ul>
+                    </section>
                 </article>
             </section>
         </main>

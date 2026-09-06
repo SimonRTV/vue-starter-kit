@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Http\Requests;
+
+use App\Models\{{model}};
+use Illuminate\Foundation\Http\FormRequest;
+
+class Index{{model}}Request extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return $this->user()?->can('viewAny', {{model}}::class) ?? false;
+    }
+
+    /** @return array<string, list<string>> */
+    public function rules(): array
+    {
+        return ['search' => ['nullable', 'string', 'max:100'], 'page' => ['nullable', 'integer', 'min:1']];
+    }
+}

@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { setLayoutProps } from '@inertiajs/vue3';
+import { setLayoutProps, usePage } from '@inertiajs/vue3';
 import PageController from '@/actions/App/Http/Controllers/PageController';
 import { PageHeader } from '@/components/application';
+import PageAttachments from '@/components/media/PageAttachments.vue';
 import PageForm from '@/components/pages/PageForm.vue';
 import type { PageDetail } from '@/types';
+import type { MediaItem } from '@/types/media';
+
+const shared = usePage();
 
 const props = defineProps<{
     page: PageDetail;
+    attachments: MediaItem[];
 }>();
 
 setLayoutProps({
@@ -38,6 +43,11 @@ setLayoutProps({
             />
 
             <PageForm :page="page" />
+            <PageAttachments
+                v-if="shared.props.auth.can.manageMedia"
+                :page-id="page.id"
+                :attachments="attachments"
+            />
         </main>
     </div>
 </template>

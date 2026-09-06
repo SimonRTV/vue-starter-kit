@@ -1,0 +1,35 @@
+<script setup lang="ts">
+import { Form, Link, router } from '@inertiajs/vue3';
+import { create, index } from '@/actions/App/Http/Controllers/{{model}}Controller';
+import { PageHeader } from '@/components/application';
+import { columns } from '@/components/{{route}}/columns';
+import { DataTable } from '@/components/data-table';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import type { Pagination } from '@/types/pagination';
+import type { {{model}}Record } from '@/types/{{route}}';
+
+const props = defineProps<{ records: Pagination<{{model}}Record>; search: string; canCreate: boolean }>();
+function changePage(pagination: { pageIndex: number }): void {
+    router.get(index.url({ query: { page: pagination.pageIndex + 1, search: props.search } }), {}, { preserveState: true });
+}
+
+defineOptions({ layout: { breadcrumbs: [{ title: '{{label}}', href: index() }] } });
+</script>
+
+<template>
+    <div class="flex flex-col gap-6 p-4 md:p-8">
+        <PageHeader title="{{label}}">
+            <template #actions><Button v-if="canCreate" as-child><Link :href="create()">Créer</Link></Button></template>
+        </PageHeader>
+        <Form v-bind="index.form()" v-slot="{ processing, errors }" class="flex flex-wrap items-end gap-3">
+            <div class="space-y-2"><Label for="search">Rechercher</Label><Input id="search" name="search" :default-value="search" maxlength="100" /></div>
+            <Button :disabled="processing" type="submit">Rechercher</Button>
+            <Button as-child variant="outline"><Link :href="index()">Réinitialiser</Link></Button>
+            <p v-if="errors.search" role="alert">{{ errors.search }}</p>
+        </Form>
+        <DataTable :columns="columns" :data="records.data" :pagination="{ pageIndex: records.current_page - 1, pageSize: 15 }" :sorting="[]" :row-count="records.total" :page-size-options="[15]" @update:pagination="changePage" />
+        <p v-if="records.total === 0" class="text-sm text-muted-foreground">Aucun résultat.</p>
+    </div>
+</template>

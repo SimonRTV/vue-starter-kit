@@ -21,6 +21,20 @@ declare module '@inertiajs/core' {
     export interface InertiaConfig {
         sharedPageProps: {
             name: string;
+            notifications: { unreadCount: number };
+            features: {
+                pages: boolean;
+                public_site: boolean;
+                media: boolean;
+                activity: boolean;
+                notifications: boolean;
+            };
+            application: {
+                name: string;
+                tagline: string;
+                contact_email: string;
+                contact_phone: string;
+            };
             branding: {
                 iconUrl: string | null;
                 fullLogoUrl: string | null;
@@ -28,6 +42,7 @@ declare module '@inertiajs/core' {
             };
             navigation: {
                 frontend: FrontendNavigationItem[];
+                resources: { title: string; url: string }[];
                 sidebarFooterLinks: SidebarFooterLink[];
             };
             auth: Auth;

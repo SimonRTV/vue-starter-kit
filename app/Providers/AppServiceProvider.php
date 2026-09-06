@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Observers\ActivityObserver;
 use App\Policies\RolePolicy;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -33,6 +35,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Role::class, RolePolicy::class);
+
+        /** @var array<class-string<Model>, mixed> $auditedModels */
+        $auditedModels = config('activity.models', []);
+        foreach (array_keys($auditedModels) as $model) {
+            $model::observe(ActivityObserver::class);
+        }
 
         $this->configureHead();
         $this->configureDefaults();

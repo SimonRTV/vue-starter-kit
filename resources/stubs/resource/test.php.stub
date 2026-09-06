@@ -1,0 +1,69 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Actions\Permissions\SyncPolicyPermissions;
+use App\Models\{{model}};
+use App\Models\User;
+use App\Policies\{{model}}Policy;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
+use Spatie\Permission\Models\Role;
+use Tests\TestCase;
+
+class {{model}}ManagementTest extends TestCase
+{
+    use LazilyRefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutVite();
+    }
+
+    public function test_guests_and_unprivileged_users_cannot_manage_records(): void
+    {
+        $record = {{model}}::factory()->create();
+        $this->get(route('{{route}}.index'))->assertRedirect(route('login'));
+        $this->actingAs(User::factory()->create());
+        $this->get(route('{{route}}.index'))->assertForbidden();
+        $this->get(route('{{route}}.show', $record))->assertForbidden();
+        $this->get(route('{{route}}.create'))->assertForbidden();
+        $this->get(route('{{route}}.edit', $record))->assertForbidden();
+        $this->post(route('{{route}}.store'), ['title' => 'Test'])->assertForbidden();
+        $this->put(route('{{route}}.update', $record), ['title' => 'Changed'])->assertForbidden();
+        $this->delete(route('{{route}}.destroy', $record))->assertForbidden();
+        $this->assertModelExists($record);
+    }
+
+    public function test_authorized_crud_validation_and_search(): void
+    {
+        app(SyncPolicyPermissions::class)->handle();
+        $role = Role::findOrCreate('{{route}} operator', 'web');
+        $role->syncPermissions({{model}}Policy::PERMISSIONS);
+        $user = User::factory()->create();
+        $user->assignRole($role);
+        $this->actingAs($user);
+        $this->get(route('{{route}}.create'))->assertOk();
+        $this->post(route('{{route}}.store'), ['title' => ''])->assertSessionHasErrors('title');
+        $this->post(route('{{route}}.store'), ['title' => 'Example', 'description' => 'First'])->assertRedirect();
+        $record = {{model}}::query()->sole();
+        $this->get(route('{{route}}.show', $record))->assertOk();
+        $this->get(route('{{route}}.edit', $record))->assertOk();
+        $this->put(route('{{route}}.update', $record), ['title' => 'Renamed'])->assertRedirect();
+        $this->assertSame('Renamed', $record->fresh()->title);
+        $this->get(route('{{route}}.index', ['search' => 'Renamed']))->assertInertia(fn (Assert $page) => $page->has('records.data', 1));
+        $this->get(route('{{route}}.index', ['search' => 'missing']))->assertInertia(fn (Assert $page) => $page->has('records.data', 0));
+        $this->delete(route('{{route}}.destroy', $record))->assertRedirect(route('{{route}}.index'));
+        $this->assertModelMissing($record);
+    }
+
+    public function test_disabled_resource_is_unavailable_without_deleting_data(): void
+    {
+        $record = {{model}}::factory()->create();
+        config(['resources.{{route}}.enabled' => false]);
+        $this->actingAs(User::factory()->create())->get(route('{{route}}.index'))->assertNotFound();
+        $this->post(route('{{route}}.store'), ['title' => 'Hidden'])->assertNotFound();
+        $this->assertModelExists($record);
+    }
+}

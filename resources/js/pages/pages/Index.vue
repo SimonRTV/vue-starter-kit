@@ -10,6 +10,7 @@ import type { PageIndexFilters, PagePagination } from '@/types';
 defineProps<{
     pages: PagePagination;
     filters: PageIndexFilters;
+    canBulkUpdate: boolean;
 }>();
 
 defineOptions({
@@ -43,7 +44,11 @@ defineOptions({
                 </template>
             </PageHeader>
 
-            <PageDataTable :pages="pages" :filters="filters" />
+            <PageDataTable
+                :pages="pages"
+                :filters="filters"
+                :can-bulk-update="canBulkUpdate"
+            />
         </main>
     </div>
 </template>

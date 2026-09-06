@@ -1,0 +1,35 @@
+<script setup lang="ts">
+import { Form, Link } from '@inertiajs/vue3';
+import { store, update, index } from '@/actions/App/Http/Controllers/{{model}}Controller';
+import { FormLayout } from '@/components/application';
+import { Button } from '@/components/ui/button';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import type { {{model}}Record } from '@/types/{{route}}';
+
+defineProps<{ record?: {{model}}Record }>();
+</script>
+
+<template>
+    <Form v-bind="record ? update.form(record.id) : store.form()" v-slot="{ errors, processing }">
+        <FormLayout title="Détails" description="Renseignez le titre et la description.">
+            <div class="space-y-6">
+                <Field>
+                    <FieldLabel for="title">Titre</FieldLabel>
+                    <Input id="title" name="title" :default-value="record?.title" required maxlength="255" :aria-invalid="Boolean(errors.title)" />
+                    <FieldError>{{ errors.title }}</FieldError>
+                </Field>
+                <Field>
+                    <FieldLabel for="description">Description</FieldLabel>
+                    <Textarea id="description" name="description" :default-value="record?.description ?? ''" maxlength="10000" :aria-invalid="Boolean(errors.description)" />
+                    <FieldError>{{ errors.description }}</FieldError>
+                </Field>
+            </div>
+            <template #actions>
+                <Button variant="outline" as-child><Link :href="index()">Annuler</Link></Button>
+                <Button type="submit" :disabled="processing">{{ processing ? 'Enregistrement…' : 'Enregistrer' }}</Button>
+            </template>
+        </FormLayout>
+    </Form>
+</template>

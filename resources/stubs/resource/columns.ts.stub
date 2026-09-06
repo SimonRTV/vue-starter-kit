@@ -1,0 +1,11 @@
+import { Link } from '@inertiajs/vue3';
+import type { ColumnDef } from '@tanstack/vue-table';
+import { h } from 'vue';
+import type { DataTableFeatures } from '@/components/data-table';
+import { show } from '@/actions/App/Http/Controllers/{{model}}Controller';
+import type { {{model}}Record } from '@/types/{{route}}';
+
+export const columns: ColumnDef<DataTableFeatures, {{model}}Record>[] = [
+    { accessorKey: 'title', header: 'Titre', enableSorting: false, cell: ({ row }) => h(Link, { href: show(row.original.id), class: 'font-medium underline underline-offset-4' }, () => row.original.title) },
+    { accessorKey: 'description', header: 'Description', enableSorting: false },
+];

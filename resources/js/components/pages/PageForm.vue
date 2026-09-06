@@ -3,6 +3,7 @@ import { Form, Link } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import PageController from '@/actions/App/Http/Controllers/PageController';
 import { FormLayout } from '@/components/application';
+import RichTextEditor from '@/components/RichTextEditor.vue';
 import { Button } from '@/components/ui/button';
 import {
     Field,
@@ -31,7 +32,7 @@ const props = defineProps<{
 const title = ref(props.page?.title ?? '');
 const slug = ref(props.page?.slug ?? '');
 const excerpt = ref(props.page?.excerpt ?? '');
-const body = ref(props.page?.body ?? '');
+const body = ref(props.page?.body_html ?? '');
 const publicationStatus = ref(props.page?.is_published ? 'published' : 'draft');
 const slugWasEdited = ref(Boolean(props.page));
 
@@ -131,14 +132,14 @@ watch(title, (value) => {
 
                 <Field :data-invalid="errors.body ? true : undefined">
                     <FieldLabel for="body">Contenu</FieldLabel>
-                    <Textarea
+                    <RichTextEditor
                         id="body"
                         v-model="body"
-                        name="body"
-                        rows="14"
-                        placeholder="Rédigez le contenu de la page…"
-                        :aria-invalid="Boolean(errors.body)"
+                        :disabled="processing"
+                        :invalid="Boolean(errors.body)"
                     />
+                    <input type="hidden" name="body" :value="body" />
+                    <input type="hidden" name="body_format" value="html" />
                     <FieldError v-if="errors.body">
                         {{ errors.body }}
                     </FieldError>

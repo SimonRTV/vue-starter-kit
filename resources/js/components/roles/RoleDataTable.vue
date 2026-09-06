@@ -4,7 +4,9 @@ import { ShieldCheck, ShieldPlus, X } from '@lucide/vue';
 import { watchDebounced } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
 import RoleController from '@/actions/App/Http/Controllers/RoleController';
+import { roles as exportTable } from '@/actions/App/Http/Controllers/TableExportController';
 import { EmptyState, ResourceTable } from '@/components/application';
+import TableViewTools from '@/components/data-table/TableViewTools.vue';
 import { roleColumns } from '@/components/roles/roleColumns';
 import { Button } from '@/components/ui/button';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
@@ -153,6 +155,14 @@ watch(
         @update:sorting="updateSorting"
     >
         <template #toolbar>
+            <TableViewTools
+                table-key="roles"
+                :filters="filters"
+                :url="(query) => RoleController.index.url({ query })"
+                :export-url="exportTable.url({ query: filters })"
+                :total="roles.total"
+                :disabled="processing"
+            />
             <FieldGroup
                 class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_12rem_auto] sm:items-end"
             >

@@ -1,3 +1,4 @@
+import type { MediaItem } from './media';
 import type { Pagination } from './pagination';
 
 export type PageStatus = 'draft' | 'published';
@@ -29,14 +30,17 @@ export type PageSummary = {
 export type PageDetail = PageSummary & {
     excerpt: string | null;
     body: string | null;
+    body_html: string;
     created_at: string | null;
 };
 
 export type PublicPage = {
+    attachments: MediaItem[];
     title: string;
     slug: string;
     excerpt: string | null;
     body: string | null;
+    body_html: string;
     published_at: string;
     updated_at: string | null;
 };

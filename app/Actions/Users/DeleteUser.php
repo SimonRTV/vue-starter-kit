@@ -32,6 +32,7 @@ class DeleteUser
                 'deleted',
                 __('Permanently deleted the account.'),
             );
+            $lockedUser->notifications()->delete();
             $lockedUser->delete();
         });
     }

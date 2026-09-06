@@ -17,6 +17,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
+ * @property array<string, bool>|null $notification_preferences
  * @property int $id
  * @property string $name
  * @property string $email
@@ -35,7 +36,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $updated_at
  */
 #[Fillable(['name', 'email', 'password', 'email_verified_at', 'appearance', 'admin_theme'])]
-#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
+#[Hidden(['notification_preferences', 'password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
@@ -64,6 +65,7 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     protected function casts(): array
     {
         return [
+            'notification_preferences' => 'array',
             'disabled_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'invitation_sent_at' => 'datetime',

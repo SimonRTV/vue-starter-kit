@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Http\Requests;
+
+use App\Models\{{model}};
+use Illuminate\Foundation\Http\FormRequest;
+
+class Store{{model}}Request extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return $this->user()?->can('create', {{model}}::class) ?? false;
+    }
+
+    /** @return array<string, list<string>> */
+    public function rules(): array
+    {
+        return ['title' => ['required', 'string', 'max:255'], 'description' => ['nullable', 'string', 'max:10000']];
+    }
+
+    /** @return array{title: string, description: string|null} */
+    public function attributesForResource(): array
+    {
+        return ['title' => (string) $this->validated('title'), 'description' => $this->validated('description') === null ? null : (string) $this->validated('description')];
+    }
+}

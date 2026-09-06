@@ -2,6 +2,7 @@
 
 namespace App\Actions\Roles;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\Permission\Models\Role;
 
@@ -14,6 +15,17 @@ class ListRoles
      * @return LengthAwarePaginator<int, Role>
      */
     public function handle(array $filters): LengthAwarePaginator
+    {
+        return $this->query($filters)->paginate($filters['per_page'])->withQueryString();
+    }
+
+    /**
+     * List roles using validated server-side filters.
+     *
+     * @param  array{search: string|null, assignment: 'assigned'|'unused'|null, sort: 'name'|'users_count'|'permissions_count'|'created_at'|'updated_at', direction: 'asc'|'desc', per_page: 10|25|50}  $filters
+     * @return Builder<Role>
+     */
+    public function query(array $filters): Builder
     {
         $query = Role::query()
             ->select(['id', 'name', 'guard_name', 'created_at', 'updated_at'])
@@ -32,8 +44,6 @@ class ListRoles
 
         return $query
             ->orderBy($filters['sort'], $filters['direction'])
-            ->orderBy('id', $filters['direction'])
-            ->paginate($filters['per_page'])
-            ->withQueryString();
+            ->orderBy('id', $filters['direction']);
     }
 }
