@@ -13,6 +13,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | {app/Http/Middleware/HandleAppearance.php,app/Models/User.php,resources/js/composables/use*Appearance.ts,resources/js/composables/useAdminTheme.ts,resources/js/pages/Welcome.vue,resources/js/pages/content/**} | .ai/rules/content.md |
 | {config/fortify.php,app/Providers/FortifyServiceProvider.php,app/Actions/Fortify/CreateNewUser.php,resources/js/pages/auth/**,tests/Feature/Auth/Registration*.php} | .ai/rules/feature-auth.md |
 | {app/Models/ApplicationSetting.php,app/Actions/ApplicationSettings/UpdateSidebarFooterLinks.php,app/Http/Requests/Settings/UpdateSidebarFooterLinksRequest.php,resources/js/components/AppSidebar.vue,resources/js/pages/settings/SidebarFooterLinks.vue,resources/js/types/navigation.ts,tests/Feature/Settings/SidebarFooterLinkTest.php} | .ai/rules/feature-settings.md |
+| {vite.config.ts,package.json,composer.json,eslint.config.js,.prettierrc} | .ai/rules/general.md |
 | app/Http/Middleware/HandleInertiaRequests.php | .ai/rules/http-middleware.md |
 | resources/js/pages/settings/SidebarFooterLinks.vue | .ai/rules/js-pages-settings.md |
 | {app/Models/ApplicationSetting.php,app/Http/Controllers/Settings/ApplicationLogoController.php,app/Http/Middleware/HandleInertiaRequests.php,resources/js/components/AppLogoFull.vue,resources/js/pages/settings/ApplicationLogo.vue,resources/js/layouts/auth/**} | .ai/rules/layouts-auth.md |
