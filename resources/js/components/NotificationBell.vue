@@ -17,7 +17,7 @@ usePoll(30000, { only: ['notifications'] });
             <Bell class="size-5" />
             <span
                 v-if="page.props.notifications.unreadCount > 0"
-                class="absolute -top-1 -right-1 flex min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] leading-5 font-semibold text-primary-foreground"
+                class="bg-primary text-primary-foreground absolute -top-1 -right-1 flex min-w-5 items-center justify-center rounded-full px-1 text-[10px] leading-5 font-semibold"
                 aria-hidden="true"
             >
                 {{

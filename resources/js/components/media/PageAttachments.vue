@@ -73,11 +73,11 @@ function detach(item: MediaItem): void {
             <p
                 v-if="form.errors.media_id || error"
                 role="alert"
-                class="text-sm text-destructive"
+                class="text-destructive text-sm"
             >
                 {{ form.errors.media_id || error }}
             </p>
-            <p v-if="!attachments.length" class="text-sm text-muted-foreground">
+            <p v-if="!attachments.length" class="text-muted-foreground text-sm">
                 Aucun fichier joint.
             </p>
             <ul v-else class="divide-y">
@@ -91,7 +91,7 @@ function detach(item: MediaItem): void {
                             :href="item.download_url"
                             class="block truncate text-sm font-medium underline underline-offset-4"
                             >{{ item.title }}</a
-                        ><span class="text-xs text-muted-foreground">{{
+                        ><span class="text-muted-foreground text-xs">{{
                             item.visibility === 'public' ? 'Public' : 'Privé'
                         }}</span>
                     </div>

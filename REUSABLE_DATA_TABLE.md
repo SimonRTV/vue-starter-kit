@@ -672,8 +672,7 @@ Run the focused resource test followed by the existing frontend and static check
 ```bash
 php artisan test --compact tests/Feature/ProductManagementTest.php
 npm run types:check
-npm run lint:check
-npm run format:check
+npm run check
 composer types:check
 npm run build
 ```

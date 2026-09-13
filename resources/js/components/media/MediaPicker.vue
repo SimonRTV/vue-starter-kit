@@ -84,7 +84,7 @@ onUnmounted(() => http.cancel());
                     >Rechercher</Button
                 >
             </form>
-            <p v-if="error" role="alert" class="text-sm text-destructive">
+            <p v-if="error" role="alert" class="text-destructive text-sm">
                 {{ error }}
             </p>
             <div
@@ -102,7 +102,7 @@ onUnmounted(() => http.cancel());
                     v-for="item in results.data"
                     :key="item.id"
                     type="button"
-                    class="flex flex-col gap-2 rounded-lg border p-3 text-left transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+                    class="hover:bg-accent focus-visible:ring-ring flex flex-col gap-2 rounded-lg border p-3 text-left transition-colors focus-visible:ring-2"
                     @click="emit('select', item)"
                 >
                     <img
@@ -113,19 +113,19 @@ onUnmounted(() => http.cancel());
                     />
                     <FileText
                         v-else
-                        class="mx-auto h-24 text-muted-foreground"
+                        class="text-muted-foreground mx-auto h-24"
                     />
                     <span class="w-full truncate text-sm font-medium">{{
                         item.title
                     }}</span>
-                    <span class="text-xs text-muted-foreground">{{
+                    <span class="text-muted-foreground text-xs">{{
                         item.visibility === 'public' ? 'Public' : 'Privé'
                     }}</span>
                 </button>
             </div>
             <p
                 v-else-if="!error"
-                class="py-6 text-center text-sm text-muted-foreground"
+                class="text-muted-foreground py-6 text-center text-sm"
             >
                 Aucun fichier trouvé. Importez vos fichiers dans la médiathèque.
             </p>

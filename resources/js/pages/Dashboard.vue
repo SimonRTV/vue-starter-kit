@@ -187,16 +187,16 @@ defineOptions({
                             Données d’exemple
                         </Badge>
                     </div>
-                    <p class="text-sm text-muted-foreground sm:text-base">
+                    <p class="text-muted-foreground text-sm sm:text-base">
                         Voici ce qui se passe aujourd’hui dans votre espace de
                         travail.
                     </p>
                 </div>
                 <div
-                    class="flex items-center gap-2 text-sm text-muted-foreground"
+                    class="text-muted-foreground flex items-center gap-2 text-sm"
                 >
                     <CircleCheck
-                        class="size-4 text-primary"
+                        class="text-primary size-4"
                         aria-hidden="true"
                     />
                     <span>Tous les systèmes sont opérationnels</span>
@@ -212,7 +212,7 @@ defineOptions({
                         <CardDescription>{{ stat.label }}</CardDescription>
                         <CardAction>
                             <div
-                                class="rounded-lg bg-muted p-2 text-muted-foreground"
+                                class="bg-muted text-muted-foreground rounded-lg p-2"
                                 aria-hidden="true"
                             >
                                 <component :is="stat.icon" class="size-5" />
@@ -231,7 +231,7 @@ defineOptions({
                             <ArrowUpRight />
                             {{ stat.change }}
                         </Badge>
-                        <span class="text-xs text-muted-foreground">
+                        <span class="text-muted-foreground text-xs">
                             {{ stat.detail }}
                         </span>
                     </CardFooter>
@@ -270,7 +270,7 @@ defineOptions({
                                 class="flex h-full min-w-0 flex-1 flex-col justify-end gap-3"
                             >
                                 <div
-                                    class="flex h-full items-end rounded-lg bg-muted/60 p-1"
+                                    class="bg-muted/60 flex h-full items-end rounded-lg p-1"
                                 >
                                     <div
                                         :class="
@@ -290,7 +290,7 @@ defineOptions({
                                         {{ month.month }}
                                     </span>
                                     <span
-                                        class="hidden text-[11px] text-muted-foreground @2xl/main:inline"
+                                        class="text-muted-foreground hidden text-[11px] @2xl/main:inline"
                                     >
                                         {{ month.amount }}
                                     </span>
@@ -301,11 +301,11 @@ defineOptions({
                     <CardFooter class="flex-wrap gap-x-8 gap-y-3">
                         <div class="flex items-center gap-2">
                             <ChartNoAxesCombined
-                                class="size-4 text-muted-foreground"
+                                class="text-muted-foreground size-4"
                                 aria-hidden="true"
                             />
                             <div class="flex flex-col">
-                                <span class="text-xs text-muted-foreground">
+                                <span class="text-muted-foreground text-xs">
                                     Croissance moyenne
                                 </span>
                                 <span class="text-sm font-medium"
@@ -315,11 +315,11 @@ defineOptions({
                         </div>
                         <div class="flex items-center gap-2">
                             <ShoppingBag
-                                class="size-4 text-muted-foreground"
+                                class="text-muted-foreground size-4"
                                 aria-hidden="true"
                             />
                             <div class="flex flex-col">
-                                <span class="text-xs text-muted-foreground">
+                                <span class="text-muted-foreground text-xs">
                                     Panier moyen
                                 </span>
                                 <span class="text-sm font-medium"
@@ -338,7 +338,7 @@ defineOptions({
                         </CardDescription>
                         <CardAction>
                             <div
-                                class="rounded-lg bg-muted p-2 text-muted-foreground"
+                                class="bg-muted text-muted-foreground rounded-lg p-2"
                                 aria-hidden="true"
                             >
                                 <Target class="size-5" />
@@ -358,7 +358,7 @@ defineOptions({
                                     {{ goal.label }}
                                 </span>
                                 <span
-                                    class="text-xs text-muted-foreground tabular-nums"
+                                    class="text-muted-foreground text-xs tabular-nums"
                                 >
                                     {{ goal.progress }} %
                                 </span>
@@ -369,14 +369,14 @@ defineOptions({
                                 :aria-valuenow="goal.progress"
                                 aria-valuemin="0"
                                 aria-valuemax="100"
-                                class="h-2 overflow-hidden rounded-full bg-muted"
+                                class="bg-muted h-2 overflow-hidden rounded-full"
                             >
                                 <div
-                                    class="h-full rounded-full bg-primary transition-[width] duration-500"
+                                    class="bg-primary h-full rounded-full transition-[width] duration-500"
                                     :style="{ width: `${goal.progress}%` }"
                                 />
                             </div>
-                            <span class="text-xs text-muted-foreground">
+                            <span class="text-muted-foreground text-xs">
                                 {{ goal.value }}
                             </span>
                         </div>
@@ -384,7 +384,7 @@ defineOptions({
                     <CardFooter>
                         <div class="flex items-start gap-2 text-sm">
                             <CircleCheck
-                                class="mt-0.5 size-4 shrink-0 text-primary"
+                                class="text-primary mt-0.5 size-4 shrink-0"
                                 aria-hidden="true"
                             />
                             <p class="text-muted-foreground">
@@ -430,7 +430,7 @@ defineOptions({
                                             {{ activity.action }}
                                         </p>
                                         <span
-                                            class="text-xs text-muted-foreground"
+                                            class="text-muted-foreground text-xs"
                                         >
                                             {{ activity.time }}
                                         </span>
@@ -449,7 +449,7 @@ defineOptions({
                         </CardDescription>
                         <CardAction>
                             <div
-                                class="rounded-lg bg-muted p-2 text-muted-foreground"
+                                class="bg-muted text-muted-foreground rounded-lg p-2"
                                 aria-hidden="true"
                             >
                                 <CalendarDays class="size-5" />
@@ -467,7 +467,7 @@ defineOptions({
                                     class="flex items-center gap-3 py-4 first:pt-0 last:pb-0"
                                 >
                                     <div
-                                        class="flex size-12 shrink-0 flex-col items-center justify-center rounded-lg bg-muted"
+                                        class="bg-muted flex size-12 shrink-0 flex-col items-center justify-center rounded-lg"
                                     >
                                         <span
                                             class="text-sm font-semibold tabular-nums"
@@ -475,7 +475,7 @@ defineOptions({
                                             {{ event.date }}
                                         </span>
                                         <span
-                                            class="text-[10px] tracking-wide text-muted-foreground uppercase"
+                                            class="text-muted-foreground text-[10px] tracking-wide uppercase"
                                         >
                                             {{ event.month }}
                                         </span>
@@ -485,7 +485,7 @@ defineOptions({
                                             {{ event.title }}
                                         </p>
                                         <span
-                                            class="flex items-center gap-1 text-xs text-muted-foreground"
+                                            class="text-muted-foreground flex items-center gap-1 text-xs"
                                         >
                                             <Clock
                                                 class="size-3"

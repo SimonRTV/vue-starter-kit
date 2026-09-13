@@ -50,7 +50,7 @@ Next steps (replace ProjectNote/project-notes for your resource):
   php artisan permissions:sync
   php artisan wayfinder:generate --with-form
   vendor/bin/pint --dirty --format agent
-  npx prettier --write resources/js/pages/project-notes resources/js/components/project-notes resources/js/types/project-notes.ts
+  npx vp fmt resources/js/pages/project-notes resources/js/components/project-notes resources/js/types/project-notes.ts
   php artisan test --compact tests/Feature/ProjectNoteManagementTest.php
   npm run build
 
@@ -194,7 +194,7 @@ HELP;
         $this->line('php artisan permissions:sync');
         $this->line('php artisan wayfinder:generate --with-form');
         $this->line('vendor/bin/pint --dirty --format agent');
-        $this->line('npx prettier --write resources/js/pages/'.$route.' resources/js/components/'.$route.' resources/js/types/'.$route.'.ts');
+        $this->line('npx vp fmt resources/js/pages/'.$route.' resources/js/components/'.$route.' resources/js/types/'.$route.'.ts');
         $this->line('php artisan test --compact tests/Feature/'.$name.'ManagementTest.php');
         $this->line('npm run build');
 

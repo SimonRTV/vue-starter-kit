@@ -78,17 +78,17 @@ function handleAnchorClick(event: MouseEvent, url: string): void {
 
 <template>
     <header
-        class="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur-xl"
+        class="border-border/70 bg-background/85 sticky top-0 z-40 border-b backdrop-blur-xl"
     >
         <div
             class="mx-auto flex h-18 max-w-7xl items-center justify-between gap-6 px-5 sm:px-8 lg:px-10"
         >
             <Link
                 :href="home()"
-                class="inline-flex min-w-0 items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                class="focus-visible:ring-ring focus-visible:ring-offset-background inline-flex min-w-0 items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 :aria-label="`${page.props.name} home`"
             >
-                <AppLogoFull class="h-8 w-auto max-w-40 text-foreground" />
+                <AppLogoFull class="text-foreground h-8 w-auto max-w-40" />
             </Link>
 
             <nav
@@ -238,12 +238,12 @@ function handleAnchorClick(event: MouseEvent, url: string): void {
                             </SheetDescription>
                             <Link
                                 :href="home()"
-                                class="inline-flex w-fit items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                class="focus-visible:ring-ring inline-flex w-fit items-center rounded-md outline-none focus-visible:ring-2"
                                 :aria-label="`${page.props.name} home`"
                                 @click="isMobileMenuOpen = false"
                             >
                                 <AppLogoFull
-                                    class="h-8 w-auto max-w-40 text-foreground"
+                                    class="text-foreground h-8 w-auto max-w-40"
                                 />
                             </Link>
                         </SheetHeader>
@@ -303,7 +303,7 @@ function handleAnchorClick(event: MouseEvent, url: string): void {
                                                             ? 'noopener noreferrer'
                                                             : undefined
                                                     "
-                                                    class="group block rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                    class="group hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring block rounded-lg transition-colors focus-visible:ring-2 focus-visible:outline-none"
                                                     @click="
                                                         handleAnchorClick(
                                                             $event,
@@ -324,7 +324,7 @@ function handleAnchorClick(event: MouseEvent, url: string): void {
                                                     :href="
                                                         resolvedUrl(child.url)
                                                     "
-                                                    class="group block rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                    class="group hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring block rounded-lg transition-colors focus-visible:ring-2 focus-visible:outline-none"
                                                     @click="
                                                         isMobileMenuOpen = false
                                                     "
@@ -360,7 +360,7 @@ function handleAnchorClick(event: MouseEvent, url: string): void {
                                             : undefined
                                     "
                                     data-test="mobile-navigation-link"
-                                    class="rounded-lg px-3 py-2 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                    class="hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring rounded-lg px-3 py-2 text-base font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none"
                                     @click="handleAnchorClick($event, item.url)"
                                 >
                                     {{ item.label }}
@@ -369,7 +369,7 @@ function handleAnchorClick(event: MouseEvent, url: string): void {
                                     v-else-if="item.url"
                                     :href="resolvedUrl(item.url)"
                                     data-test="mobile-navigation-link"
-                                    class="rounded-lg px-3 py-2 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                    class="hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring rounded-lg px-3 py-2 text-base font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none"
                                     @click="isMobileMenuOpen = false"
                                 >
                                     {{ item.label }}

@@ -15,7 +15,7 @@ class AppLogoTest extends TestCase
         $this->assertIsString($logo);
         $this->assertStringContainsString('const hasCustomIcon = computed(', $logo);
         $this->assertMatchesRegularExpression(
-            "/'rounded-md bg-sidebar-primary text-sidebar-primary-foreground':\s*!hasCustomIcon/",
+            "/'bg-sidebar-primary text-sidebar-primary-foreground rounded-md':\s*!hasCustomIcon/",
             $logo,
         );
         $this->assertMatchesRegularExpression("/'size-8':\s*hasCustomIcon/", $logo);

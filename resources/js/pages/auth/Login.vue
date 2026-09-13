@@ -104,7 +104,7 @@ defineProps<{
 
     <div
         v-if="registrationUrl"
-        class="mt-6 space-x-1 text-center text-sm text-muted-foreground"
+        class="text-muted-foreground mt-6 space-x-1 text-center text-sm"
     >
         <span>Vous n’avez pas encore de compte ?</span>
         <TextLink :href="registrationUrl">Créer un compte</TextLink>

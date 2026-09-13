@@ -229,7 +229,7 @@ function roleError(errors: Record<string, string>): string | undefined {
                             </FieldLabel>
                         </Field>
                     </FieldGroup>
-                    <p v-else class="text-sm text-muted-foreground">
+                    <p v-else class="text-muted-foreground text-sm">
                         Aucun rôle n’a encore été créé. L’utilisateur peut tout
                         de même être enregistré sans rôle.
                     </p>

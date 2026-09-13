@@ -349,27 +349,27 @@
         @apply my-1;
     }
     .rich-content blockquote {
-        @apply border-l-4 border-primary/40 pl-5 text-muted-foreground italic;
+        @apply border-primary/40 text-muted-foreground border-l-4 pl-5 italic;
     }
     .rich-content a {
-        @apply text-primary underline decoration-primary/40 underline-offset-4;
+        @apply text-primary decoration-primary/40 underline underline-offset-4;
     }
     .rich-content a:hover {
         @apply decoration-primary;
     }
     .rich-content code {
-        @apply rounded bg-muted px-1 py-0.5 font-mono text-sm;
+        @apply bg-muted rounded px-1 py-0.5 font-mono text-sm;
     }
     .rich-content pre {
-        @apply overflow-x-auto rounded-lg bg-muted p-4;
+        @apply bg-muted overflow-x-auto rounded-lg p-4;
     }
     .rich-content pre code {
         @apply bg-transparent p-0;
     }
     .rich-content hr {
-        @apply my-8 border-border;
+        @apply border-border my-8;
     }
     .rich-content .ProseMirror-selectednode {
-        @apply outline-2 outline-primary;
+        @apply outline-primary outline-2;
     }
 }

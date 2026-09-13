@@ -25,7 +25,7 @@ const form = useForm({ email: { ...props.email } });
             title="Notifications"
             description="Choisissez les catégories pour lesquelles vous souhaitez recevoir un e-mail."
         />
-        <p class="text-sm text-muted-foreground">
+        <p class="text-muted-foreground text-sm">
             Les notifications restent disponibles dans votre boîte de réception.
             Les e-mails de connexion, de vérification et de récupération de
             compte restent actifs.
@@ -48,13 +48,13 @@ const form = useForm({ email: { ...props.email } });
                         v-model="form.email[key]"
                         type="checkbox"
                         :disabled="form.processing"
-                        class="mt-1 size-4 accent-primary"
+                        class="accent-primary mt-1 size-4"
                     />
                     <span class="space-y-1"
                         ><span class="block text-sm font-medium">{{
                             category.label
                         }}</span
-                        ><span class="block text-sm text-muted-foreground">{{
+                        ><span class="text-muted-foreground block text-sm">{{
                             category.description
                         }}</span></span
                     >
@@ -69,7 +69,7 @@ const form = useForm({ email: { ...props.email } });
                 <p
                     v-if="form.recentlySuccessful"
                     role="status"
-                    class="text-sm text-muted-foreground"
+                    class="text-muted-foreground text-sm"
                 >
                     Préférences enregistrées.
                 </p>

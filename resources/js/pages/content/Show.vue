@@ -21,16 +21,16 @@ function formatDate(value: string): string {
 </script>
 
 <template>
-    <div class="min-h-screen overflow-x-hidden bg-background text-foreground">
+    <div class="bg-background text-foreground min-h-screen overflow-x-hidden">
         <FrontendHeader />
 
         <main>
             <section
-                class="relative isolate border-b border-border/70 bg-muted/35"
+                class="border-border/70 bg-muted/35 relative isolate border-b"
             >
                 <div
                     aria-hidden="true"
-                    class="pointer-events-none absolute -top-36 left-1/2 size-96 -translate-x-1/2 rounded-full bg-primary/8 blur-3xl"
+                    class="bg-primary/8 pointer-events-none absolute -top-36 left-1/2 size-96 -translate-x-1/2 rounded-full blur-3xl"
                 />
 
                 <div
@@ -38,16 +38,16 @@ function formatDate(value: string): string {
                 >
                     <nav
                         aria-label="Breadcrumb"
-                        class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground"
+                        class="text-muted-foreground flex flex-wrap items-center gap-2 text-sm"
                     >
                         <Link
                             :href="home()"
-                            class="transition-colors hover:text-foreground"
+                            class="hover:text-foreground transition-colors"
                         >
                             Home
                         </Link>
                         <ChevronRight class="size-4" aria-hidden="true" />
-                        <span class="truncate text-foreground">
+                        <span class="text-foreground truncate">
                             {{ page.title }}
                         </span>
                     </nav>
@@ -66,7 +66,7 @@ function formatDate(value: string): string {
                             </h1>
                             <p
                                 v-if="page.excerpt"
-                                class="max-w-3xl text-lg leading-8 text-pretty text-muted-foreground sm:text-xl"
+                                class="text-muted-foreground max-w-3xl text-lg leading-8 text-pretty sm:text-xl"
                             >
                                 {{ page.excerpt }}
                             </p>
@@ -82,7 +82,7 @@ function formatDate(value: string): string {
                         class="rich-content text-lg"
                         v-html="page.body_html"
                     />
-                    <p v-else class="text-lg leading-8 text-muted-foreground">
+                    <p v-else class="text-muted-foreground text-lg leading-8">
                         No additional content is available for this page yet.
                     </p>
 
@@ -92,7 +92,7 @@ function formatDate(value: string): string {
                         class="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center"
                     >
                         <div
-                            class="flex items-center gap-2 text-sm text-muted-foreground"
+                            class="text-muted-foreground flex items-center gap-2 text-sm"
                         >
                             <Clock3 class="size-4" aria-hidden="true" />
                             Last updated
@@ -118,7 +118,7 @@ function formatDate(value: string): string {
                             <li v-for="file in page.attachments" :key="file.id">
                                 <a
                                     :href="file.download_url"
-                                    class="flex items-center gap-3 rounded-lg border p-4 hover:bg-muted"
+                                    class="hover:bg-muted flex items-center gap-3 rounded-lg border p-4"
                                     ><img
                                         v-if="file.thumbnail_url"
                                         :src="file.thumbnail_url"

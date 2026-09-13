@@ -193,19 +193,19 @@ function saveLink(): void {
 
 <template>
     <div
-        class="overflow-hidden rounded-xl border bg-background shadow-xs focus-within:ring-2 focus-within:ring-ring/40"
+        class="bg-background focus-within:ring-ring/40 overflow-hidden rounded-xl border shadow-xs focus-within:ring-2"
         :class="invalid ? 'border-destructive' : 'border-input'"
     >
         <div
             role="group"
             aria-label="Mise en forme du contenu"
-            class="flex flex-wrap items-center gap-1 border-b bg-muted/40 p-2"
+            class="bg-muted/40 flex flex-wrap items-center gap-1 border-b p-2"
         >
             <select
                 :value="block"
                 :disabled="disabled || !editor"
                 aria-label="Style de paragraphe"
-                class="mr-1 h-8 rounded-md border bg-background px-2 text-sm"
+                class="bg-background mr-1 h-8 rounded-md border px-2 text-sm"
                 @change="changeBlock"
             >
                 <option value="p">Paragraphe</option>
@@ -307,7 +307,7 @@ function saveLink(): void {
         </div>
         <EditorContent :editor="editor" />
         <div
-            class="flex flex-wrap items-center justify-between gap-2 border-t px-4 py-2 text-xs text-muted-foreground"
+            class="text-muted-foreground flex flex-wrap items-center justify-between gap-2 border-t px-4 py-2 text-xs"
         >
             <span>Rédigez et mettez en forme votre contenu.</span
             ><span>{{ words }} mot(s)</span>
@@ -334,7 +334,7 @@ function saveLink(): void {
                     <p
                         v-if="linkError"
                         role="alert"
-                        class="text-sm text-destructive"
+                        class="text-destructive text-sm"
                     >
                         {{ linkError }}
                     </p>

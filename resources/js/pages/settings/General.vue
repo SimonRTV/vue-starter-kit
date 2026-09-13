@@ -101,7 +101,7 @@ defineOptions({
                 <p
                     v-if="recentlySuccessful"
                     role="status"
-                    class="text-sm text-muted-foreground"
+                    class="text-muted-foreground text-sm"
                 >
                     Enregistré.
                 </p>

@@ -26,7 +26,7 @@ withDefaults(
         <span class="leading-5 font-medium">{{ label }}</span>
         <span
             v-if="description"
-            class="text-sm leading-5 text-muted-foreground"
+            class="text-muted-foreground text-sm leading-5"
         >
             {{ description }}
         </span>

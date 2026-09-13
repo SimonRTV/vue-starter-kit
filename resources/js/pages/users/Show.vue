@@ -70,7 +70,7 @@ setLayoutProps({
                     </Badge>
                 </template>
                 <template #meta>
-                    <p class="text-sm text-muted-foreground">
+                    <p class="text-muted-foreground text-sm">
                         {{ user.email }}
                     </p>
                 </template>
@@ -188,7 +188,7 @@ setLayoutProps({
                                     {{ formatRoleName(role) }}
                                 </Badge>
                             </div>
-                            <p v-else class="text-sm text-muted-foreground">
+                            <p v-else class="text-muted-foreground text-sm">
                                 Aucun rôle attribué.
                             </p>
                         </div>
@@ -207,7 +207,7 @@ setLayoutProps({
                                     {{ permission }}
                                 </Badge>
                             </div>
-                            <p v-else class="text-sm text-muted-foreground">
+                            <p v-else class="text-muted-foreground text-sm">
                                 Aucune autorisation effective.
                             </p>
                         </div>
@@ -235,14 +235,14 @@ setLayoutProps({
                                     <p class="text-sm font-medium">
                                         {{ activity.description }}
                                     </p>
-                                    <p class="text-xs text-muted-foreground">
+                                    <p class="text-muted-foreground text-xs">
                                         {{ activity.actor_name ?? 'Système' }} ·
                                         {{ formatDate(activity.created_at) }}
                                     </p>
                                 </div>
                             </template>
                         </div>
-                        <p v-else class="text-sm text-muted-foreground">
+                        <p v-else class="text-muted-foreground text-sm">
                             Aucune activité de gestion n’a encore été
                             enregistrée.
                         </p>

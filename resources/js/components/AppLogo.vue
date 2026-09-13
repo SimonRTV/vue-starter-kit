@@ -13,7 +13,7 @@ const hasCustomIcon = computed(() => Boolean(page.props.branding.iconUrl));
     <div
         :class="
             cn('flex size-8 items-center justify-center', {
-                'rounded-md bg-sidebar-primary text-sidebar-primary-foreground':
+                'bg-sidebar-primary text-sidebar-primary-foreground rounded-md':
                     !hasCustomIcon,
             })
         "

@@ -257,7 +257,7 @@ php artisan migrate
 php artisan permissions:sync
 php artisan wayfinder:generate --with-form
 vendor/bin/pint --dirty --format agent
-npx prettier --write resources/js/pages/project-notes resources/js/components/project-notes resources/js/types/project-notes.ts
+npx vp fmt resources/js/pages/project-notes resources/js/components/project-notes resources/js/types/project-notes.ts
 php artisan test --compact tests/Feature/ProjectNoteManagementTest.php
 npm run build
 ```

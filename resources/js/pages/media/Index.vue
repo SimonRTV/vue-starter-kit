@@ -177,7 +177,7 @@ function size(bytes: number): string {
                 >
                     <div class="space-y-3 md:col-span-2">
                         <div
-                            class="relative flex flex-col items-center gap-3 rounded-xl border-2 border-dashed p-6 text-center transition-colors focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 sm:p-10"
+                            class="focus-within:ring-ring relative flex flex-col items-center gap-3 rounded-xl border-2 border-dashed p-6 text-center transition-colors focus-within:ring-2 focus-within:ring-offset-2 sm:p-10"
                             :class="[
                                 isDragging
                                     ? 'border-primary bg-primary/10'
@@ -191,7 +191,7 @@ function size(bytes: number): string {
                         >
                             <UploadCloud
                                 aria-hidden="true"
-                                class="size-8 text-muted-foreground"
+                                class="text-muted-foreground size-8"
                             />
                             <p class="font-medium">
                                 {{
@@ -202,7 +202,7 @@ function size(bytes: number): string {
                             </p>
                             <label
                                 for="media-file"
-                                class="text-sm font-medium text-primary underline underline-offset-4"
+                                class="text-primary text-sm font-medium underline underline-offset-4"
                                 >ou cliquez pour choisir un fichier</label
                             >
                             <input
@@ -222,7 +222,7 @@ function size(bytes: number): string {
                             />
                             <p
                                 id="media-file-help"
-                                class="text-xs text-muted-foreground"
+                                class="text-muted-foreground text-xs"
                             >
                                 Un fichier à la fois ·
                                 {{ size(maxUploadKb * 1024) }} maximum
@@ -283,7 +283,7 @@ function size(bytes: number): string {
                                 ></SelectContent
                             ></Select
                         ><FieldError>{{ upload.errors.visibility }}</FieldError>
-                        <p class="text-xs text-muted-foreground">
+                        <p class="text-muted-foreground text-xs">
                             Public : accessible à toute personne disposant du
                             lien.
                         </p></Field
@@ -319,7 +319,7 @@ function size(bytes: number): string {
                     maxlength="100" /></Field
             ><Button type="submit" variant="outline">Rechercher</Button>
         </form>
-        <p v-if="deleteError" role="alert" class="text-sm text-destructive">
+        <p v-if="deleteError" role="alert" class="text-destructive text-sm">
             {{ deleteError }}
         </p>
         <div
@@ -337,19 +337,19 @@ function size(bytes: number): string {
                         :src="item.thumbnail_url"
                         :alt="item.alt_text ?? ''"
                         loading="lazy"
-                        class="h-36 w-full rounded-md bg-muted object-contain"
+                        class="bg-muted h-36 w-full rounded-md object-contain"
                     />
                     <div
                         v-else
-                        class="flex h-36 items-center justify-center rounded-md bg-muted"
+                        class="bg-muted flex h-36 items-center justify-center rounded-md"
                     >
-                        <FileText class="size-12 text-muted-foreground" />
+                        <FileText class="text-muted-foreground size-12" />
                     </div>
                     <div class="min-w-0">
                         <h2 class="truncate font-medium" :title="item.title">
                             {{ item.title }}
                         </h2>
-                        <p class="truncate text-xs text-muted-foreground">
+                        <p class="text-muted-foreground truncate text-xs">
                             {{ item.original_name }} · {{ size(item.size) }}
                         </p>
                     </div>
@@ -390,7 +390,7 @@ function size(bytes: number): string {
         </div>
         <div
             v-else
-            class="rounded-lg border border-dashed p-12 text-center text-muted-foreground"
+            class="text-muted-foreground rounded-lg border border-dashed p-12 text-center"
         >
             {{
                 filters.search
@@ -414,7 +414,7 @@ function size(bytes: number): string {
                     "
                     >Précédent</Link
                 ></Button
-            ><span class="text-sm text-muted-foreground"
+            ><span class="text-muted-foreground text-sm"
                 >{{ media.total }} fichiers · Page {{ media.current_page }} /
                 {{ media.last_page }}</span
             ><Button

@@ -4,7 +4,7 @@ import AuthLayout from '@/layouts/AuthLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { initializeFlashToast } from '@/lib/flashToast';
 
-createInertiaApp({
+void createInertiaApp({
     serverHead: true,
     layout: (name) => {
         switch (true) {

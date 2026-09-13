@@ -131,7 +131,7 @@ setLayoutProps({
                     <Badge variant="secondary">Protégé</Badge>
                 </template>
                 <template #meta>
-                    <p class="text-sm text-muted-foreground">
+                    <p class="text-muted-foreground text-sm">
                         {{ role.permissions_count }}
                         {{
                             role.permissions_count === 1
@@ -216,7 +216,7 @@ setLayoutProps({
                                 </TableRow>
                             </TableBody>
                         </Table>
-                        <p v-else class="text-sm text-muted-foreground">
+                        <p v-else class="text-muted-foreground text-sm">
                             Ce rôle n’accorde aucune autorisation.
                         </p>
                     </CardContent>
@@ -239,7 +239,7 @@ setLayoutProps({
                     <CardContent class="flex flex-col gap-4">
                         <p
                             v-if="!role.can_view_assigned_users"
-                            class="text-sm text-muted-foreground"
+                            class="text-muted-foreground text-sm"
                         >
                             {{ role.users_count }}
                             {{
@@ -265,7 +265,7 @@ setLayoutProps({
                                         {{ user.name }}
                                     </Link>
                                     <span
-                                        class="truncate text-xs text-muted-foreground"
+                                        class="text-muted-foreground truncate text-xs"
                                     >
                                         {{ user.email }}
                                     </span>
@@ -276,14 +276,14 @@ setLayoutProps({
                                     role.users_count >
                                     role.assigned_users.length
                                 "
-                                class="text-xs text-muted-foreground"
+                                class="text-muted-foreground text-xs"
                             >
                                 Affichage de
                                 {{ role.assigned_users.length }} utilisateurs
                                 sur {{ role.users_count }}.
                             </p>
                         </template>
-                        <p v-else class="text-sm text-muted-foreground">
+                        <p v-else class="text-muted-foreground text-sm">
                             Aucun utilisateur n’a ce rôle.
                         </p>
                     </CardContent>

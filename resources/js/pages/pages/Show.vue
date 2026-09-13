@@ -62,7 +62,7 @@ setLayoutProps({
                     </Badge>
                 </template>
                 <template #meta>
-                    <p class="font-mono text-sm text-muted-foreground">
+                    <p class="text-muted-foreground font-mono text-sm">
                         /{{ page.slug }}
                     </p>
                 </template>
@@ -104,7 +104,7 @@ setLayoutProps({
                             class="rich-content"
                             v-html="page.body_html"
                         />
-                        <p v-else class="text-sm text-muted-foreground">
+                        <p v-else class="text-muted-foreground text-sm">
                             Cette page ne contient encore aucun contenu.
                         </p>
                     </CardContent>

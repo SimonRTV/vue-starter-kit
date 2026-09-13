@@ -44,14 +44,14 @@ const workflowSteps = [
 </script>
 
 <template>
-    <div class="min-h-screen overflow-x-hidden bg-background text-foreground">
+    <div class="bg-background text-foreground min-h-screen overflow-x-hidden">
         <FrontendHeader is-home-page />
 
         <main>
             <section class="relative isolate">
                 <div
                     aria-hidden="true"
-                    class="pointer-events-none absolute -top-24 left-1/2 size-96 -translate-x-1/2 rounded-full bg-primary/8 blur-3xl"
+                    class="bg-primary/8 pointer-events-none absolute -top-24 left-1/2 size-96 -translate-x-1/2 rounded-full blur-3xl"
                 />
                 <div
                     class="mx-auto grid max-w-7xl items-center gap-16 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:py-32"
@@ -72,7 +72,7 @@ const workflowSteps = [
                                 >
                             </h1>
                             <p
-                                class="max-w-2xl text-lg leading-8 text-pretty text-muted-foreground sm:text-xl"
+                                class="text-muted-foreground max-w-2xl text-lg leading-8 text-pretty sm:text-xl"
                             >
                                 Bring your people, priorities, and everyday work
                                 into one calm, flexible workspace built to help
@@ -105,14 +105,14 @@ const workflowSteps = [
                         </div>
 
                         <div
-                            class="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:gap-6"
+                            class="text-muted-foreground flex flex-col gap-3 text-sm sm:flex-row sm:gap-6"
                         >
                             <span class="inline-flex items-center gap-2">
-                                <Check class="size-4 text-foreground" />
+                                <Check class="text-foreground size-4" />
                                 Quick to understand
                             </span>
                             <span class="inline-flex items-center gap-2">
-                                <Check class="size-4 text-foreground" />
+                                <Check class="text-foreground size-4" />
                                 Flexible as you grow
                             </span>
                         </div>
@@ -121,10 +121,10 @@ const workflowSteps = [
                     <div class="relative mx-auto w-full max-w-xl lg:max-w-none">
                         <div
                             aria-hidden="true"
-                            class="absolute -inset-5 rounded-[2rem] bg-muted/70 blur-2xl"
+                            class="bg-muted/70 absolute -inset-5 rounded-[2rem] blur-2xl"
                         />
                         <div
-                            class="relative animate-in rounded-[1.75rem] border border-border/70 bg-muted/35 p-3 shadow-2xl shadow-foreground/5 delay-150 duration-1000 fade-in slide-in-from-top-8 sm:p-5"
+                            class="animate-in border-border/70 bg-muted/35 shadow-foreground/5 fade-in slide-in-from-top-8 relative rounded-[1.75rem] border p-3 shadow-2xl delay-150 duration-1000 sm:p-5"
                         >
                             <Card>
                                 <CardHeader>
@@ -147,9 +147,9 @@ const workflowSteps = [
                                 </CardHeader>
                                 <CardContent class="flex flex-col gap-5">
                                     <div class="grid grid-cols-2 gap-3">
-                                        <div class="rounded-xl bg-muted p-4">
+                                        <div class="bg-muted rounded-xl p-4">
                                             <p
-                                                class="text-xs font-medium text-muted-foreground"
+                                                class="text-muted-foreground text-xs font-medium"
                                             >
                                                 Progress
                                             </p>
@@ -159,9 +159,9 @@ const workflowSteps = [
                                                 72%
                                             </p>
                                         </div>
-                                        <div class="rounded-xl bg-muted p-4">
+                                        <div class="bg-muted rounded-xl p-4">
                                             <p
-                                                class="text-xs font-medium text-muted-foreground"
+                                                class="text-muted-foreground text-xs font-medium"
                                             >
                                                 Next milestone
                                             </p>
@@ -175,13 +175,13 @@ const workflowSteps = [
 
                                     <div class="flex flex-col gap-3">
                                         <div
-                                            class="flex items-center justify-between gap-4 rounded-xl border border-border/70 p-3"
+                                            class="border-border/70 flex items-center justify-between gap-4 rounded-xl border p-3"
                                         >
                                             <div
                                                 class="flex items-center gap-3"
                                             >
                                                 <span
-                                                    class="flex size-9 items-center justify-center rounded-lg bg-secondary"
+                                                    class="bg-secondary flex size-9 items-center justify-center rounded-lg"
                                                 >
                                                     <Check class="size-4" />
                                                 </span>
@@ -192,7 +192,7 @@ const workflowSteps = [
                                                         Direction approved
                                                     </p>
                                                     <p
-                                                        class="text-xs text-muted-foreground"
+                                                        class="text-muted-foreground text-xs"
                                                     >
                                                         Shared with the whole
                                                         team
@@ -204,13 +204,13 @@ const workflowSteps = [
                                             >
                                         </div>
                                         <div
-                                            class="flex items-center justify-between gap-4 rounded-xl border border-border/70 p-3"
+                                            class="border-border/70 flex items-center justify-between gap-4 rounded-xl border p-3"
                                         >
                                             <div
                                                 class="flex items-center gap-3"
                                             >
                                                 <span
-                                                    class="flex size-9 items-center justify-center rounded-lg bg-secondary"
+                                                    class="bg-secondary flex size-9 items-center justify-center rounded-lg"
                                                 >
                                                     <Zap class="size-4" />
                                                 </span>
@@ -221,7 +221,7 @@ const workflowSteps = [
                                                         Final review
                                                     </p>
                                                     <p
-                                                        class="text-xs text-muted-foreground"
+                                                        class="text-muted-foreground text-xs"
                                                     >
                                                         Three contributors
                                                         active
@@ -243,14 +243,14 @@ const workflowSteps = [
             <section
                 id="features"
                 aria-labelledby="features-heading"
-                class="scroll-mt-24 border-y border-border/70 bg-muted/35"
+                class="border-border/70 bg-muted/35 scroll-mt-24 border-y"
             >
                 <div
                     class="mx-auto flex max-w-7xl flex-col gap-12 px-5 py-20 sm:px-8 sm:py-24 lg:px-10"
                 >
                     <div class="flex max-w-2xl flex-col gap-4">
                         <p
-                            class="text-sm font-semibold tracking-wide text-primary uppercase"
+                            class="text-primary text-sm font-semibold tracking-wide uppercase"
                         >
                             Made for real work
                         </p>
@@ -260,7 +260,7 @@ const workflowSteps = [
                         >
                             The structure you need, without the noise you don’t.
                         </h2>
-                        <p class="text-lg leading-8 text-muted-foreground">
+                        <p class="text-muted-foreground text-lg leading-8">
                             A dependable foundation that feels simple on day one
                             and remains useful as your work becomes more
                             ambitious.
@@ -271,7 +271,7 @@ const workflowSteps = [
                         <Card id="simple-workflows" class="h-full scroll-mt-24">
                             <CardHeader>
                                 <span
-                                    class="flex size-11 items-center justify-center rounded-xl bg-secondary"
+                                    class="bg-secondary flex size-11 items-center justify-center rounded-xl"
                                 >
                                     <Zap class="size-5" />
                                 </span>
@@ -284,7 +284,7 @@ const workflowSteps = [
                             </CardHeader>
                             <CardContent>
                                 <p
-                                    class="text-sm leading-6 text-muted-foreground"
+                                    class="text-muted-foreground text-sm leading-6"
                                 >
                                     Spend less time managing the process and
                                     more time doing the work that matters.
@@ -298,7 +298,7 @@ const workflowSteps = [
                         >
                             <CardHeader>
                                 <span
-                                    class="flex size-11 items-center justify-center rounded-xl bg-secondary"
+                                    class="bg-secondary flex size-11 items-center justify-center rounded-xl"
                                 >
                                     <Layers3 class="size-5" />
                                 </span>
@@ -310,7 +310,7 @@ const workflowSteps = [
                             </CardHeader>
                             <CardContent>
                                 <p
-                                    class="text-sm leading-6 text-muted-foreground"
+                                    class="text-muted-foreground text-sm leading-6"
                                 >
                                     Decisions, updates, and priorities stay
                                     connected and easy to find.
@@ -321,7 +321,7 @@ const workflowSteps = [
                         <Card id="built-to-grow" class="h-full scroll-mt-24">
                             <CardHeader>
                                 <span
-                                    class="flex size-11 items-center justify-center rounded-xl bg-secondary"
+                                    class="bg-secondary flex size-11 items-center justify-center rounded-xl"
                                 >
                                     <ShieldCheck class="size-5" />
                                 </span>
@@ -333,7 +333,7 @@ const workflowSteps = [
                             </CardHeader>
                             <CardContent>
                                 <p
-                                    class="text-sm leading-6 text-muted-foreground"
+                                    class="text-muted-foreground text-sm leading-6"
                                 >
                                     A flexible foundation keeps your workspace
                                     useful through every stage.
@@ -356,7 +356,7 @@ const workflowSteps = [
                         class="flex max-w-lg flex-col gap-5 lg:sticky lg:top-28 lg:self-start"
                     >
                         <p
-                            class="text-sm font-semibold tracking-wide text-primary uppercase"
+                            class="text-primary text-sm font-semibold tracking-wide uppercase"
                         >
                             How it works
                         </p>
@@ -366,7 +366,7 @@ const workflowSteps = [
                         >
                             From scattered ideas to shared momentum.
                         </h2>
-                        <p class="text-lg leading-8 text-muted-foreground">
+                        <p class="text-muted-foreground text-lg leading-8">
                             A straightforward path that helps your team find its
                             rhythm without forcing everyone into a rigid
                             process.
@@ -377,10 +377,10 @@ const workflowSteps = [
                         <li
                             v-for="step in workflowSteps"
                             :key="step.number"
-                            class="grid gap-5 rounded-2xl border border-border/70 p-6 sm:grid-cols-[auto_1fr] sm:p-8"
+                            class="border-border/70 grid gap-5 rounded-2xl border p-6 sm:grid-cols-[auto_1fr] sm:p-8"
                         >
                             <span
-                                class="flex size-12 items-center justify-center rounded-full bg-primary font-mono text-sm font-semibold text-primary-foreground"
+                                class="bg-primary text-primary-foreground flex size-12 items-center justify-center rounded-full font-mono text-sm font-semibold"
                             >
                                 {{ step.number }}
                             </span>
@@ -390,7 +390,7 @@ const workflowSteps = [
                                 >
                                     {{ step.title }}
                                 </h3>
-                                <p class="leading-7 text-muted-foreground">
+                                <p class="text-muted-foreground leading-7">
                                     {{ step.description }}
                                 </p>
                             </div>
@@ -405,7 +405,7 @@ const workflowSteps = [
                 class="scroll-mt-24 px-5 pb-20 sm:px-8 sm:pb-28 lg:px-10"
             >
                 <div
-                    class="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 rounded-3xl bg-primary px-6 py-10 text-primary-foreground sm:px-10 sm:py-14 lg:flex-row lg:items-center lg:px-14"
+                    class="bg-primary text-primary-foreground mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 rounded-3xl px-6 py-10 sm:px-10 sm:py-14 lg:flex-row lg:items-center lg:px-14"
                 >
                     <div class="flex max-w-2xl flex-col gap-3">
                         <p

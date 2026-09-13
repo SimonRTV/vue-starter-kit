@@ -98,7 +98,7 @@ function goToNextPage(): void {
     <div
         class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"
     >
-        <div class="flex items-center gap-3 text-sm text-muted-foreground">
+        <div class="text-muted-foreground flex items-center gap-3 text-sm">
             <span v-if="rowCount">
                 Affichage de {{ firstVisibleRow }} à {{ lastVisibleRow }} sur
                 {{ rowCount }}
@@ -143,7 +143,7 @@ function goToNextPage(): void {
                 </Select>
             </Field>
 
-            <span class="text-sm text-muted-foreground">
+            <span class="text-muted-foreground text-sm">
                 Page {{ pagination.pageIndex + 1 }} sur {{ pageCount }}
             </span>
 

@@ -104,7 +104,7 @@ defineProps<{
         </div>
     </Form>
 
-    <div class="mt-6 space-x-1 text-center text-sm text-muted-foreground">
+    <div class="text-muted-foreground mt-6 space-x-1 text-center text-sm">
         <span>Vous avez déjà un compte ?</span>
         <TextLink :href="login()">Se connecter</TextLink>
     </div>

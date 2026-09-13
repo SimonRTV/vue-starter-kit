@@ -39,7 +39,7 @@ function selectTheme(value: unknown): void {
             <h2 id="admin-theme-label" class="text-sm font-medium">
                 Thème d’administration
             </h2>
-            <p class="text-sm text-muted-foreground">
+            <p class="text-muted-foreground text-sm">
                 Choisissez la palette de couleurs de l’interface
                 d’administration.
             </p>
@@ -69,7 +69,7 @@ function selectTheme(value: unknown): void {
                     <Check v-if="adminTheme === theme.value" />
                 </div>
 
-                <p class="text-xs text-muted-foreground">
+                <p class="text-muted-foreground text-xs">
                     {{ theme.description }}
                 </p>
 

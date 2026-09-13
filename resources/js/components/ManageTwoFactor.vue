@@ -39,7 +39,7 @@ onUnmounted(() => clearTwoFactorAuthData());
             v-if="!twoFactorEnabled"
             class="flex flex-col items-start justify-start space-y-4"
         >
-            <p class="text-sm text-muted-foreground">
+            <p class="text-muted-foreground text-sm">
                 Lorsque vous activez l’authentification à deux facteurs, un code
                 sécurisé vous sera demandé à la connexion. Vous le trouverez
                 dans une application compatible TOTP sur votre téléphone.
@@ -63,7 +63,7 @@ onUnmounted(() => clearTwoFactorAuthData());
         </div>
 
         <div v-else class="flex flex-col items-start justify-start space-y-4">
-            <p class="text-sm text-muted-foreground">
+            <p class="text-muted-foreground text-sm">
                 Un code sécurisé aléatoire vous sera demandé à la connexion.
                 Vous le trouverez dans l’application compatible TOTP de votre
                 téléphone.

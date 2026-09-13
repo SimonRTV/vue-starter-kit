@@ -5,7 +5,11 @@ export type RoleAssignmentStatus = 'assigned' | 'unused';
 export type RoleAssignmentFilter = RoleAssignmentStatus | null;
 
 export type RoleSort =
-    'name' | 'users_count' | 'permissions_count' | 'created_at' | 'updated_at';
+    | 'name'
+    | 'users_count'
+    | 'permissions_count'
+    | 'created_at'
+    | 'updated_at';
 
 export type RoleSortDirection = 'asc' | 'desc';
 

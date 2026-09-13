@@ -114,7 +114,7 @@ const table = useTable({
 
         <div
             v-if="selectable && selectedIds.length"
-            class="flex flex-wrap items-center gap-3 rounded-md border bg-muted/30 p-3"
+            class="bg-muted/30 flex flex-wrap items-center gap-3 rounded-md border p-3"
         >
             <span class="text-sm"
                 >{{ selectedIds.length }} sélectionné(s) sur cette page</span
@@ -132,7 +132,7 @@ const table = useTable({
                             <input
                                 type="checkbox"
                                 aria-label="Sélectionner toutes les lignes de cette page"
-                                class="size-4 accent-primary"
+                                class="accent-primary size-4"
                                 :checked="allSelected"
                                 :indeterminate="
                                     selectedIds.length > 0 && !allSelected
@@ -178,7 +178,7 @@ const table = useTable({
                                 <input
                                     type="checkbox"
                                     :aria-label="`Sélectionner la ligne ${row.id}`"
-                                    class="size-4 accent-primary"
+                                    class="accent-primary size-4"
                                     :checked="selectedIds.includes(row.id)"
                                     :disabled="processing"
                                     @change="toggleRow(row.id)"

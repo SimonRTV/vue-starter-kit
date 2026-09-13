@@ -100,7 +100,7 @@ function resetDarkFullLogo(): void {
                 description="Définissez le symbole carré utilisé dans la barre latérale et les autres zones compactes."
             >
                 <div
-                    class="flex min-h-36 items-center justify-center rounded-lg border bg-muted/40 p-6"
+                    class="bg-muted/40 flex min-h-36 items-center justify-center rounded-lg border p-6"
                 >
                     <img
                         v-if="iconUrl"
@@ -110,7 +110,7 @@ function resetDarkFullLogo(): void {
                     />
                     <div v-else class="flex flex-col items-center gap-2">
                         <AppLogoIcon class="size-20 fill-current" />
-                        <p class="text-sm text-muted-foreground">
+                        <p class="text-muted-foreground text-sm">
                             Icône par défaut
                         </p>
                     </div>
@@ -142,7 +142,7 @@ function resetDarkFullLogo(): void {
                             <FieldError :errors="[errors.logo]" />
                             <p
                                 v-if="progress"
-                                class="text-sm text-muted-foreground"
+                                class="text-muted-foreground text-sm"
                             >
                                 Téléversement… {{ progress.percentage }} %
                             </p>
@@ -235,7 +235,7 @@ function resetDarkFullLogo(): void {
                             <FieldError :errors="[errors.full_logo]" />
                             <p
                                 v-if="progress"
-                                class="text-sm text-muted-foreground"
+                                class="text-muted-foreground text-sm"
                             >
                                 Téléversement… {{ progress.percentage }} %
                             </p>
@@ -339,7 +339,7 @@ function resetDarkFullLogo(): void {
                             <FieldError :errors="[errors.dark_full_logo]" />
                             <p
                                 v-if="progress"
-                                class="text-sm text-muted-foreground"
+                                class="text-muted-foreground text-sm"
                             >
                                 Téléversement… {{ progress.percentage }} %
                             </p>

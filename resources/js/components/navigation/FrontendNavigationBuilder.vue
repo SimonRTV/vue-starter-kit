@@ -257,7 +257,7 @@ function error(path: string): string | undefined {
 <template>
     <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-2">
-            <p class="text-sm text-muted-foreground">
+            <p class="text-muted-foreground text-sm">
                 Jusqu’à 10 éléments principaux et 8 sous-liens par menu.
             </p>
             <div class="flex flex-wrap gap-2">
@@ -545,7 +545,7 @@ function error(path: string): string | undefined {
                                             Sous-liens
                                         </h3>
                                         <p
-                                            class="text-xs text-muted-foreground"
+                                            class="text-muted-foreground text-xs"
                                         >
                                             Affichés dans le panneau déroulant.
                                         </p>

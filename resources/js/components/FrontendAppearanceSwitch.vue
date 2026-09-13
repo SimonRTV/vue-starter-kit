@@ -18,7 +18,7 @@ function updateMode(value: boolean): void {
 </script>
 
 <template>
-    <div class="inline-flex items-center gap-2 text-muted-foreground">
+    <div class="text-muted-foreground inline-flex items-center gap-2">
         <Sun class="size-4" aria-hidden="true" />
         <Switch
             :model-value="isDark"

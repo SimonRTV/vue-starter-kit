@@ -45,21 +45,21 @@ function resolvedUrl(url: string): string {
 </script>
 
 <template>
-    <footer class="border-t border-border/70">
+    <footer class="border-border/70 border-t">
         <div
             class="mx-auto flex max-w-7xl flex-col gap-8 px-5 py-10 sm:px-8 md:flex-row md:items-center md:justify-between lg:px-10"
         >
             <Link
                 :href="home()"
-                class="inline-flex w-fit items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                class="focus-visible:ring-ring inline-flex w-fit items-center rounded-md outline-none focus-visible:ring-2"
                 :aria-label="`${page.props.name} home`"
             >
-                <AppLogoFull class="h-7 w-auto max-w-36 text-foreground" />
+                <AppLogoFull class="text-foreground h-7 w-auto max-w-36" />
             </Link>
 
             <nav
                 aria-label="Footer navigation"
-                class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground"
+                class="text-muted-foreground flex flex-wrap items-center gap-x-6 gap-y-3 text-sm"
             >
                 <template
                     v-for="(item, index) in footerItems"
@@ -74,14 +74,14 @@ function resolvedUrl(url: string): string {
                                 ? 'noopener noreferrer'
                                 : undefined
                         "
-                        class="transition-colors hover:text-foreground"
+                        class="hover:text-foreground transition-colors"
                     >
                         {{ item.label }}
                     </a>
                     <Link
                         v-else
                         :href="resolvedUrl(item.url)"
-                        class="transition-colors hover:text-foreground"
+                        class="hover:text-foreground transition-colors"
                     >
                         {{ item.label }}
                     </Link>
@@ -89,7 +89,7 @@ function resolvedUrl(url: string): string {
                 <Link
                     v-if="!page.props.auth.user"
                     :href="login()"
-                    class="transition-colors hover:text-foreground"
+                    class="hover:text-foreground transition-colors"
                 >
                     Log in
                 </Link>

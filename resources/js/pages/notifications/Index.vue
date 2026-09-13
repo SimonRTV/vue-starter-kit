@@ -101,7 +101,7 @@ function date(value: string): string {
                 <select
                     id="notification-status"
                     v-model="status"
-                    class="h-9 rounded-md border bg-background px-3 text-sm"
+                    class="bg-background h-9 rounded-md border px-3 text-sm"
                 >
                     <option value="all">Toutes</option>
                     <option value="unread">Non lues</option>
@@ -113,7 +113,7 @@ function date(value: string): string {
                 <select
                     id="notification-category"
                     v-model="category"
-                    class="h-9 rounded-md border bg-background px-3 text-sm"
+                    class="bg-background h-9 rounded-md border px-3 text-sm"
                 >
                     <option value="">Toutes les catégories</option>
                     <option
@@ -127,13 +127,13 @@ function date(value: string): string {
             </Field>
             <Button type="submit" variant="outline">Filtrer</Button>
         </form>
-        <p role="status" class="text-sm text-muted-foreground">
+        <p role="status" class="text-muted-foreground text-sm">
             {{ items.total }} notification(s) ·
             {{ page.props.notifications.unreadCount }} non lue(s)
         </p>
         <div
             v-if="!items.data.length"
-            class="flex flex-col items-center gap-3 rounded-xl border border-dashed p-12 text-center text-muted-foreground"
+            class="text-muted-foreground flex flex-col items-center gap-3 rounded-xl border border-dashed p-12 text-center"
         >
             <Bell class="size-8" aria-hidden="true" />
             <p>Aucune notification à afficher.</p>
@@ -152,20 +152,20 @@ function date(value: string): string {
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex flex-wrap items-center gap-2">
                         <Badge v-if="item.read_at === null">Non lue</Badge>
-                        <span class="text-xs text-muted-foreground">{{
+                        <span class="text-muted-foreground text-xs">{{
                             categories[item.data.category]?.label ??
                             item.data.category
                         }}</span>
                     </div>
                     <time
                         :datetime="item.created_at"
-                        class="text-xs text-muted-foreground"
+                        class="text-muted-foreground text-xs"
                         >{{ date(item.created_at) }}</time
                     >
                 </div>
                 <h2 class="font-semibold break-words">{{ item.data.title }}</h2>
                 <p
-                    class="text-sm break-words whitespace-pre-wrap text-muted-foreground"
+                    class="text-muted-foreground text-sm break-words whitespace-pre-wrap"
                 >
                     {{ item.data.body }}
                 </p>
@@ -217,7 +217,7 @@ function date(value: string): string {
                     >Précédent</Link
                 ></Button
             >
-            <span class="text-sm text-muted-foreground"
+            <span class="text-muted-foreground text-sm"
                 >Page {{ items.current_page }} sur {{ items.last_page }}</span
             >
             <Button

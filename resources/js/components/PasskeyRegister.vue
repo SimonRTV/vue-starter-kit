@@ -60,7 +60,7 @@ const handleCancel = () => {
 </script>
 
 <template>
-    <div v-if="!isSupported" class="text-sm text-muted-foreground">
+    <div v-if="!isSupported" class="text-muted-foreground text-sm">
         Les clés d’accès ne sont pas prises en charge par ce navigateur.
     </div>
 
@@ -71,7 +71,7 @@ const handleCancel = () => {
     <form
         v-else
         @submit="handleSubmit"
-        class="space-y-4 rounded-lg border border-border bg-muted/50 p-4"
+        class="border-border bg-muted/50 space-y-4 rounded-lg border p-4"
     >
         <div class="grid gap-2">
             <Label for="passkey-name">Nom de la clé d’accès</Label>
@@ -80,10 +80,10 @@ const handleCancel = () => {
                 type="text"
                 v-model="name"
                 placeholder="p. ex. MacBook Pro, iPhone"
-                class="mt-1 block w-full border-foreground/20"
+                class="border-foreground/20 mt-1 block w-full"
                 autofocus
             />
-            <p class="text-xs text-muted-foreground">
+            <p class="text-muted-foreground text-xs">
                 Un nom vous aidera à reconnaître cette clé d’accès plus tard.
             </p>
         </div>

@@ -87,7 +87,7 @@ function remove(): void {
                 v-if="views.length"
                 v-model="selected"
                 aria-label="Vues enregistrées"
-                class="h-9 max-w-56 rounded-md border bg-background px-3 text-sm"
+                class="bg-background h-9 max-w-56 rounded-md border px-3 text-sm"
                 :disabled="disabled"
             >
                 <option value="">Vues enregistrées</option>
@@ -137,11 +137,11 @@ function remove(): void {
                 ><Download class="size-4" />Exporter en CSV</Button
             >
         </div>
-        <p class="text-xs text-muted-foreground">
+        <p class="text-muted-foreground text-xs">
             Vues privées enregistrées dans ce navigateur. L’export inclut tous
             les résultats filtrés, jusqu’à 10 000 lignes.
         </p>
-        <p v-if="error && !open" role="alert" class="text-sm text-destructive">
+        <p v-if="error && !open" role="alert" class="text-destructive text-sm">
             {{ error }}
         </p>
         <Dialog v-model:open="open">
@@ -167,7 +167,7 @@ function remove(): void {
                     <p
                         v-if="error"
                         role="alert"
-                        class="text-sm text-destructive"
+                        class="text-destructive text-sm"
                     >
                         {{ error }}
                     </p>

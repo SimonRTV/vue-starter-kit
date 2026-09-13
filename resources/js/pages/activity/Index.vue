@@ -85,7 +85,7 @@ const eventLabels: Record<string, string> = {
             title="Journal d’activité"
             description="Consultez les changements effectués dans l’application."
         />
-        <p class="text-sm text-muted-foreground">
+        <p class="text-muted-foreground text-sm">
             Les valeurs sensibles sont masquées. Les dates utilisent le fuseau
             {{ timezone }}.
             {{
@@ -103,7 +103,7 @@ const eventLabels: Record<string, string> = {
                 <select
                     id="activity-type"
                     v-model="form.type"
-                    class="h-9 rounded-md border bg-background px-3 text-sm"
+                    class="bg-background h-9 rounded-md border px-3 text-sm"
                 >
                     <option value="">Toutes les ressources</option>
                     <option v-for="type in types" :key="type" :value="type">
@@ -121,7 +121,7 @@ const eventLabels: Record<string, string> = {
                 <select
                     id="activity-event"
                     v-model="form.event"
-                    class="h-9 rounded-md border bg-background px-3 text-sm"
+                    class="bg-background h-9 rounded-md border px-3 text-sm"
                 >
                     <option value="">Toutes les actions</option>
                     <option v-for="event in events" :key="event" :value="event">
@@ -195,12 +195,12 @@ const eventLabels: Record<string, string> = {
                 >
             </div>
         </form>
-        <p role="status" class="text-sm text-muted-foreground">
+        <p role="status" class="text-muted-foreground text-sm">
             {{ activities.total }} événement(s)
         </p>
         <div
             v-if="activities.data.length === 0"
-            class="rounded-xl border border-dashed p-10 text-center text-muted-foreground"
+            class="text-muted-foreground rounded-xl border border-dashed p-10 text-center"
         >
             Aucun événement ne correspond à ces critères.
         </div>
@@ -222,7 +222,7 @@ const eventLabels: Record<string, string> = {
                                 activity.subject_type
                             }}
                         </p>
-                        <p class="break-all text-muted-foreground">
+                        <p class="text-muted-foreground break-all">
                             #{{ activity.subject_id }} ·
                             {{ activity.actor_name ?? 'Système' }}
                         </p>
@@ -244,7 +244,7 @@ const eventLabels: Record<string, string> = {
                         <div
                             v-for="(change, field) in activity.changes"
                             :key="field"
-                            class="grid gap-2 rounded-md bg-muted/50 p-3 sm:grid-cols-3"
+                            class="bg-muted/50 grid gap-2 rounded-md p-3 sm:grid-cols-3"
                         >
                             <dt class="font-medium">{{ field }}</dt>
                             <dd class="min-w-0 break-words whitespace-pre-wrap">
@@ -283,7 +283,7 @@ const eventLabels: Record<string, string> = {
                     >Précédent</Link
                 >
             </Button>
-            <span class="text-sm text-muted-foreground"
+            <span class="text-muted-foreground text-sm"
                 >Page {{ activities.current_page }} sur
                 {{ activities.last_page }}</span
             >
