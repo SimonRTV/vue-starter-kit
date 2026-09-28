@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\BulkPageController;
+use App\Http\Controllers\CsvImportController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MediaFileController;
 use App\Http\Controllers\NotificationController;
@@ -58,6 +59,16 @@ Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(functio
 
     Route::resource('pages', PageController::class)
         ->middleware(EnsureFeatureEnabled::class.':starter.features.pages');
+
+    Route::prefix('{resource}-import')->where(['resource' => '[a-z][a-z0-9-]*'])->name('csv-imports.')->group(function () {
+        Route::get('/', [CsvImportController::class, 'create'])->name('create');
+        Route::post('/', [CsvImportController::class, 'store'])->middleware('throttle:10,1')->name('store');
+        Route::get('{csvImport}', [CsvImportController::class, 'show'])->name('show');
+        Route::patch('{csvImport}', [CsvImportController::class, 'preview'])->middleware('throttle:20,1')->name('preview');
+        Route::post('{csvImport}/commit', [CsvImportController::class, 'commit'])->middleware('throttle:10,1')->name('commit');
+        Route::get('{csvImport}/errors', [CsvImportController::class, 'errors'])->name('errors');
+        Route::delete('{csvImport}', [CsvImportController::class, 'destroy'])->name('destroy');
+    });
 
     /** @var array<string, array{controller: class-string, model: class-string, label: string, enabled: bool}> $resources */
     $resources = config('resources', []);

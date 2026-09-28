@@ -26,7 +26,7 @@ class ExportCsv
                 return;
             }
             fwrite($stream, "\xEF\xBB\xBF");
-            fputcsv($stream, $headers, ',', '"', '');
+            fputcsv($stream, array_map($this->safeCell(...), $headers), ',', '"', '');
             foreach ($records as $record) {
                 fputcsv($stream, array_map($this->safeCell(...), $record), ',', '"', '');
             }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { UserPlus } from '@lucide/vue';
+import { Upload, UserPlus } from '@lucide/vue';
+import { create as importUsers } from '@/actions/App/Http/Controllers/CsvImportController';
 import UserController from '@/actions/App/Http/Controllers/UserController';
 import { PageHeader } from '@/components/application';
 import { Button } from '@/components/ui/button';
@@ -41,6 +42,12 @@ defineOptions({
                 description="Invitez, suspendez, sécurisez et gérez les accès aux comptes."
             >
                 <template v-if="abilities.create" #actions>
+                    <Button variant="outline" as-child
+                        ><Link :href="importUsers('users')"
+                            ><Upload data-icon="inline-start" />Importer un
+                            CSV</Link
+                        ></Button
+                    >
                     <Button as-child>
                         <Link :href="UserController.create()">
                             <UserPlus data-icon="inline-start" />

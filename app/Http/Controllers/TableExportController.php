@@ -26,7 +26,7 @@ class TableExportController extends Controller
     public function users(IndexUserRequest $request, ListUsers $list, ExportCsv $csv): StreamedResponse
     {
         return $csv->download($list->query($request->filters())->limit(ExportCsv::MAX_ROWS + 1)->get()->map(fn (User $user): array => [
-            $user->name, $user->email, $user->disabled_at === null ? 'Actif' : 'Désactivé', $user->email_verified_at === null ? 'Non' : 'Oui', $user->roles->pluck('name')->implode(', '), $user->created_at?->toISOString(),
+            $user->name, $user->email, $user->disabled_at === null ? 'Actif' : 'Désactivé', $user->email_verified_at === null ? 'Non' : 'Oui', $user->roles->pluck('name')->values()->toJson(JSON_UNESCAPED_UNICODE), $user->created_at?->toISOString(),
         ]), 'utilisateurs.csv', ['Nom', 'E-mail', 'Statut', 'Vérifié', 'Rôles', 'Création']);
     }
 

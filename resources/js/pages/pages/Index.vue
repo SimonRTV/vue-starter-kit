@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { Plus } from '@lucide/vue';
+import { Plus, Upload } from '@lucide/vue';
+import { create as importPages } from '@/actions/App/Http/Controllers/CsvImportController';
 import PageController from '@/actions/App/Http/Controllers/PageController';
 import { PageHeader } from '@/components/application';
 import PageDataTable from '@/components/pages/PageDataTable.vue';
@@ -11,6 +12,7 @@ defineProps<{
     pages: PagePagination;
     filters: PageIndexFilters;
     canBulkUpdate: boolean;
+    canImport: boolean;
 }>();
 
 defineOptions({
@@ -35,6 +37,12 @@ defineOptions({
                 description="Créez, publiez et maintenez le contenu de votre site."
             >
                 <template #actions>
+                    <Button v-if="canImport" variant="outline" as-child>
+                        <Link :href="importPages('pages')"
+                            ><Upload data-icon="inline-start" />Importer un
+                            CSV</Link
+                        >
+                    </Button>
                     <Button as-child>
                         <Link :href="PageController.create()">
                             <Plus data-icon="inline-start" />

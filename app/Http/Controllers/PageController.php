@@ -49,6 +49,7 @@ class PageController extends Controller
             'pages' => $pages,
             'filters' => $filters,
             'canBulkUpdate' => auth()->user()?->can(PagePolicy::UPDATE) ?? false,
+            'canImport' => auth()->user()?->can('create', Page::class) ?? false,
         ]);
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Activity;
+use App\Models\CsvImport;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -11,3 +12,6 @@ Artisan::command('inspire', function () {
 
 Schedule::command('model:prune', ['--model' => [Activity::class]])
     ->daily()->withoutOverlapping();
+
+Schedule::command('model:prune', ['--model' => [CsvImport::class]])
+    ->hourly()->withoutOverlapping();
