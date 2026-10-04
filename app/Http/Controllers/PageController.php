@@ -79,12 +79,19 @@ class PageController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Page $page): Response
+    public function show(Page $page, MediaLibrary $library): Response
     {
         Gate::authorize('view', $page);
         Head::title($page->title);
 
-        return Inertia::render('pages/Show', ['page' => $this->detail($page)]);
+        return Inertia::render('pages/Show', [
+            'page' => $this->detail($page),
+            'attachments' => config('starter.features.media')
+                ? $page->attachments()->get()->filter(fn (Media $media): bool => Gate::allows('view', $media))->map(fn (Media $media): array => $library->item($media))->values()
+                : [],
+            'canUpdate' => Gate::allows('update', $page),
+            'canDelete' => Gate::allows('delete', $page),
+        ]);
     }
 
     /**
@@ -112,7 +119,7 @@ class PageController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Page updated.')]);
 
-        return to_route('pages.show', $page);
+        return to_route('pages.edit', $page);
     }
 
     /**

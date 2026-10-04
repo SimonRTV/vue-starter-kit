@@ -2,9 +2,9 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { preferences } from '@/actions/App/Http/Controllers/NotificationController';
-import Heading from '@/components/Heading.vue';
+import { ArrowUpRight, Settings2 } from '@lucide/vue';
+import { PageHeader } from '@/components/application';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
@@ -63,38 +63,54 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
 </script>
 
 <template>
-    <div class="px-4 py-6">
-        <Heading
+    <div
+        class="admin-page mx-auto flex w-full max-w-[1400px] flex-col gap-8 p-5 md:p-8 lg:p-10"
+    >
+        <PageHeader
             title="Paramètres"
-            description="Gérez votre profil et les paramètres de votre compte"
+            description="Un espace qui s’adapte à vous. Gérez votre compte et personnalisez votre application."
         />
-
-        <div class="flex flex-col lg:flex-row lg:gap-12">
-            <aside class="w-full max-w-xl lg:w-48">
-                <nav class="flex flex-col gap-1" aria-label="Paramètres">
+        <div
+            class="grid items-start gap-6 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10"
+        >
+            <aside class="min-w-0">
+                <div class="mb-4 hidden items-center gap-2 px-3 lg:flex">
+                    <Settings2 class="text-primary size-4" />
+                    <p
+                        class="text-muted-foreground text-xs font-semibold tracking-[0.18em] uppercase"
+                    >
+                        À votre mesure
+                    </p>
+                </div>
+                <nav
+                    class="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:flex lg:flex-col"
+                    aria-label="Paramètres"
+                >
                     <Button
                         v-for="item in sidebarNavItems"
                         :key="toUrl(item.href)"
                         variant="ghost"
-                        :class="[
-                            'w-full justify-start',
-                            { 'bg-muted': isCurrentOrParentUrl(item.href) },
-                        ]"
+                        class="admin-settings-link h-auto min-h-11 w-full justify-between px-3 py-3 text-left text-sm whitespace-normal"
                         as-child
                     >
-                        <Link :href="item.href">
+                        <Link
+                            :href="item.href"
+                            :aria-current="
+                                isCurrentOrParentUrl(item.href)
+                                    ? 'page'
+                                    : undefined
+                            "
+                        >
                             {{ item.title }}
+                            <ArrowUpRight
+                                class="admin-settings-indicator size-4 shrink-0 opacity-0"
+                            />
                         </Link>
                     </Button>
                 </nav>
             </aside>
-
-            <Separator class="my-6 lg:hidden" />
-
-            <div class="flex-1 md:max-w-2xl">
-                <section class="flex max-w-xl flex-col gap-12">
-                    <slot />
-                </section>
+            <div class="admin-settings-panel">
+                <section class="flex min-w-0 flex-col gap-8"><slot /></section>
             </div>
         </div>
     </div>

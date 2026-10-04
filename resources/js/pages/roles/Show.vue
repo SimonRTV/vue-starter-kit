@@ -124,7 +124,7 @@ setLayoutProps({
 <template>
     <div class="flex flex-1 flex-col">
         <main
-            class="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
+            class="admin-page mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
         >
             <PageHeader :title="roleName">
                 <template v-if="role.is_protected" #badge>

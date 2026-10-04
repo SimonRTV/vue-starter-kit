@@ -27,7 +27,7 @@ class StorePageRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', Rule::unique(Page::class)],
+            'slug' => ['required', 'string', 'max:255'],
             'excerpt' => ['nullable', 'string', 'max:500'],
             'body' => ['nullable', 'string', 'max:200000'],
             'body_format' => ['sometimes', 'required', Rule::in(['text', 'html'])],

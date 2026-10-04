@@ -80,7 +80,9 @@ const eventLabels: Record<string, string> = {
 </script>
 
 <template>
-    <div class="flex flex-col gap-6 p-4 md:p-6">
+    <div
+        class="admin-page mx-auto flex w-full max-w-[1600px] flex-col gap-8 p-5 md:p-8 lg:p-10"
+    >
         <PageHeader
             title="Journal d’activité"
             description="Consultez les changements effectués dans l’application."
@@ -95,7 +97,7 @@ const eventLabels: Record<string, string> = {
             }}
         </p>
         <form
-            class="grid gap-4 rounded-xl border p-4 sm:grid-cols-2 lg:grid-cols-3"
+            class="admin-panel grid gap-5 rounded-2xl border p-6 sm:grid-cols-2 lg:grid-cols-3"
             @submit.prevent="filter"
         >
             <Field>
@@ -204,11 +206,14 @@ const eventLabels: Record<string, string> = {
         >
             Aucun événement ne correspond à ces critères.
         </div>
-        <ol v-else class="divide-y rounded-xl border">
+        <ol
+            v-else
+            class="admin-panel divide-y overflow-hidden rounded-2xl border"
+        >
             <li
                 v-for="activity in activities.data"
                 :key="activity.id"
-                class="space-y-3 p-4"
+                class="space-y-4 p-6"
             >
                 <div
                     class="flex flex-wrap items-start justify-between gap-2 text-sm"

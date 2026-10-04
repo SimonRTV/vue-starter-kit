@@ -288,7 +288,7 @@
     --admin-theme-preview-background: hsl(0 0% 98%);
     --admin-theme-preview-foreground: hsl(0 0% 20%);
     --admin-theme-preview-card: hsl(0 0% 100%);
-    --admin-theme-preview-sidebar: hsl(0 0% 92%);
+    --admin-theme-preview-sidebar: hsl(150 5% 12%);
     --admin-theme-preview-primary: hsl(0 0% 25%);
     --admin-theme-preview-muted: hsl(0 0% 60%);
 }
@@ -297,7 +297,7 @@
     --admin-theme-preview-background: hsl(214 45% 97%);
     --admin-theme-preview-foreground: hsl(222 47% 20%);
     --admin-theme-preview-card: hsl(0 0% 100%);
-    --admin-theme-preview-sidebar: hsl(214 45% 90%);
+    --admin-theme-preview-sidebar: hsl(222 46% 13%);
     --admin-theme-preview-primary: hsl(221 83% 53%);
     --admin-theme-preview-muted: hsl(215 20% 65%);
 }
@@ -306,7 +306,7 @@
     --admin-theme-preview-background: hsl(84 22% 96%);
     --admin-theme-preview-foreground: hsl(142 30% 18%);
     --admin-theme-preview-card: hsl(48 33% 99%);
-    --admin-theme-preview-sidebar: hsl(100 25% 88%);
+    --admin-theme-preview-sidebar: hsl(150 23% 13%);
     --admin-theme-preview-primary: hsl(142 71% 29%);
     --admin-theme-preview-muted: hsl(120 10% 58%);
 }
@@ -372,4 +372,262 @@
     .rich-content .ProseMirror-selectednode {
         @apply outline-primary outline-2;
     }
+}
+
+/* Workspace surfaces follow the user's palette; public pages remain independent. */
+:root {
+    --admin-canvas: hsl(40 12% 96%);
+    --admin-panel: hsl(0 0% 100%);
+    --admin-rail: hsl(150 5% 12%);
+    --admin-rail-foreground: hsl(40 10% 94%);
+    --admin-rail-muted: hsl(120 3% 60%);
+    --admin-rail-active: hsl(40 12% 92%);
+    --admin-rail-active-foreground: hsl(150 5% 12%);
+    --admin-focus: hsl(150 5% 17%);
+    --admin-focus-foreground: hsl(40 10% 94%);
+    --admin-highlight: hsl(45 18% 78%);
+}
+
+:root[data-admin-theme='ocean'] {
+    --admin-canvas: hsl(216 30% 96%);
+    --admin-panel: hsl(216 30% 100%);
+    --admin-rail: hsl(222 46% 13%);
+    --admin-rail-foreground: hsl(214 40% 95%);
+    --admin-rail-muted: hsl(216 22% 65%);
+    --admin-rail-active: hsl(214 80% 91%);
+    --admin-rail-active-foreground: hsl(222 46% 18%);
+    --admin-focus: hsl(222 46% 18%);
+    --admin-focus-foreground: hsl(214 40% 95%);
+    --admin-highlight: hsl(199 85% 72%);
+}
+
+:root[data-admin-theme='forest'] {
+    --admin-canvas: hsl(70 20% 95%);
+    --admin-panel: hsl(48 33% 99%);
+    --admin-rail: hsl(150 23% 13%);
+    --admin-rail-foreground: hsl(70 22% 93%);
+    --admin-rail-muted: hsl(110 13% 62%);
+    --admin-rail-active: hsl(80 30% 85%);
+    --admin-rail-active-foreground: hsl(150 23% 15%);
+    --admin-focus: hsl(150 23% 19%);
+    --admin-focus-foreground: hsl(70 22% 93%);
+    --admin-highlight: hsl(80 42% 71%);
+}
+
+.dark {
+    --admin-canvas: hsl(150 4% 9%);
+    --admin-panel: hsl(150 4% 13%);
+    --admin-rail: hsl(150 5% 7%);
+    --admin-focus: hsl(45 14% 82%);
+    --admin-focus-foreground: hsl(150 5% 13%);
+    --admin-highlight: hsl(150 5% 30%);
+}
+
+.dark[data-admin-theme='ocean'] {
+    --admin-canvas: hsl(222 38% 9%);
+    --admin-panel: hsl(222 32% 13%);
+    --admin-rail: hsl(222 42% 7%);
+    --admin-focus: hsl(210 56% 81%);
+    --admin-focus-foreground: hsl(222 46% 16%);
+    --admin-highlight: hsl(221 50% 35%);
+}
+
+.dark[data-admin-theme='forest'] {
+    --admin-canvas: hsl(144 22% 9%);
+    --admin-panel: hsl(144 18% 13%);
+    --admin-rail: hsl(150 23% 7%);
+    --admin-focus: hsl(80 24% 77%);
+    --admin-focus-foreground: hsl(150 23% 15%);
+    --admin-highlight: hsl(142 32% 30%);
+}
+
+.admin-workspace {
+    --card: var(--admin-panel);
+    --card-foreground: var(--foreground);
+    @apply selection:bg-primary/20;
+    background: var(--admin-canvas);
+}
+.admin-canvas {
+    background: var(--admin-canvas);
+}
+.admin-navigation,
+.admin-sidebar-body {
+    --sidebar-background: var(--admin-rail);
+    --sidebar-foreground: var(--admin-rail-foreground);
+    --sidebar-accent: color-mix(
+        in srgb,
+        var(--admin-rail-foreground) 8%,
+        var(--admin-rail)
+    );
+    --sidebar-accent-foreground: var(--admin-rail-foreground);
+    --sidebar-border: color-mix(
+        in srgb,
+        var(--admin-rail-foreground) 12%,
+        var(--admin-rail)
+    );
+    --sidebar-primary: var(--admin-rail-active);
+    --sidebar-primary-foreground: var(--admin-rail-active-foreground);
+    background: var(--admin-rail);
+    color: var(--admin-rail-foreground);
+}
+.admin-sidebar-body [data-sidebar='group-label'] {
+    color: var(--admin-rail-muted);
+}
+.admin-nav-link {
+    color: var(--admin-rail-muted);
+    @apply text-[13px] transition-colors;
+}
+.admin-nav-link:hover {
+    color: var(--admin-rail-foreground);
+}
+.admin-nav-link[data-active='true'] {
+    background: var(--admin-rail-active);
+    color: var(--admin-rail-active-foreground);
+    @apply font-semibold;
+}
+.admin-brand {
+    @apply tracking-wide;
+}
+.admin-sidebar-body [data-sidebar='footer'] {
+    @apply border-t;
+    border-color: var(--sidebar-border);
+}
+.admin-sidebar-body [data-slot='avatar-fallback'] {
+    background: var(--sidebar-accent);
+    color: var(--admin-rail-foreground);
+}
+.admin-topbar {
+    background: color-mix(in srgb, var(--admin-canvas) 92%, transparent);
+}
+.admin-workspace .admin-page {
+    @apply gap-8 p-5 md:p-8 lg:p-10;
+}
+.admin-workspace [data-slot='card'],
+.admin-panel,
+.admin-metrics {
+    background: var(--admin-panel);
+    @apply shadow-none;
+}
+.admin-workspace [data-slot='card'] {
+    @apply rounded-2xl;
+}
+.admin-workspace [data-slot='card-header'] {
+    @apply gap-2;
+}
+.admin-workspace [data-slot='card-title'] {
+    @apply text-lg font-medium tracking-tight;
+}
+.admin-workspace [data-slot='card-description'] {
+    @apply text-xs leading-relaxed;
+}
+.admin-workspace [data-slot='button'] {
+    @apply font-medium shadow-none;
+}
+.admin-workspace
+    :is(
+        [data-slot='input'],
+        [data-slot='textarea'],
+        [data-slot='select-trigger']
+    ) {
+    background: var(--admin-canvas);
+    @apply rounded-lg shadow-none;
+}
+.admin-workspace :is([data-slot='input'], [data-slot='select-trigger']) {
+    @apply min-h-10;
+}
+.admin-workspace [data-slot='label'],
+.admin-workspace [data-slot='field-label'] {
+    @apply text-xs;
+}
+.admin-workspace [data-slot='table-head'] {
+    @apply bg-muted/50 h-12 px-4 text-[10px] tracking-wide;
+}
+.admin-workspace [data-slot='table-cell'] {
+    @apply px-4 py-5;
+}
+.admin-workspace [data-slot='table-row'] {
+    @apply border-border/70;
+}
+.admin-workspace [data-slot='badge'] {
+    @apply rounded-md text-[10px] font-medium;
+}
+.admin-workspace .admin-form [data-slot='card-header'] {
+    @apply border-b pb-6 lg:border-r lg:border-b-0;
+}
+.admin-workspace .admin-form [data-slot='card-footer'] {
+    @apply border-t pt-5;
+}
+.admin-resource-table [data-slot='card-header'] {
+    @apply pb-2;
+}
+.admin-data-grid {
+    @apply overflow-hidden rounded-xl border scheme-light dark:scheme-dark;
+}
+.admin-eyebrow {
+    @apply text-muted-foreground text-[10px] font-semibold tracking-[0.18em] uppercase;
+}
+.admin-metric {
+    @apply border-border/80 border-b odd:border-r;
+}
+.admin-metric:nth-last-child(-n + 2) {
+    @apply border-b-0;
+}
+.admin-focus-panel {
+    background: var(--admin-focus);
+    color: var(--admin-focus-foreground);
+}
+.admin-orbit,
+.admin-orbit div {
+    border-color: color-mix(
+        in srgb,
+        var(--admin-focus-foreground) 10%,
+        transparent
+    );
+}
+.admin-goal-fill {
+    background: var(--admin-highlight);
+}
+.admin-settings-panel {
+    @apply min-w-0 rounded-2xl border p-5 sm:p-8;
+    background: var(--admin-panel);
+}
+.admin-settings-panel > section > div + div {
+    @apply border-t pt-8;
+}
+.admin-settings-panel header h2 {
+    @apply mb-2 text-xl font-medium tracking-tight;
+}
+.admin-settings-panel header p {
+    @apply text-xs leading-relaxed;
+}
+.admin-settings-link[aria-current='page'] {
+    @apply bg-primary/8 text-primary;
+}
+.admin-settings-link[aria-current='page'] .admin-settings-indicator {
+    @apply opacity-100;
+}
+@container main (min-width: 48rem) {
+    .admin-metric {
+        @apply border-b-0;
+    }
+    .admin-metric:not(:last-child) {
+        @apply border-r;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .admin-workspace *,
+    .admin-workspace *::before,
+    .admin-workspace *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+.admin-workspace .admin-page select:not([data-slot]) {
+    background: var(--admin-canvas);
+    @apply h-10 rounded-lg;
+}
+
+.admin-workspace [data-slot='breadcrumb-list'] {
+    @apply text-xs;
 }

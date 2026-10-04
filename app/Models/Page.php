@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
+ * @property array<string, string>|null $seo
  * @property int $id
  * @property string $title
  * @property string $slug
@@ -21,7 +22,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['title', 'slug', 'excerpt', 'body', 'body_format', 'is_published', 'published_at'])]
+#[Fillable(['title', 'slug', 'excerpt', 'body', 'body_format', 'is_published', 'published_at', 'seo'])]
 class Page extends Model
 {
     /** @use HasFactory<PageFactory> */
@@ -48,6 +49,7 @@ class Page extends Model
     {
         return [
             'is_published' => 'boolean',
+            'seo' => 'array',
             'published_at' => 'datetime',
         ];
     }

@@ -47,6 +47,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        Head::flush();
+
         $user = $request->user();
         $settings = $this->generalSettings->get();
         Head::defaults(fn (HeadBuilder $head) => $head->title($settings['name'], suffix: ' - '.$settings['name'])->og(siteName: $settings['name']));

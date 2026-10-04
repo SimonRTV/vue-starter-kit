@@ -17,9 +17,8 @@ defineOptions({
 </script>
 
 <template>
-    <h1 class="sr-only">Paramètres d’apparence</h1>
-
     <div class="flex flex-col gap-8">
+        <h1 class="sr-only">Paramètres d’apparence</h1>
         <Heading
             variant="small"
             title="Paramètres d’apparence"

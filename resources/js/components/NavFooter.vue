@@ -26,10 +26,10 @@ const { isCurrentUrl } = useCurrentUrl();
         :class="`group-data-[collapsible=icon]:p-0 ${$props.class || ''}`"
     >
         <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu class="gap-0.5">
                 <SidebarMenuItem v-for="item in items" :key="item.title">
                     <SidebarMenuButton
-                        class="text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100"
+                        class="text-sidebar-foreground/60 hover:text-sidebar-foreground h-7 py-1 text-xs"
                         as-child
                         :is-active="!item.isExternal && isCurrentUrl(item.href)"
                     >

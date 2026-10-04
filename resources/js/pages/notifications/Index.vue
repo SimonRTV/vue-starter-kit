@@ -74,7 +74,9 @@ function date(value: string): string {
 </script>
 
 <template>
-    <div class="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
+    <div
+        class="admin-page mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8"
+    >
         <PageHeader
             title="Notifications"
             description="Retrouvez les informations et les mises à jour qui vous concernent."
@@ -95,7 +97,10 @@ function date(value: string): string {
                 >Actualiser</Button
             >
         </div>
-        <form class="flex flex-wrap items-end gap-3" @submit.prevent="filter">
+        <form
+            class="admin-panel flex flex-wrap items-end gap-4 rounded-2xl border p-6"
+            @submit.prevent="filter"
+        >
             <Field class="min-w-40 flex-1">
                 <FieldLabel for="notification-status">État</FieldLabel>
                 <select
@@ -142,7 +147,7 @@ function date(value: string): string {
             <li
                 v-for="item in items.data"
                 :key="item.id"
-                class="space-y-3 rounded-xl border p-4 sm:p-5"
+                class="bg-card space-y-3 rounded-2xl border p-5 sm:p-6"
                 :class="
                     item.read_at === null
                         ? 'border-primary/30 bg-primary/5'

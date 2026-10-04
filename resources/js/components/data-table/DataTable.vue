@@ -121,7 +121,7 @@ const table = useTable({
             >
             <slot name="bulk-actions" />
         </div>
-        <div class="rounded-md border">
+        <div class="admin-data-grid">
             <Table>
                 <TableHeader>
                     <TableRow

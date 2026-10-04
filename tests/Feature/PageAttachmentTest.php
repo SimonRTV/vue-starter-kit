@@ -82,6 +82,43 @@ class PageAttachmentTest extends TestCase
         $this->actingAs($this->editor())->post(route('page-attachments.store', $page), ['media_id' => $private->id])->assertNotFound();
     }
 
+    public function test_page_reader_exposes_only_authorized_attachments_and_respects_the_feature_toggle(): void
+    {
+        $user = $this->editor();
+        $user->givePermissionTo(PagePolicy::VIEW);
+        $page = Page::factory()->create();
+        $accessible = Media::factory()->create(['uploaded_by' => $user->id]);
+        $inaccessible = Media::factory()->create();
+        $page->attachments()->attach([$accessible->id, $inaccessible->id]);
+
+        $this->actingAs($user)->get(route('pages.show', $page))
+            ->assertOk()
+            ->assertInertia(fn (Assert $response) => $response
+                ->component('pages/Show')
+                ->has('attachments', 1)
+                ->where('attachments.0.id', $accessible->id)
+                ->where('attachments.0.download_url', route('media-files.download', $accessible)),
+            );
+
+        config(['starter.features.media' => false]);
+
+        $this->get(route('pages.show', $page))
+            ->assertInertia(fn (Assert $response) => $response->where('attachments', []));
+    }
+
+    public function test_page_reader_without_media_permission_does_not_receive_attached_files(): void
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo(PagePolicy::VIEW);
+        $page = Page::factory()->create();
+        $media = Media::factory()->create(['uploaded_by' => $user->id]);
+        $page->attachments()->attach($media);
+
+        $this->actingAs($user)->get(route('pages.show', $page))
+            ->assertOk()
+            ->assertInertia(fn (Assert $response) => $response->where('attachments', []));
+    }
+
     public function test_deleting_a_page_cleans_its_links_but_preserves_shared_media(): void
     {
         $page = Page::factory()->create();

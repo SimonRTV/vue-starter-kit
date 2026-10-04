@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\ApplicationSettings\SeoSettings;
 use App\Actions\Media\MediaLibrary;
 use App\Actions\Pages\PageContent;
 use App\Models\Media;
 use App\Models\Page;
 use Inertia\Inertia;
 use Inertia\Response;
-use Laravel\Head\Facades\Head;
 
 class PublicPageController extends Controller
 {
-    public function __invoke(Page $page, MediaLibrary $library): Response
+    public function __invoke(Page $page, MediaLibrary $library, SeoSettings $seo): Response
     {
         abort_unless(
             $page->is_published
@@ -21,11 +21,7 @@ class PublicPageController extends Controller
             404,
         );
 
-        Head::title($page->title);
-
-        if (filled($page->excerpt)) {
-            Head::description($page->excerpt);
-        }
+        $seo->apply($page);
 
         return Inertia::render('content/Show', [
             'page' => [

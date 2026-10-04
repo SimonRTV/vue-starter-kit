@@ -56,13 +56,18 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <Card>
+    <Card class="admin-resource-table">
         <CardHeader>
             <CardTitle>{{ title }}</CardTitle>
             <CardDescription v-if="description">
                 {{ description }}
             </CardDescription>
-            <CardAction v-if="$slots.actions">
+            <CardAction class="flex items-center gap-3">
+                <span
+                    class="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs tabular-nums"
+                    >{{ rowCount }}
+                    {{ rowCount === 1 ? itemLabel : itemsLabel }}</span
+                >
                 <slot name="actions" />
             </CardAction>
         </CardHeader>

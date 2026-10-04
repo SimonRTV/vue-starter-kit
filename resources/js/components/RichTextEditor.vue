@@ -15,6 +15,8 @@ import {
     Unlink,
     Minus,
     Eraser,
+    Ellipsis,
+    Clock3,
 } from '@lucide/vue';
 import StarterKit from '@tiptap/starter-kit';
 import { EditorContent, useEditor } from '@tiptap/vue-3';
@@ -28,10 +30,23 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const props = withDefaults(
-    defineProps<{ id: string; disabled?: boolean; invalid?: boolean }>(),
-    { disabled: false, invalid: false },
+    defineProps<{
+        id: string;
+        disabled?: boolean;
+        invalid?: boolean;
+        document?: boolean;
+        preview?: boolean;
+    }>(),
+    { disabled: false, invalid: false, document: false, preview: false },
 );
 const model = defineModel<string>({ required: true });
 const linkOpen = ref(false);
@@ -39,7 +54,7 @@ const linkUrl = ref('');
 const linkError = ref('');
 const editor = useEditor({
     content: model.value,
-    editable: !props.disabled,
+    editable: !props.disabled && !props.preview,
     extensions: [
         StarterKit.configure({
             heading: { levels: [2, 3] },
@@ -60,7 +75,9 @@ const editor = useEditor({
             'aria-multiline': 'true',
             'aria-label': 'Contenu de la page',
             'aria-invalid': String(props.invalid),
-            class: 'rich-content min-h-80 px-5 py-5 outline-none sm:px-6',
+            class: props.document
+                ? 'rich-content min-h-[52vh] px-6 py-8 outline-none sm:px-10'
+                : 'rich-content min-h-80 px-5 py-5 outline-none sm:px-6',
         },
     },
     onUpdate: ({ editor: instance }) => {
@@ -76,8 +93,8 @@ watch(model, (value) => {
     }
 });
 watch(
-    () => props.disabled,
-    (value) => editor.value?.setEditable(!value),
+    () => [props.disabled, props.preview],
+    () => editor.value?.setEditable(!props.disabled && !props.preview),
 );
 watch(
     () => props.invalid,
@@ -193,13 +210,21 @@ function saveLink(): void {
 
 <template>
     <div
-        class="bg-background focus-within:ring-ring/40 overflow-hidden rounded-xl border shadow-xs focus-within:ring-2"
-        :class="invalid ? 'border-destructive' : 'border-input'"
+        class="bg-background"
+        :class="
+            document
+                ? 'rounded-b-xl'
+                : [
+                      'focus-within:ring-ring/40 overflow-hidden rounded-xl border shadow-xs focus-within:ring-2',
+                      invalid ? 'border-destructive' : 'border-input',
+                  ]
+        "
     >
         <div
+            v-show="!preview"
             role="group"
             aria-label="Mise en forme du contenu"
-            class="bg-muted/40 flex flex-wrap items-center gap-1 border-b p-2"
+            class="bg-muted/40 flex flex-wrap items-center gap-0.5 border-y px-3 py-2 sm:px-5"
         >
             <select
                 :value="block"
@@ -213,7 +238,10 @@ function saveLink(): void {
                 <option value="h3">Titre 3</option>
             </select>
             <Button
-                v-for="tool in tools"
+                v-for="tool in tools.filter(
+                    (item) =>
+                        !['strike', 'code', 'codeBlock'].includes(item.active),
+                )"
                 :key="tool.active"
                 type="button"
                 size="icon"
@@ -239,48 +267,67 @@ function saveLink(): void {
                 @click="openLink"
                 ><Link2 class="size-4"
             /></Button>
-            <Button
-                type="button"
-                size="icon"
-                variant="ghost"
-                class="size-8"
-                title="Retirer le lien"
-                aria-label="Retirer le lien"
-                :disabled="disabled || !editor?.isActive('link')"
-                @click="
-                    editor
-                        ?.chain()
-                        .focus()
-                        .extendMarkRange('link')
-                        .unsetLink()
-                        .run()
-                "
-                ><Unlink class="size-4"
-            /></Button>
-            <Button
-                type="button"
-                size="icon"
-                variant="ghost"
-                class="size-8"
-                title="Séparateur"
-                aria-label="Insérer un séparateur"
-                :disabled="disabled || !editor"
-                @click="editor?.chain().focus().setHorizontalRule().run()"
-                ><Minus class="size-4"
-            /></Button>
-            <Button
-                type="button"
-                size="icon"
-                variant="ghost"
-                class="size-8"
-                title="Effacer la mise en forme"
-                aria-label="Effacer la mise en forme"
-                :disabled="disabled || !editor"
-                @click="
-                    editor?.chain().focus().unsetAllMarks().clearNodes().run()
-                "
-                ><Eraser class="size-4"
-            /></Button>
+            <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        class="size-8"
+                        aria-label="Plus de mise en forme"
+                        title="Plus de mise en forme"
+                        :disabled="disabled || !editor"
+                        ><Ellipsis class="size-4"
+                    /></Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                    <DropdownMenuItem
+                        v-for="tool in tools.filter((item) =>
+                            ['strike', 'code', 'codeBlock'].includes(
+                                item.active,
+                            ),
+                        )"
+                        :key="tool.active"
+                        @select="tool.run"
+                        ><component :is="tool.icon" class="size-4" />{{
+                            tool.label
+                        }}</DropdownMenuItem
+                    >
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                        @select="
+                            editor?.chain().focus().setHorizontalRule().run()
+                        "
+                        ><Minus class="size-4" />Insérer un
+                        séparateur</DropdownMenuItem
+                    >
+                    <DropdownMenuItem
+                        :disabled="!editor?.isActive('link')"
+                        @select="
+                            editor
+                                ?.chain()
+                                .focus()
+                                .extendMarkRange('link')
+                                .unsetLink()
+                                .run()
+                        "
+                        ><Unlink class="size-4" />Retirer le
+                        lien</DropdownMenuItem
+                    >
+                    <DropdownMenuItem
+                        @select="
+                            editor
+                                ?.chain()
+                                .focus()
+                                .unsetAllMarks()
+                                .clearNodes()
+                                .run()
+                        "
+                        ><Eraser class="size-4" />Effacer la mise en
+                        forme</DropdownMenuItem
+                    >
+                </DropdownMenuContent>
+            </DropdownMenu>
             <span class="mx-1 h-5 border-l" aria-hidden="true" />
             <Button
                 type="button"
@@ -305,12 +352,33 @@ function saveLink(): void {
                 ><Redo2 class="size-4"
             /></Button>
         </div>
-        <EditorContent :editor="editor" />
+        <div class="relative">
+            <span
+                v-if="editor?.isEmpty"
+                class="text-muted-foreground/60 pointer-events-none absolute"
+                :class="
+                    document
+                        ? 'top-8 left-6 sm:left-10'
+                        : 'top-5 left-5 sm:left-6'
+                "
+                >{{
+                    preview
+                        ? 'Aucun contenu pour le moment.'
+                        : 'Commencez à écrire votre page…'
+                }}</span
+            >
+            <EditorContent :editor="editor" />
+        </div>
         <div
             class="text-muted-foreground flex flex-wrap items-center justify-between gap-2 border-t px-4 py-2 text-xs"
         >
-            <span>Rédigez et mettez en forme votre contenu.</span
-            ><span>{{ words }} mot(s)</span>
+            <span>{{ words }} {{ words === 1 ? 'mot' : 'mots' }}</span>
+            <span class="flex items-center gap-1.5"
+                ><Clock3 class="size-3" />{{
+                    words > 0 ? Math.max(1, Math.ceil(words / 200)) : 0
+                }}
+                min de lecture</span
+            >
         </div>
         <Dialog v-model:open="linkOpen">
             <DialogContent>

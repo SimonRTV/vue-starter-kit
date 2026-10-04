@@ -59,7 +59,7 @@ function selectTheme(value: unknown): void {
                 :key="theme.value"
                 :value="theme.value"
                 :aria-label="`${theme.label}: ${theme.description}`"
-                class="h-auto min-w-0 flex-col items-stretch p-4 text-left whitespace-normal"
+                class="h-auto min-w-0 flex-col items-stretch justify-start p-4 text-left whitespace-normal"
             >
                 <div class="flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
@@ -75,7 +75,7 @@ function selectTheme(value: unknown): void {
 
                 <div
                     :data-admin-theme-preview="theme.value"
-                    class="admin-theme-preview mt-1 flex h-16 overflow-hidden rounded-md border"
+                    class="admin-theme-preview mt-1 flex h-28 overflow-hidden rounded-lg border"
                     aria-hidden="true"
                 >
                     <div
@@ -89,17 +89,17 @@ function selectTheme(value: unknown): void {
                         />
                     </div>
                     <div
-                        class="flex flex-1 flex-col gap-2 bg-[var(--admin-theme-preview-background)] p-2"
+                        class="flex flex-1 flex-col gap-2 bg-[var(--admin-theme-preview-background)] p-3"
                     >
                         <span
                             class="h-2 w-1/2 rounded-full bg-[var(--admin-theme-preview-foreground)]"
                         />
-                        <div class="grid flex-1 grid-cols-2 gap-1">
+                        <div class="grid flex-1 grid-cols-[1.5fr_1fr] gap-1">
                             <span
                                 class="rounded-sm bg-[var(--admin-theme-preview-card)] shadow-xs"
                             />
                             <span
-                                class="rounded-sm bg-[var(--admin-theme-preview-card)] shadow-xs"
+                                class="rounded-sm bg-[var(--admin-theme-preview-sidebar)] shadow-xs"
                             />
                         </div>
                     </div>

@@ -5,11 +5,53 @@ namespace Tests\Feature\Settings;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class AppearanceTest extends TestCase
 {
     use RefreshDatabase;
+
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public static function workspacePalettes(): array
+    {
+        return [
+            'neutral light' => ['neutral', 'light'],
+            'neutral dark' => ['neutral', 'dark'],
+            'ocean light' => ['ocean', 'light'],
+            'ocean dark' => ['ocean', 'dark'],
+            'forest light' => ['forest', 'light'],
+            'forest dark' => ['forest', 'dark'],
+        ];
+    }
+
+    #[DataProvider('workspacePalettes')]
+    public function test_workspace_palette_is_preserved_between_dashboard_and_settings(string $theme, string $appearance): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->patchJson(route('appearance.update'), [
+                'admin_theme' => $theme,
+                'appearance' => $appearance,
+            ])
+            ->assertOk();
+
+        foreach (['dashboard' => 'Dashboard', 'appearance.edit' => 'settings/Appearance', 'profile.edit' => 'settings/Profile'] as $route => $component) {
+            $this->get(route($route))
+                ->assertOk()
+                ->assertSee('data-admin-theme="'.$theme.'"', false)
+                ->assertSee('data-appearance="'.$appearance.'"', false)
+                ->assertSee('data-appearance-surface="dashboard"', false)
+                ->assertInertia(fn (Assert $page) => $page
+                    ->component($component)
+                    ->where('auth.user.admin_theme', $theme)
+                    ->where('auth.user.appearance', $appearance),
+                );
+        }
+    }
 
     public function test_guests_are_redirected_to_login(): void
     {

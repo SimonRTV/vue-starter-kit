@@ -1,34 +1,21 @@
 <script setup lang="ts">
-import { usePage } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import {
+    ArrowRight,
     ArrowUpRight,
     BriefcaseBusiness,
     CalendarDays,
-    ChartNoAxesCombined,
-    CircleCheck,
     Clock,
     DollarSign,
-    ShoppingBag,
-    Sparkles,
-    Target,
+    SlidersHorizontal,
     TrendingUp,
     Users,
 } from '@lucide/vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { Component } from 'vue';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import {
-    Card,
-    CardAction,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { index as activityIndex } from '@/actions/App/Http/Controllers/ActivityController';
+import { edit as editAppearance } from '@/routes/appearance';
 import { dashboard } from '@/routes';
 
 type DashboardStat = {
@@ -40,6 +27,7 @@ type DashboardStat = {
 };
 
 const page = usePage();
+const period = ref<'all' | 'recent'>('all');
 
 const firstName = computed(
     () => page.props.auth.user.name.trim().split(/\s+/)[0] || 'vous',
@@ -85,6 +73,10 @@ const revenueByMonth = [
     { month: 'Juil.', amount: '76 k$', height: 76 },
     { month: 'Août', amount: '86 k$', height: 86, current: true },
 ];
+
+const displayedRevenue = computed(() =>
+    period.value === 'recent' ? revenueByMonth.slice(-3) : revenueByMonth,
+);
 
 const goals = [
     {
@@ -168,341 +160,379 @@ defineOptions({
 </script>
 
 <template>
-    <div class="@container/main flex flex-1 flex-col">
-        <main
-            class="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
+    <div class="admin-dashboard @container/main flex flex-1 flex-col">
+        <div
+            class="admin-page mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-8 p-5 md:p-8 lg:p-10"
         >
             <header
-                class="flex flex-col gap-4 @3xl/main:flex-row @3xl/main:items-center @3xl/main:justify-between"
+                class="flex flex-col justify-between gap-5 @3xl/main:flex-row @3xl/main:items-end"
             >
-                <div class="flex min-w-0 flex-col gap-1">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <h1
-                            class="text-2xl font-semibold tracking-tight sm:text-3xl"
-                        >
-                            Bonjour, {{ firstName }}
-                        </h1>
-                        <Badge variant="outline">
-                            <Sparkles />
-                            Données d’exemple
-                        </Badge>
-                    </div>
-                    <p class="text-muted-foreground text-sm sm:text-base">
-                        Voici ce qui se passe aujourd’hui dans votre espace de
-                        travail.
+                <div>
+                    <p
+                        class="text-primary mb-4 flex items-center gap-2 text-[10px] font-semibold tracking-[0.22em] uppercase"
+                    >
+                        <span class="bg-primary size-1.5 rounded-full" /> Votre
+                        espace, en un regard
+                    </p>
+                    <h1
+                        class="text-4xl font-medium tracking-[-0.055em] sm:text-5xl lg:text-6xl"
+                    >
+                        Bonjour, {{ firstName
+                        }}<span class="text-primary">.</span>
+                    </h1>
+                    <p class="text-muted-foreground mt-3 text-sm">
+                        Une vue claire pour garder une longueur d’avance.
                     </p>
                 </div>
-                <div
-                    class="text-muted-foreground flex items-center gap-2 text-sm"
-                >
-                    <CircleCheck
-                        class="text-primary size-4"
-                        aria-hidden="true"
-                    />
-                    <span>Tous les systèmes sont opérationnels</span>
+                <div class="flex shrink-0 flex-wrap items-center gap-3">
+                    <span
+                        class="text-muted-foreground rounded-full border px-3 py-1.5 text-[11px]"
+                        >Données d’exemple</span
+                    >
+                    <Button variant="outline" size="sm" as-child
+                        ><Link :href="editAppearance()"
+                            ><SlidersHorizontal class="size-3.5" />
+                            Personnaliser</Link
+                        ></Button
+                    >
                 </div>
             </header>
 
             <section
                 aria-label="Vue d’ensemble de l’activité"
-                class="grid gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4"
+                class="admin-metrics grid grid-cols-2 overflow-hidden rounded-2xl border @3xl/main:grid-cols-4"
             >
-                <Card v-for="stat in stats" :key="stat.label" class="min-w-0">
-                    <CardHeader>
-                        <CardDescription>{{ stat.label }}</CardDescription>
-                        <CardAction>
-                            <div
-                                class="bg-muted text-muted-foreground rounded-lg p-2"
-                                aria-hidden="true"
-                            >
-                                <component :is="stat.icon" class="size-5" />
-                            </div>
-                        </CardAction>
-                    </CardHeader>
-                    <CardContent>
-                        <p
-                            class="text-3xl font-semibold tracking-tight tabular-nums"
+                <article
+                    v-for="(stat, index) in stats"
+                    :key="stat.label"
+                    class="admin-metric flex min-w-0 flex-col gap-4 p-4 lg:p-6"
+                >
+                    <div
+                        class="text-muted-foreground flex items-center justify-between gap-3"
+                    >
+                        <span class="text-[11px] font-medium">{{
+                            stat.label
+                        }}</span>
+                        <component
+                            :is="stat.icon"
+                            class="size-4"
+                            aria-hidden="true"
+                        />
+                    </div>
+                    <p
+                        class="text-2xl font-medium tracking-[-0.045em] tabular-nums md:text-3xl xl:text-4xl"
+                    >
+                        {{ stat.value }}
+                    </p>
+                    <div class="flex items-center gap-2 text-[11px]">
+                        <span
+                            class="text-primary bg-primary/8 inline-flex shrink-0 items-center gap-0.5 rounded-full px-1.5 py-0.5"
+                            ><ArrowUpRight class="size-3" />{{
+                                stat.change
+                            }}</span
                         >
-                            {{ stat.value }}
-                        </p>
-                    </CardContent>
-                    <CardFooter class="flex-wrap gap-2">
-                        <Badge variant="secondary">
-                            <ArrowUpRight />
-                            {{ stat.change }}
-                        </Badge>
-                        <span class="text-muted-foreground text-xs">
-                            {{ stat.detail }}
-                        </span>
-                    </CardFooter>
-                </Card>
+                        <span class="text-muted-foreground">{{
+                            index === 0 ? 'vs. mois dernier' : stat.detail
+                        }}</span>
+                    </div>
+                </article>
             </section>
 
             <section
                 aria-label="Vue d’ensemble des performances"
-                class="grid gap-6 @5xl/main:grid-cols-12"
+                class="grid gap-6 @4xl/main:grid-cols-[minmax(0,1.8fr)_minmax(260px,1fr)]"
             >
-                <Card class="min-w-0 @5xl/main:col-span-8">
-                    <CardHeader>
-                        <CardTitle
-                            >Vue d’ensemble du chiffre d’affaires</CardTitle
-                        >
-                        <CardDescription>
-                            Chiffre d’affaires mensuel récurrent des 7 derniers
-                            mois
-                        </CardDescription>
-                        <CardAction>
-                            <Badge variant="secondary">
-                                <TrendingUp />
-                                12,5 %
-                            </Badge>
-                        </CardAction>
-                    </CardHeader>
-                    <CardContent>
+                <article
+                    class="admin-panel min-w-0 overflow-hidden rounded-2xl border"
+                >
+                    <div
+                        class="flex flex-wrap items-start justify-between gap-4 p-6 pb-0"
+                    >
+                        <div>
+                            <p class="admin-eyebrow">Performance</p>
+                            <h2 class="mt-2 text-xl font-medium tracking-tight">
+                                Le rythme de votre croissance
+                            </h2>
+                        </div>
                         <div
+                            class="bg-muted flex rounded-full p-1"
+                            role="group"
+                            aria-label="Période du graphique"
+                        >
+                            <button
+                                v-for="option in [
+                                    { value: 'all', label: '7 mois' },
+                                    { value: 'recent', label: '3 mois' },
+                                ] as const"
+                                :key="option.value"
+                                type="button"
+                                :aria-pressed="period === option.value"
+                                :class="[
+                                    'focus-visible:outline-ring rounded-full px-3 py-1.5 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2',
+                                    period === option.value
+                                        ? 'bg-card text-foreground shadow-sm'
+                                        : 'text-muted-foreground',
+                                ]"
+                                @click="period = option.value"
+                            >
+                                {{ option.label }}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-3 px-6 pt-6">
+                        <span
+                            class="text-4xl font-medium tracking-[-0.05em] tabular-nums"
+                            >86 000
+                            <span class="text-muted-foreground text-xl"
+                                >$</span
+                            ></span
+                        >
+                        <span class="text-primary text-xs">+12,5 %</span>
+                    </div>
+                    <p class="text-muted-foreground px-6 pt-1 text-xs">
+                        Chiffre d’affaires · août, données d’exemple
+                    </p>
+                    <div class="px-6 pt-6 pb-5">
+                        <div
+                            class="relative h-48"
                             role="img"
-                            aria-label="Le chiffre d’affaires mensuel est passé de 42 000 dollars en février à 86 000 dollars en août"
-                            class="flex h-64 items-end gap-2 sm:gap-4"
+                            :aria-label="
+                                period === 'all'
+                                    ? 'Chiffre d’affaires mensuel : février 42 000, mars 55 000, avril 49 000, mai 67 000, juin 58 000, juillet 76 000, août 86 000 dollars.'
+                                    : 'Chiffre d’affaires mensuel : juin 58 000, juillet 76 000, août 86 000 dollars.'
+                            "
                         >
                             <div
-                                v-for="month in revenueByMonth"
-                                :key="month.month"
-                                class="flex h-full min-w-0 flex-1 flex-col justify-end gap-3"
+                                class="pointer-events-none absolute inset-0 flex flex-col justify-between pb-7"
+                                aria-hidden="true"
                             >
                                 <div
-                                    class="bg-muted/60 flex h-full items-end rounded-lg p-1"
+                                    v-for="line in 4"
+                                    :key="line"
+                                    class="border-border/80 border-t border-dashed"
+                                />
+                            </div>
+                            <div
+                                class="relative flex h-full items-end gap-3 sm:gap-5"
+                                aria-hidden="true"
+                            >
+                                <div
+                                    v-for="month in displayedRevenue"
+                                    :key="month.month"
+                                    class="group flex h-full min-w-0 flex-1 flex-col justify-end gap-2"
                                 >
-                                    <div
-                                        :class="
-                                            cn(
-                                                'w-full rounded-md transition-[height] duration-500',
-                                                month.current
-                                                    ? 'bg-primary'
-                                                    : 'bg-primary/25',
-                                            )
-                                        "
-                                        :style="{ height: `${month.height}%` }"
-                                        :title="`${month.month}: ${month.amount}`"
-                                    />
-                                </div>
-                                <div class="flex flex-col items-center gap-0.5">
-                                    <span class="text-xs font-medium">
-                                        {{ month.month }}
-                                    </span>
                                     <span
-                                        class="text-muted-foreground hidden text-[11px] @2xl/main:inline"
+                                        class="text-muted-foreground text-center text-[10px] tabular-nums"
+                                        >{{ month.amount }}</span
                                     >
-                                        {{ month.amount }}
-                                    </span>
+                                    <div
+                                        :class="[
+                                            'admin-chart-bar mx-auto w-full max-w-16 rounded-t-md transition-all duration-300',
+                                            month.current
+                                                ? 'bg-primary'
+                                                : 'bg-primary/20 group-hover:bg-primary/50',
+                                        ]"
+                                        :style="{
+                                            height: `${month.height * 1.35}px`,
+                                        }"
+                                    />
+                                    <span
+                                        class="text-muted-foreground text-center text-[10px]"
+                                        >{{ month.month }}</span
+                                    >
                                 </div>
                             </div>
                         </div>
-                    </CardContent>
-                    <CardFooter class="flex-wrap gap-x-8 gap-y-3">
-                        <div class="flex items-center gap-2">
-                            <ChartNoAxesCombined
-                                class="text-muted-foreground size-4"
-                                aria-hidden="true"
-                            />
-                            <div class="flex flex-col">
-                                <span class="text-muted-foreground text-xs">
-                                    Croissance moyenne
-                                </span>
-                                <span class="text-sm font-medium"
-                                    >8,4 % par mois</span
-                                >
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <ShoppingBag
-                                class="text-muted-foreground size-4"
-                                aria-hidden="true"
-                            />
-                            <div class="flex flex-col">
-                                <span class="text-muted-foreground text-xs">
-                                    Panier moyen
-                                </span>
-                                <span class="text-sm font-medium"
-                                    >248,60 $</span
-                                >
-                            </div>
-                        </div>
-                    </CardFooter>
-                </Card>
-
-                <Card class="min-w-0 @5xl/main:col-span-4">
-                    <CardHeader>
-                        <CardTitle>Objectifs trimestriels</CardTitle>
-                        <CardDescription>
-                            Progression de vos principaux objectifs
-                        </CardDescription>
-                        <CardAction>
-                            <div
-                                class="bg-muted text-muted-foreground rounded-lg p-2"
-                                aria-hidden="true"
-                            >
-                                <Target class="size-5" />
-                            </div>
-                        </CardAction>
-                    </CardHeader>
-                    <CardContent class="flex flex-col gap-6">
-                        <div
-                            v-for="goal in goals"
-                            :key="goal.label"
-                            class="flex flex-col gap-2.5"
+                    </div>
+                    <div
+                        class="bg-muted/40 flex flex-wrap items-center justify-between gap-3 border-t px-6 py-4 text-xs"
+                    >
+                        <span class="text-muted-foreground"
+                            >Croissance moyenne
+                            <strong class="text-foreground ml-2 font-medium"
+                                >8,4 % / mois</strong
+                            ></span
+                        ><span class="text-muted-foreground"
+                            >Panier moyen
+                            <strong class="text-foreground ml-2 font-medium"
+                                >248,60 $</strong
+                            ></span
                         >
+                    </div>
+                </article>
+
+                <article
+                    class="admin-focus-panel relative flex min-w-0 flex-col overflow-hidden rounded-2xl p-6"
+                >
+                    <div
+                        class="admin-orbit pointer-events-none absolute -top-14 -right-16 size-56 rounded-full border"
+                        aria-hidden="true"
+                    >
+                        <div class="absolute inset-6 rounded-full border" />
+                        <div class="absolute inset-12 rounded-full border" />
+                    </div>
+                    <div class="relative flex items-center justify-between">
+                        <p
+                            class="text-[10px] font-semibold tracking-[0.2em] uppercase opacity-60"
+                        >
+                            Le cap du trimestre
+                        </p>
+                        <ArrowUpRight class="size-5 opacity-70" />
+                    </div>
+                    <div class="relative mt-7 mb-8">
+                        <span class="text-6xl font-light tracking-[-0.06em]"
+                            >86<span class="text-3xl opacity-50">%</span></span
+                        >
+                        <h2 class="mt-3 text-xl font-medium tracking-tight">
+                            L’objectif se rapproche.
+                        </h2>
+                        <p
+                            class="mt-2 max-w-56 text-xs leading-relaxed opacity-60"
+                        >
+                            Chaque avancée compte. Gardez vos priorités en
+                            perspective.
+                        </p>
+                    </div>
+                    <div class="relative mt-auto flex flex-col gap-5">
+                        <div v-for="goal in goals" :key="goal.label">
                             <div
-                                class="flex items-center justify-between gap-4"
+                                class="mb-2 flex items-center justify-between gap-2 text-xs"
                             >
-                                <span class="text-sm font-medium">
-                                    {{ goal.label }}
-                                </span>
-                                <span
-                                    class="text-muted-foreground text-xs tabular-nums"
+                                <span class="opacity-75">{{ goal.label }}</span
+                                ><span class="tabular-nums"
+                                    >{{ goal.progress }} %</span
                                 >
-                                    {{ goal.progress }} %
-                                </span>
                             </div>
                             <div
                                 role="progressbar"
                                 :aria-label="goal.label"
                                 :aria-valuenow="goal.progress"
-                                aria-valuemin="0"
-                                aria-valuemax="100"
-                                class="bg-muted h-2 overflow-hidden rounded-full"
+                                :aria-valuemin="0"
+                                :aria-valuemax="100"
+                                :aria-valuetext="goal.value"
+                                class="h-1 overflow-hidden rounded-full bg-current/10"
                             >
                                 <div
-                                    class="bg-primary h-full rounded-full transition-[width] duration-500"
+                                    class="admin-goal-fill h-full rounded-full"
                                     :style="{ width: `${goal.progress}%` }"
                                 />
                             </div>
-                            <span class="text-muted-foreground text-xs">
-                                {{ goal.value }}
-                            </span>
                         </div>
-                    </CardContent>
-                    <CardFooter>
-                        <div class="flex items-start gap-2 text-sm">
-                            <CircleCheck
-                                class="text-primary mt-0.5 size-4 shrink-0"
-                                aria-hidden="true"
-                            />
-                            <p class="text-muted-foreground">
-                                Vous êtes en bonne voie pour atteindre les trois
-                                objectifs ce trimestre.
-                            </p>
-                        </div>
-                    </CardFooter>
-                </Card>
+                    </div>
+                </article>
             </section>
 
             <section
                 aria-label="Détails de l’espace de travail"
-                class="grid gap-6 @5xl/main:grid-cols-12"
+                class="grid gap-6 @4xl/main:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]"
             >
-                <Card class="min-w-0 @5xl/main:col-span-7">
-                    <CardHeader>
-                        <CardTitle>Activité récente</CardTitle>
-                        <CardDescription>
-                            Les dernières nouvelles de votre équipe
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div class="flex flex-col">
-                            <template
-                                v-for="(activity, index) in recentActivity"
-                                :key="activity.name"
-                            >
-                                <Separator v-if="index > 0" />
-                                <div
-                                    class="flex items-start gap-3 py-4 first:pt-0 last:pb-0"
-                                >
-                                    <Avatar class="size-9">
-                                        <AvatarFallback>
-                                            {{ activity.initials }}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div class="min-w-0 flex-1">
-                                        <p class="text-sm leading-relaxed">
-                                            <span class="font-medium">
-                                                {{ activity.name }}
-                                            </span>
-                                            {{ activity.action }}
-                                        </p>
-                                        <span
-                                            class="text-muted-foreground text-xs"
-                                        >
-                                            {{ activity.time }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </template>
+                <article class="admin-panel min-w-0 rounded-2xl border p-6">
+                    <div class="mb-6 flex items-center justify-between gap-3">
+                        <div>
+                            <p class="admin-eyebrow">Le fil de l’équipe</p>
+                            <h2 class="mt-2 text-xl font-medium tracking-tight">
+                                Activité récente
+                            </h2>
                         </div>
-                    </CardContent>
-                </Card>
-
-                <Card class="min-w-0 @5xl/main:col-span-5">
-                    <CardHeader>
-                        <CardTitle>Prochaines échéances</CardTitle>
-                        <CardDescription>
-                            Vos prochaines réunions et étapes clés
-                        </CardDescription>
-                        <CardAction>
-                            <div
-                                class="bg-muted text-muted-foreground rounded-lg p-2"
+                        <Button
+                            v-if="page.props.auth.can.viewActivity"
+                            variant="ghost"
+                            size="icon"
+                            as-child
+                            ><Link
+                                :href="activityIndex()"
+                                aria-label="Ouvrir le journal d’activité"
+                                ><ArrowUpRight class="size-5" /></Link
+                        ></Button>
+                    </div>
+                    <ol class="flex flex-col">
+                        <li
+                            v-for="(activity, index) in recentActivity"
+                            :key="activity.initials"
+                            class="relative flex gap-4 pb-6 last:pb-0"
+                        >
+                            <span
+                                v-if="index < recentActivity.length - 1"
+                                class="bg-border absolute top-9 bottom-0 left-[17px] w-px"
                                 aria-hidden="true"
+                            />
+                            <span
+                                class="bg-muted text-muted-foreground relative flex size-9 shrink-0 items-center justify-center rounded-full text-[10px] font-medium"
+                                >{{ activity.initials }}</span
                             >
-                                <CalendarDays class="size-5" />
-                            </div>
-                        </CardAction>
-                    </CardHeader>
-                    <CardContent>
-                        <div class="flex flex-col">
-                            <template
-                                v-for="(event, index) in schedule"
-                                :key="`${event.date}-${event.title}`"
-                            >
-                                <Separator v-if="index > 0" />
-                                <div
-                                    class="flex items-center gap-3 py-4 first:pt-0 last:pb-0"
+                            <div class="min-w-0 pt-0.5">
+                                <p class="text-xs leading-relaxed">
+                                    <span class="font-semibold">{{
+                                        activity.name
+                                    }}</span>
+                                    <span class="text-muted-foreground">{{
+                                        ` ${activity.action}`
+                                    }}</span>
+                                </p>
+                                <p
+                                    class="text-muted-foreground mt-1 text-[10px]"
                                 >
-                                    <div
-                                        class="bg-muted flex size-12 shrink-0 flex-col items-center justify-center rounded-lg"
-                                    >
-                                        <span
-                                            class="text-sm font-semibold tabular-nums"
-                                        >
-                                            {{ event.date }}
-                                        </span>
-                                        <span
-                                            class="text-muted-foreground text-[10px] tracking-wide uppercase"
-                                        >
-                                            {{ event.month }}
-                                        </span>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <p class="truncate text-sm font-medium">
-                                            {{ event.title }}
-                                        </p>
-                                        <span
-                                            class="text-muted-foreground flex items-center gap-1 text-xs"
-                                        >
-                                            <Clock
-                                                class="size-3"
-                                                aria-hidden="true"
-                                            />
-                                            {{ event.time }}
-                                        </span>
-                                    </div>
-                                    <Badge variant="outline">
-                                        {{ event.type }}
-                                    </Badge>
-                                </div>
-                            </template>
+                                    {{ activity.time }}
+                                </p>
+                            </div>
+                        </li>
+                    </ol>
+                </article>
+                <article class="admin-panel min-w-0 rounded-2xl border p-6">
+                    <div class="mb-6 flex items-center justify-between">
+                        <div>
+                            <p class="admin-eyebrow">À l’horizon</p>
+                            <h2 class="mt-2 text-xl font-medium tracking-tight">
+                                Prochaines échéances
+                            </h2>
                         </div>
-                    </CardContent>
-                </Card>
+                        <CalendarDays class="text-muted-foreground size-5" />
+                    </div>
+                    <ol class="divide-y">
+                        <li
+                            v-for="event in schedule"
+                            :key="event.title"
+                            class="flex items-center gap-4 py-4 first:pt-0 last:pb-0"
+                        >
+                            <div
+                                class="bg-muted flex h-14 w-12 shrink-0 flex-col items-center justify-center rounded-lg"
+                            >
+                                <span
+                                    class="text-xl font-medium tabular-nums"
+                                    >{{ event.date }}</span
+                                ><span
+                                    class="text-muted-foreground text-[9px] uppercase"
+                                    >{{ event.month }}</span
+                                >
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <span
+                                    class="text-primary text-[9px] font-semibold tracking-wider uppercase"
+                                    >{{ event.type }}</span
+                                >
+                                <p class="my-1 text-xs font-medium">
+                                    {{ event.title }}
+                                </p>
+                                <p
+                                    class="text-muted-foreground flex items-center gap-1.5 text-[10px]"
+                                >
+                                    <Clock class="size-3" />{{ event.time }}
+                                </p>
+                            </div>
+                        </li>
+                    </ol>
+                </article>
             </section>
-        </main>
+            <footer
+                class="text-muted-foreground flex flex-wrap items-center justify-between gap-3 border-t pt-5 text-[10px]"
+            >
+                <span>Votre espace de travail. Votre perspective.</span
+                ><Link
+                    :href="editAppearance()"
+                    class="hover:text-primary inline-flex items-center gap-2"
+                    >Un espace à votre image <ArrowRight class="size-3"
+                /></Link>
+            </footer>
+        </div>
     </div>
 </template>

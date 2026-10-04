@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\ApplicationSettings\SeoSettings;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\BulkPageController;
 use App\Http\Controllers\CsvImportController;
@@ -9,28 +10,30 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageAttachmentController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SeoController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TableExportController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\EnsureFeatureEnabled;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return config('starter.features.public_site')
-        ? Inertia::render('Welcome')
-        : to_route('dashboard');
-})
-    ->name('home')
-    ->withHead(
-        title: 'Welcome',
-        description: 'A flexible, thoughtful workspace for bringing people, priorities, and progress together.',
-        robots: 'all',
-    );
+Route::get('/', function (SeoSettings $seo) {
+    if (! config('starter.features.public_site')) {
+        return to_route('dashboard');
+    }
+    $seo->apply();
+
+    return Inertia::render('Welcome');
+})->name('home');
 Route::get('content/{page:slug}', PublicPageController::class)
     ->middleware([EnsureFeatureEnabled::class.':starter.features.public_site', EnsureFeatureEnabled::class.':starter.features.pages'])
-    ->name('content.show')
-    ->withHead(robots: 'all');
+    ->name('content.show');
+Route::get('sitemap.xml', SitemapController::class)
+    ->middleware(EnsureFeatureEnabled::class.':starter.features.public_site')->name('sitemap');
+Route::get('robots.txt', RobotsController::class)->name('robots');
 
 Route::middleware(EnsureFeatureEnabled::class.':starter.features.media')->group(function () {
     Route::get('files/{media}/download', [MediaFileController::class, 'download'])->name('media-files.download');
@@ -38,6 +41,10 @@ Route::middleware(EnsureFeatureEnabled::class.':starter.features.media')->group(
 });
 
 Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(function () {
+    Route::middleware(EnsureFeatureEnabled::class.':starter.features.public_site')->group(function () {
+        Route::get('seo/{target?}', [SeoController::class, 'edit'])->where('target', 'defaults|home|[0-9]+')->name('seo.edit')->withHead(title: 'Référencement SEO');
+        Route::put('seo/{target}', [SeoController::class, 'update'])->where('target', 'defaults|home|[0-9]+')->name('seo.update');
+    });
     Route::inertia('dashboard', 'Dashboard')
         ->name('dashboard')
         ->withHead(title: 'Tableau de bord');

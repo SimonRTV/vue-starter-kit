@@ -7,7 +7,9 @@ use App\Models\User;
 use App\Policies\PagePolicy;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia as Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
@@ -232,23 +234,73 @@ class PageManagementTest extends TestCase
         $this->assertNotNull($page->published_at);
     }
 
-    public function test_page_creation_validates_required_unique_and_boolean_fields(): void
+    public function test_page_creation_validates_required_and_boolean_fields(): void
     {
         $user = $this->authorizedUser();
-        Page::factory()->create(['slug' => 'existing-page']);
 
         $response = $this
             ->actingAs($user)
             ->from(route('pages.create'))
             ->post(route('pages.store'), [
                 'title' => '',
-                'slug' => 'existing-page',
+                'slug' => '',
                 'is_published' => 'sometimes',
             ]);
 
         $response
             ->assertRedirect(route('pages.create'))
             ->assertSessionHasErrors(['title', 'slug', 'is_published']);
+    }
+
+    /**
+     * @param  list<string>  $existingSlugs
+     */
+    #[DataProvider('pageSlugCollisions')]
+    public function test_page_creation_uses_the_next_available_slug(array $existingSlugs, string $requestedSlug, string $expectedSlug): void
+    {
+        $user = $this->authorizedUser();
+        $originalPages = [];
+
+        foreach ($existingSlugs as $index => $existingSlug) {
+            $factory = $index % 2 === 0 ? Page::factory()->published() : Page::factory()->draft();
+            $originalPages[] = $factory->create(['slug' => $existingSlug, 'title' => 'Original page'])->refresh();
+        }
+
+        $response = $this->actingAs($user)->post(route('pages.store'), [
+            'title' => 'New page',
+            'slug' => $requestedSlug,
+            'body' => 'New content.',
+            'is_published' => false,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $createdPage = Page::query()->where('title', 'New page')->sole();
+        $response->assertRedirect(route('pages.show', $createdPage));
+        $this->assertSame($expectedSlug, $createdPage->slug);
+        $this->assertLessThanOrEqual(255, Str::length($createdPage->slug));
+        $this->assertSame('New content.', $createdPage->body);
+        $this->assertFalse($createdPage->is_published);
+        $this->assertSame(count($existingSlugs) + 1, Page::query()->count());
+
+        foreach ($originalPages as $originalPage) {
+            $this->assertSame($originalPage->getRawOriginal(), $originalPage->fresh()->getRawOriginal());
+        }
+    }
+
+    /**
+     * @return array<string, array{list<string>, string, string}>
+     */
+    public static function pageSlugCollisions(): array
+    {
+        return [
+            'available custom slug' => [['other-page'], 'custom-address', 'custom-address'],
+            'first duplicate' => [['about'], 'about', 'about-2'],
+            'several duplicates' => [['about', 'about-2', 'about-3'], 'about', 'about-4'],
+            'first available suffix' => [['about', 'about-3'], 'about', 'about-2'],
+            'existing numeric ending' => [['report-2026'], 'report-2026', 'report-2026-2'],
+            'maximum length with an occupied suffix' => [[Str::repeat('a', 255), Str::repeat('a', 253).'-2'], Str::repeat('a', 255), Str::repeat('a', 253).'-3'],
+            'multibyte maximum length' => [[Str::repeat('é', 255)], Str::repeat('é', 255), Str::repeat('é', 253).'-2'],
+        ];
     }
 
     public function test_authenticated_users_can_view_a_page(): void
@@ -265,7 +317,28 @@ class PageManagementTest extends TestCase
                 ->component('pages/Show')
                 ->where('page.id', $managedPage->id)
                 ->where('page.body', 'Full page content.')
-                ->where('page.status', 'published'),
+                ->where('page.status', 'published')
+                ->where('canUpdate', true)
+                ->where('canDelete', true),
+            );
+    }
+
+    public function test_page_view_exposes_only_the_readers_management_abilities(): void
+    {
+        $user = User::factory()->create();
+        $this->grantPermissions($user, [PagePolicy::VIEW]);
+        $managedPage = Page::factory()->draft()->create();
+
+        $this->actingAs($user)
+            ->get(route('pages.show', $managedPage))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('pages/Show')
+                ->where('page.id', $managedPage->id)
+                ->where('page.status', 'draft')
+                ->where('canUpdate', false)
+                ->where('canDelete', false)
+                ->where('attachments', []),
             );
     }
 
@@ -289,7 +362,7 @@ class PageManagementTest extends TestCase
 
         $publishResponse
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route('pages.show', $managedPage));
+            ->assertRedirect(route('pages.edit', $managedPage));
 
         $managedPage->refresh();
 
@@ -307,12 +380,67 @@ class PageManagementTest extends TestCase
                 'is_published' => false,
             ]);
 
-        $unpublishResponse->assertSessionHasNoErrors();
+        $unpublishResponse
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('pages.edit', $managedPage));
 
         $managedPage->refresh();
 
         $this->assertFalse($managedPage->is_published);
         $this->assertNull($managedPage->published_at);
+    }
+
+    public function test_saving_in_the_editor_returns_the_updated_content_without_changing_draft_status(): void
+    {
+        $user = $this->authorizedUser();
+        $managedPage = Page::factory()->draft()->create();
+
+        $this->actingAs($user)
+            ->patch(route('pages.update', $managedPage), [
+                'title' => 'Updated title',
+                'slug' => 'updated-page',
+                'excerpt' => 'A short introduction.',
+                'body' => '<h2>Introduction</h2><p><strong>Updated content</strong></p>',
+                'body_format' => 'html',
+                'is_published' => false,
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('pages.edit', $managedPage));
+
+        $this->get(route('pages.edit', $managedPage))
+            ->assertInertia(fn (Assert $response) => $response
+                ->component('pages/Edit')
+                ->where('page.title', 'Updated title')
+                ->where('page.slug', 'updated-page')
+                ->where('page.excerpt', 'A short introduction.')
+                ->where('page.body_html', '<h2>Introduction</h2><p><strong>Updated content</strong></p>')
+                ->where('page.is_published', false)
+                ->where('page.published_at', null),
+            );
+    }
+
+    public function test_invalid_editor_changes_return_to_edit_and_preserve_saved_content(): void
+    {
+        $user = $this->authorizedUser();
+        $managedPage = Page::factory()->draft()->create(['title' => 'Saved title']);
+        $originalBody = $managedPage->body;
+        Page::factory()->create(['slug' => 'taken-slug']);
+
+        $this->actingAs($user)
+            ->from(route('pages.edit', $managedPage))
+            ->patch(route('pages.update', $managedPage), [
+                'title' => '',
+                'slug' => 'taken-slug',
+                'body' => '<p>Unsaved content</p>',
+                'body_format' => 'html',
+                'is_published' => false,
+            ])
+            ->assertRedirect(route('pages.edit', $managedPage))
+            ->assertSessionHasErrors(['title', 'slug']);
+
+        $managedPage->refresh();
+        $this->assertSame('Saved title', $managedPage->title);
+        $this->assertSame($originalBody, $managedPage->body);
     }
 
     public function test_authenticated_users_can_delete_a_page(): void
