@@ -35,7 +35,6 @@ import type {
     TemplateValues,
 } from '@/types/page-templates';
 import RichTextEditor from '@/components/RichTextEditor.vue';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Field,
@@ -108,6 +107,12 @@ const form = useForm({
 const selectedTemplate = computed(() =>
     props.templates.find((template) => template.id === form.page_template_id),
 );
+const publicationStatus = computed({
+    get: () => (form.is_published ? 'published' : 'draft'),
+    set: (value: string) => {
+        form.is_published = value === 'published';
+    },
+});
 const templateSelection = computed({
     get: () =>
         form.page_template_id === null
@@ -167,7 +172,11 @@ function submit(event: SubmitEvent): void {
     }
 
     const intent =
-        (event.submitter as HTMLButtonElement | null)?.value || 'save';
+        (event.submitter as HTMLButtonElement | null)?.value === 'preview'
+            ? 'preview'
+            : form.is_published
+              ? 'publish'
+              : 'unpublish';
 
     form.transform((data) => ({ ...data, intent })).submit(
         props.page ? update(props.page.id) : store(),
@@ -362,9 +371,7 @@ onUnmounted(() => removeNavigationListener?.());
                             {{
                                 form.processing
                                     ? 'Enregistrement…'
-                                    : page
-                                      ? 'Enregistrer'
-                                      : 'Enregistrer le brouillon'
+                                    : 'Enregistrer'
                             }}
                         </Button>
                     </div>
@@ -543,54 +550,57 @@ onUnmounted(() => removeNavigationListener?.());
                     <section
                         class="bg-background space-y-5 rounded-xl border p-5"
                     >
-                        <div class="flex items-center justify-between gap-3">
-                            <h2
-                                class="flex items-center gap-2 text-sm font-semibold"
-                            >
-                                <Globe
-                                    class="text-muted-foreground size-4"
-                                />Publication
-                            </h2>
-                            <Badge variant="secondary">{{
-                                page?.has_draft
-                                    ? 'Modifications privées'
-                                    : page?.is_published
-                                      ? 'En ligne'
-                                      : 'Brouillon'
-                            }}</Badge>
-                        </div>
+                        <h2
+                            class="flex items-center gap-2 text-sm font-semibold"
+                        >
+                            <Globe
+                                class="text-muted-foreground size-4"
+                            />Publication
+                        </h2>
                         <Field
                             :data-invalid="
                                 form.errors.is_published ? true : undefined
                             "
                         >
-                            <FieldDescription>{{
-                                page?.is_published
-                                    ? 'Enregistrer conserve vos modifications en privé. Publiez-les lorsque vous êtes prêt ; la version actuelle reste en ligne.'
-                                    : 'Enregistrez et prévisualisez votre brouillon. La page sera visible sur le site uniquement après publication.'
-                            }}</FieldDescription>
-                            <Button
-                                type="submit"
-                                name="intent"
-                                value="publish"
+                            <FieldLabel for="publication-status"
+                                >Statut de publication</FieldLabel
+                            >
+                            <Select
+                                v-model="publicationStatus"
                                 :disabled="form.processing"
                             >
-                                <Globe class="size-4" />{{
-                                    page?.is_published
-                                        ? 'Publier les modifications'
-                                        : 'Publier la page'
-                                }}
-                            </Button>
-                            <Button
-                                v-if="page?.is_published"
-                                type="submit"
-                                name="intent"
-                                value="unpublish"
-                                variant="outline"
-                                :disabled="form.processing"
+                                <SelectTrigger
+                                    id="publication-status"
+                                    class="w-full"
+                                    :aria-invalid="
+                                        Boolean(form.errors.is_published)
+                                    "
+                                    aria-describedby="publication-status-description"
+                                    ><SelectValue
+                                /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="draft"
+                                        >Brouillon</SelectItem
+                                    >
+                                    <SelectItem value="published"
+                                        >Publiée</SelectItem
+                                    >
+                                </SelectContent>
+                            </Select>
+                            <FieldDescription
+                                id="publication-status-description"
+                                >{{
+                                    form.is_published
+                                        ? 'Enregistrer publiera la page et ses modifications sur le site.'
+                                        : page?.is_published
+                                          ? 'Enregistrer retirera la page du site et la conservera en brouillon.'
+                                          : 'La page restera privée après enregistrement.'
+                                }}</FieldDescription
                             >
-                                Retirer du site
-                            </Button>
+                            <FieldDescription v-if="page?.has_draft">
+                                Des modifications privées sont en attente de
+                                publication.
+                            </FieldDescription>
                             <FieldError v-if="form.errors.is_published">{{
                                 form.errors.is_published
                             }}</FieldError>
