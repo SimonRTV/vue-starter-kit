@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Actions\Pages\TemplateFields;
 use App\Models\Page;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -15,7 +16,8 @@ class StorePageRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('create', Page::class) ?? false;
+        return ($this->user()?->can('create', Page::class) ?? false)
+            && ($this->input('intent') !== 'preview' || ($this->user()->can('viewAny', Page::class) && config('starter.features.public_site')));
     }
 
     /**
@@ -26,12 +28,14 @@ class StorePageRequest extends FormRequest
     public function rules(): array
     {
         return [
+            ...app(TemplateFields::class)->rules($this),
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255'],
             'excerpt' => ['nullable', 'string', 'max:500'],
             'body' => ['nullable', 'string', 'max:200000'],
             'body_format' => ['sometimes', 'required', Rule::in(['text', 'html'])],
             'is_published' => ['required', 'boolean'],
+            'intent' => ['sometimes', 'required', Rule::in(['save', 'preview', 'publish', 'unpublish'])],
         ];
     }
 
@@ -54,11 +58,11 @@ class StorePageRequest extends FormRequest
             'body' => Arr::get($validated, 'body') === null
                 ? null
                 : Arr::string($validated, 'body'),
-            'is_published' => in_array(
-                Arr::get($validated, 'is_published'),
-                [true, 1, '1'],
-                true,
-            ),
-        ];
+            'is_published' => match ($this->validated('intent')) {
+                'save', 'preview', 'unpublish' => false,
+                'publish' => true,
+                default => in_array(Arr::get($validated, 'is_published'), [true, 1, '1'], true),
+            },
+        ] + app(TemplateFields::class)->attributes($this);
     }
 }

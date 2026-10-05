@@ -7,6 +7,9 @@ use App\Actions\Pages\CreatePage;
 use App\Actions\Pages\DeletePage;
 use App\Actions\Pages\ListPages;
 use App\Actions\Pages\PageContent;
+use App\Actions\Pages\PageTemplates;
+use App\Actions\Pages\SavePageDraft;
+use App\Actions\Pages\TemplateFields;
 use App\Actions\Pages\UpdatePage;
 use App\Http\Requests\IndexPageRequest;
 use App\Http\Requests\StorePageRequest;
@@ -49,6 +52,7 @@ class PageController extends Controller
             'pages' => $pages,
             'filters' => $filters,
             'canBulkUpdate' => auth()->user()?->can(PagePolicy::UPDATE) ?? false,
+            'canManageTemplates' => Gate::allows('manageTemplates', Page::class),
             'canImport' => auth()->user()?->can('create', Page::class) ?? false,
         ]);
     }
@@ -61,7 +65,7 @@ class PageController extends Controller
         Gate::authorize('create', Page::class);
         Head::title('Nouvelle page');
 
-        return Inertia::render('pages/Create');
+        return Inertia::render('pages/Create', app(PageTemplates::class)->editorOptions());
     }
 
     /**
@@ -73,7 +77,7 @@ class PageController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Page created.')]);
 
-        return to_route('pages.show', $page);
+        return to_route($request->validated('intent') === 'preview' ? 'content.preview' : 'pages.show', $page);
     }
 
     /**
@@ -103,6 +107,7 @@ class PageController extends Controller
         Head::title('Modifier '.$page->title);
 
         return Inertia::render('pages/Edit', [
+            ...app(PageTemplates::class)->editorOptions(),
             'page' => $this->detail($page),
             'attachments' => config('starter.features.media')
                 ? $page->attachments()->get()->filter(fn (Media $media): bool => Gate::allows('view', $media))->map(fn (Media $media): array => $library->item($media))->values()
@@ -113,13 +118,17 @@ class PageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePageRequest $request, Page $page): RedirectResponse
+    public function update(UpdatePageRequest $request, Page $page, SavePageDraft $saveDraft): RedirectResponse
     {
-        $this->updatePage->handle($page, $request->pageAttributes());
+        if (in_array($request->validated('intent'), ['save', 'preview'], true)) {
+            $saveDraft->handle($page, $request->pageAttributes());
+        } else {
+            $this->updatePage->handle($page, $request->pageAttributes());
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Page updated.')]);
 
-        return to_route('pages.edit', $page);
+        return to_route($request->validated('intent') === 'preview' ? 'content.preview' : 'pages.edit', $page);
     }
 
     /**
@@ -157,11 +166,19 @@ class PageController extends Controller
      */
     private function detail(Page $page): array
     {
+        $publicSlug = $page->slug;
+        $page = clone $page;
+        $page->fill($page->draft ?? []);
+
         return [
             ...$this->summary($page),
             'excerpt' => $page->excerpt,
             'body' => $page->body,
             'body_html' => app(PageContent::class)->render($page->body, $page->body_format),
+            'has_draft' => $page->draft !== null,
+            'public_slug' => $publicSlug,
+            'page_template_id' => $page->page_template_id,
+            'template_fields' => $page->template ? app(TemplateFields::class)->values($page->template->loadMissing('fieldSets'), $page->template_fields ?? []) : (object) [],
             'created_at' => $page->created_at?->toISOString(),
         ];
     }

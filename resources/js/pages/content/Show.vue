@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { ArrowLeft, CalendarDays, ChevronRight, Clock3 } from '@lucide/vue';
+import {
+    ArrowLeft,
+    CalendarDays,
+    ChevronRight,
+    Clock3,
+    Eye,
+} from '@lucide/vue';
 import FrontendFooter from '@/components/frontend/FrontendFooter.vue';
 import FrontendHeader from '@/components/frontend/FrontendHeader.vue';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +17,7 @@ import type { PublicPage } from '@/types';
 
 defineProps<{
     page: PublicPage;
+    preview?: { id: number; canUpdate: boolean; isPublished: boolean } | null;
 }>();
 
 function formatDate(value: string): string {
@@ -53,7 +60,13 @@ function formatDate(value: string): string {
                     </nav>
 
                     <div class="flex max-w-4xl flex-col items-start gap-6">
-                        <Badge variant="secondary">
+                        <Badge v-if="preview" variant="secondary">
+                            <Eye />Aperçu
+                        </Badge>
+                        <Badge
+                            v-else-if="page.published_at"
+                            variant="secondary"
+                        >
                             <CalendarDays />
                             Published {{ formatDate(page.published_at) }}
                         </Badge>
@@ -93,11 +106,14 @@ function formatDate(value: string): string {
                     >
                         <div
                             class="text-muted-foreground flex items-center gap-2 text-sm"
+                            v-if="page.updated_at || page.published_at"
                         >
                             <Clock3 class="size-4" aria-hidden="true" />
                             Last updated
                             {{
-                                formatDate(page.updated_at ?? page.published_at)
+                                formatDate(
+                                    (page.updated_at ?? page.published_at)!,
+                                )
                             }}
                         </div>
 

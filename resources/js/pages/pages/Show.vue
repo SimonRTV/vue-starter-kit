@@ -8,6 +8,7 @@ import {
     Download,
     Edit3,
     ExternalLink,
+    Eye,
     FileText,
     Info,
     Maximize2,
@@ -33,7 +34,10 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import { show as showPublicPage } from '@/routes/content';
+import {
+    preview as previewPage,
+    show as showPublicPage,
+} from '@/routes/content';
 import type { PageDetail } from '@/types';
 import type { MediaItem } from '@/types/media';
 
@@ -199,16 +203,20 @@ setLayoutProps({
                                         <a
                                             v-if="publicPageAvailable"
                                             :href="
-                                                showPublicPage.url(page.slug)
+                                                showPublicPage.url(
+                                                    page.public_slug,
+                                                )
                                             "
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             class="text-primary underline underline-offset-4"
                                             >{{
-                                                showPublicPage.url(page.slug)
+                                                showPublicPage.url(
+                                                    page.public_slug,
+                                                )
                                             }}</a
                                         ><span v-else>{{
-                                            showPublicPage.url(page.slug)
+                                            showPublicPage.url(page.public_slug)
                                         }}</span>
                                     </dd>
                                 </div>
@@ -267,12 +275,21 @@ setLayoutProps({
                         </SheetContent>
                     </Sheet>
                     <Button
+                        v-if="shared.props.features.public_site"
+                        variant="outline"
+                        as-child
+                    >
+                        <Link :href="previewPage(page.id)"
+                            ><Eye class="size-4" />Prévisualiser</Link
+                        >
+                    </Button>
+                    <Button
                         v-if="publicPageAvailable"
                         variant="outline"
                         as-child
                         class="hidden sm:inline-flex"
                         ><a
-                            :href="showPublicPage.url(page.slug)"
+                            :href="showPublicPage.url(page.public_slug)"
                             target="_blank"
                             rel="noopener noreferrer"
                             ><ExternalLink class="size-4" />Voir en ligne</a

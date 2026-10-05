@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Policies\RolePolicy;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -49,6 +50,7 @@ class SeoManagementTest extends TestCase
 
     public function test_global_settings_are_validated_persisted_and_applied_only_to_public_pages(): void
     {
+        Inertia::disableSsr();
         $this->administrator();
         $settings = [...app(SeoSettings::class)->defaults(), 'site_name' => 'Atelier', 'title_suffix' => 'Atelier',
             'meta_title' => 'Bienvenue', 'meta_description' => 'Notre atelier', 'og_image' => 'https://example.com/share.jpg',

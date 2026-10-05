@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Actions\Pages\TemplateFields;
 use App\Models\Page;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -15,7 +16,8 @@ class UpdatePageRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('update', $this->route('page')) ?? false;
+        return ($this->user()?->can('update', $this->route('page')) ?? false)
+            && ($this->input('intent') !== 'preview' || ($this->user()->can('view', $this->route('page')) && config('starter.features.public_site')));
     }
 
     /**
@@ -26,6 +28,7 @@ class UpdatePageRequest extends FormRequest
     public function rules(): array
     {
         return [
+            ...app(TemplateFields::class)->rules($this, $this->route('page')),
             'title' => ['required', 'string', 'max:255'],
             'slug' => [
                 'required',
@@ -37,6 +40,7 @@ class UpdatePageRequest extends FormRequest
             'body' => ['nullable', 'string', 'max:200000'],
             'body_format' => ['sometimes', 'required', Rule::in(['text', 'html'])],
             'is_published' => ['required', 'boolean'],
+            'intent' => ['sometimes', 'required', Rule::in(['save', 'preview', 'publish', 'unpublish'])],
         ];
     }
 
@@ -59,11 +63,11 @@ class UpdatePageRequest extends FormRequest
             'body' => Arr::get($validated, 'body') === null
                 ? null
                 : Arr::string($validated, 'body'),
-            'is_published' => in_array(
-                Arr::get($validated, 'is_published'),
-                [true, 1, '1'],
-                true,
-            ),
-        ];
+            'is_published' => match ($this->validated('intent')) {
+                'save', 'preview', 'unpublish' => false,
+                'publish' => true,
+                default => in_array(Arr::get($validated, 'is_published'), [true, 1, '1'], true),
+            },
+        ] + app(TemplateFields::class)->attributes($this, $this->route('page'));
     }
 }

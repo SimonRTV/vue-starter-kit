@@ -5,12 +5,15 @@ import PageController from '@/actions/App/Http/Controllers/PageController';
 import PageAttachments from '@/components/media/PageAttachments.vue';
 import PageForm from '@/components/pages/PageForm.vue';
 import type { PageDetail } from '@/types';
+import type { PageTemplate, TemplateSource } from '@/types/page-templates';
 import type { MediaItem } from '@/types/media';
 
 const shared = usePage();
 
 const props = defineProps<{
     page: PageDetail;
+    templates: PageTemplate[];
+    templateSources: TemplateSource[];
     attachments: MediaItem[];
 }>();
 
@@ -36,7 +39,11 @@ watchEffect(() => {
 
 <template>
     <div class="flex min-w-0 flex-1 flex-col">
-        <PageForm :page="page">
+        <PageForm
+            :page="page"
+            :templates="templates"
+            :template-sources="templateSources"
+        >
             <template v-if="shared.props.auth.can.manageMedia" #attachments>
                 <PageAttachments
                     :page-id="page.id"

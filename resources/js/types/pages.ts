@@ -1,3 +1,4 @@
+import type { TemplateValues } from './page-templates';
 import type { MediaItem } from './media';
 import type { Pagination } from './pagination';
 
@@ -28,6 +29,10 @@ export type PageSummary = {
 };
 
 export type PageDetail = PageSummary & {
+    page_template_id: number | null;
+    template_fields: TemplateValues;
+    has_draft: boolean;
+    public_slug: string;
     excerpt: string | null;
     body: string | null;
     body_html: string;
@@ -41,7 +46,7 @@ export type PublicPage = {
     excerpt: string | null;
     body: string | null;
     body_html: string;
-    published_at: string;
+    published_at: string | null;
     updated_at: string | null;
 };
 

@@ -15,6 +15,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | {app/Models/ApplicationSetting.php,app/Actions/ApplicationSettings/UpdateSidebarFooterLinks.php,app/Http/Requests/Settings/UpdateSidebarFooterLinksRequest.php,resources/js/components/AppSidebar.vue,resources/js/pages/settings/SidebarFooterLinks.vue,resources/js/types/navigation.ts,tests/Feature/Settings/SidebarFooterLinkTest.php} | .ai/rules/feature-settings.md |
 | {vite.config.ts,package.json,composer.json,eslint.config.js,.prettierrc} | .ai/rules/general.md |
 | app/Http/Middleware/HandleInertiaRequests.php | .ai/rules/http-middleware.md |
+| {config/page_templates.php,app/Actions/Pages/*Template*.php,app/Actions/Pages/*Source.php,app/Models/PageTemplate.php,app/Models/PageFieldSet.php,app/Http/Controllers/Page*Controller.php,resources/js/pages/content/**} | .ai/rules/js-pages-content.md |
 | resources/js/pages/settings/SidebarFooterLinks.vue | .ai/rules/js-pages-settings.md |
 | {app/Models/ApplicationSetting.php,app/Http/Controllers/Settings/ApplicationLogoController.php,app/Http/Middleware/HandleInertiaRequests.php,resources/js/components/AppLogoFull.vue,resources/js/pages/settings/ApplicationLogo.vue,resources/js/layouts/auth/**} | .ai/rules/layouts-auth.md |
 | {app/Actions/Exports/**,app/Http/Controllers/TableExportController.php,app/Http/Controllers/BulkPageController.php,resources/js/components/data-table/**,resources/js/components/application/ResourceTable.vue,resources/js/lib/tableViews.ts} | .ai/rules/lib.md |

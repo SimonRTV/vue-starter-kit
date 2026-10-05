@@ -4,6 +4,7 @@ import { ArrowRight, ChevronDown, Menu } from '@lucide/vue';
 import { ref } from 'vue';
 import AppLogoFull from '@/components/AppLogoFull.vue';
 import FrontendNavigationChildContent from '@/components/frontend/FrontendNavigationChildContent.vue';
+import PagePreviewBanner from '@/components/pages/PagePreviewBanner.vue';
 import FrontendAppearanceSwitch from '@/components/FrontendAppearanceSwitch.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -80,6 +81,7 @@ function handleAnchorClick(event: MouseEvent, url: string): void {
     <header
         class="border-border/70 bg-background/85 sticky top-0 z-40 border-b backdrop-blur-xl"
     >
+        <PagePreviewBanner />
         <div
             class="mx-auto flex h-18 max-w-7xl items-center justify-between gap-6 px-5 sm:px-8 lg:px-10"
         >

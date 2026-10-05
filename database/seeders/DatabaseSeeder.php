@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             UserManagementSeeder::class,
             ApplicationSettingSeeder::class,
             PageSeeder::class,
+            PageTemplateSeeder::class,
         ]);
 
         $sampleUsers = [

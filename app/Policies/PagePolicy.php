@@ -7,6 +7,13 @@ use App\Models\User;
 
 class PagePolicy
 {
+    public const MANAGE_TEMPLATES = 'pages.manage_templates';
+
+    public function manageTemplates(User $user): bool
+    {
+        return $user->can(self::MANAGE_TEMPLATES);
+    }
+
     public const VIEW = 'pages.view';
 
     public const CREATE = 'pages.create';
@@ -16,6 +23,7 @@ class PagePolicy
     public const DELETE = 'pages.delete';
 
     public const PERMISSIONS = [
+        self::MANAGE_TEMPLATES,
         self::VIEW,
         self::CREATE,
         self::UPDATE,
@@ -26,6 +34,7 @@ class PagePolicy
      * @var array<string, string>
      */
     public const PERMISSION_DESCRIPTIONS = [
+        self::MANAGE_TEMPLATES => 'Manage page templates and reusable field definitions.',
         self::VIEW => 'View pages and their content.',
         self::CREATE => 'Create new pages.',
         self::UPDATE => 'Edit existing pages.',
@@ -36,6 +45,7 @@ class PagePolicy
      * @var list<string>
      */
     public const SENSITIVE_PERMISSIONS = [
+        self::MANAGE_TEMPLATES,
         self::DELETE,
     ];
 

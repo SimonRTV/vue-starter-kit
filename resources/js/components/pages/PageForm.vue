@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link, router, useForm } from '@inertiajs/vue3';
+import { Link, router, useForm, usePage } from '@inertiajs/vue3';
 import {
     ArrowLeft,
     Check,
@@ -28,6 +28,12 @@ import {
     update,
 } from '@/actions/App/Http/Controllers/PageController';
 import ConfirmationAction from '@/components/application/ConfirmationAction.vue';
+import TemplateFieldsEditor from '@/components/pages/TemplateFieldsEditor.vue';
+import type {
+    PageTemplate,
+    TemplateSource,
+    TemplateValues,
+} from '@/types/page-templates';
 import RichTextEditor from '@/components/RichTextEditor.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -41,24 +47,77 @@ import {
 import { Input } from '@/components/ui/input';
 import {
     Select,
-    SelectContent,
-    SelectItem,
     SelectTrigger,
     SelectValue,
+    SelectContent,
+    SelectItem,
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { show as publicPage } from '@/routes/content';
 import type { PageDetail } from '@/types';
 
-const props = defineProps<{ page?: PageDetail }>();
+const props = defineProps<{
+    page?: PageDetail;
+    templates: PageTemplate[];
+    templateSources: TemplateSource[];
+}>();
+function initialFields(
+    templateId: number | null,
+    saved: TemplateValues = {},
+): TemplateValues {
+    const values: TemplateValues = {};
+    for (const set of props.templates.find(
+        (template) => template.id === templateId,
+    )?.field_sets ?? []) {
+        values[set.key] = {};
+        for (const field of set.fields) {
+            values[set.key][field.key] =
+                saved[set.key]?.[field.key] ??
+                (field.type === 'boolean'
+                    ? false
+                    : field.type === 'collection'
+                      ? {
+                            source: props.templateSources[0]?.key ?? '',
+                            limit: 6,
+                            order_by:
+                                Object.keys(
+                                    props.templateSources[0]?.orders ?? {},
+                                )[0] ?? '',
+                            direction: 'desc',
+                        }
+                      : null);
+        }
+    }
+    return values;
+}
+const shared = usePage();
 const form = useForm({
+    page_template_id: props.page?.page_template_id ?? (null as number | null),
+    template_fields: initialFields(
+        props.page?.page_template_id ?? null,
+        props.page?.template_fields,
+    ),
     title: props.page?.title ?? '',
     slug: props.page?.slug ?? '',
     excerpt: props.page?.excerpt ?? '',
     body: props.page?.body_html ?? '',
     body_format: 'html',
     is_published: props.page?.is_published ?? false,
+});
+const selectedTemplate = computed(() =>
+    props.templates.find((template) => template.id === form.page_template_id),
+);
+const templateSelection = computed({
+    get: () =>
+        form.page_template_id === null
+            ? 'default'
+            : String(form.page_template_id),
+    set: (value: string) => {
+        form.page_template_id = value === 'default' ? null : Number(value);
+        form.template_fields = initialFields(form.page_template_id);
+        form.clearErrors();
+    },
 });
 const formElement = useTemplateRef<HTMLFormElement>('formElement');
 const focusMode = ref(false);
@@ -67,12 +126,6 @@ const leaveDialogOpen = ref(false);
 let pendingNavigation: (() => void) | undefined;
 let leavingEditor = false;
 const slugWasEdited = ref(Boolean(props.page));
-const publicationStatus = computed({
-    get: () => (form.is_published ? 'published' : 'draft'),
-    set: (value: string) => {
-        form.is_published = value === 'published';
-    },
-});
 const saveStatus = computed(() =>
     form.processing
         ? 'Enregistrement…'
@@ -108,28 +161,39 @@ watch(
     },
 );
 
-function submit(): void {
+function submit(event: SubmitEvent): void {
     if (form.processing) {
         return;
     }
 
-    form.submit(props.page ? update(props.page.id) : store(), {
-        preserveScroll: true,
-        onSuccess: () => {
-            if (props.page) {
-                form.title = props.page.title;
-                form.slug = props.page.slug;
-                form.excerpt = props.page.excerpt ?? '';
-                form.body = props.page.body_html;
-                form.is_published = props.page.is_published;
-                form.defaults();
-            }
+    const intent =
+        (event.submitter as HTMLButtonElement | null)?.value || 'save';
+
+    form.transform((data) => ({ ...data, intent })).submit(
+        props.page ? update(props.page.id) : store(),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                if (props.page && intent !== 'preview') {
+                    form.title = props.page.title;
+                    form.slug = props.page.slug;
+                    form.excerpt = props.page.excerpt ?? '';
+                    form.body = props.page.body_html;
+                    form.is_published = props.page.is_published;
+                    form.page_template_id = props.page.page_template_id;
+                    form.template_fields = initialFields(
+                        props.page.page_template_id,
+                        props.page.template_fields,
+                    );
+                    form.defaults();
+                }
+            },
+            onError: () => {
+                preview.value = false;
+                focusMode.value = false;
+            },
         },
-        onError: () => {
-            preview.value = false;
-            focusMode.value = false;
-        },
-    });
+    );
 }
 
 useEventListener('keydown', (event: KeyboardEvent) => {
@@ -228,7 +292,9 @@ onUnmounted(() => removeNavigationListener?.());
                             </p>
                         </div>
                     </div>
-                    <div class="flex w-full items-center gap-2 sm:w-auto">
+                    <div
+                        class="flex w-full flex-wrap items-center gap-2 sm:w-auto"
+                    >
                         <Button
                             type="button"
                             variant="outline"
@@ -252,20 +318,39 @@ onUnmounted(() => removeNavigationListener?.());
                             /><Maximize2 v-else class="size-4" />
                         </Button>
                         <Button
-                            v-if="page?.is_published"
+                            v-if="
+                                page?.is_published &&
+                                shared.props.features.public_site
+                            "
                             variant="outline"
                             as-child
                             class="hidden sm:inline-flex"
                         >
                             <a
-                                :href="publicPage.url(page.slug)"
+                                :href="publicPage.url(page.public_slug)"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 ><Globe class="size-4" />Voir en ligne</a
                             >
                         </Button>
                         <Button
+                            v-if="
+                                shared.props.features.public_site &&
+                                shared.props.auth.can.managePages
+                            "
                             type="submit"
+                            name="intent"
+                            value="preview"
+                            variant="outline"
+                            :disabled="form.processing"
+                            title="Enregistrer le brouillon et ouvrir l’aperçu privé"
+                        >
+                            <Eye class="size-4" />Enregistrer et prévisualiser
+                        </Button>
+                        <Button
+                            type="submit"
+                            name="intent"
+                            value="save"
                             :disabled="form.processing"
                             class="flex-1 sm:flex-none"
                             title="Enregistrer (⌘/Ctrl+S)"
@@ -279,7 +364,7 @@ onUnmounted(() => removeNavigationListener?.());
                                     ? 'Enregistrement…'
                                     : page
                                       ? 'Enregistrer'
-                                      : 'Créer la page'
+                                      : 'Enregistrer le brouillon'
                             }}
                         </Button>
                     </div>
@@ -317,7 +402,7 @@ onUnmounted(() => removeNavigationListener?.());
                                 size="sm"
                                 :aria-pressed="preview"
                                 @click="preview = true"
-                                ><Eye class="size-3.5" />Aperçu</Button
+                                ><Eye class="size-3.5" />Aperçu du texte</Button
                             >
                         </div>
                         <span
@@ -387,10 +472,21 @@ onUnmounted(() => removeNavigationListener?.());
                             form.errors.body
                         }}</FieldError>
                     </section>
+                    <TemplateFieldsEditor
+                        v-if="selectedTemplate"
+                        v-model="form.template_fields"
+                        :template="selectedTemplate"
+                        :sources="templateSources"
+                        :errors="form.errors"
+                        :disabled="form.processing"
+                    />
+                    <FieldError v-if="form.errors.template_fields">{{
+                        form.errors.template_fields
+                    }}</FieldError>
                     <p class="text-muted-foreground text-xs">
                         {{
                             preview
-                                ? 'Cet aperçu reflète votre contenu actuel. Enregistrez pour appliquer les modifications.'
+                                ? 'Aperçu du texte uniquement. Enregistrez puis ouvrez la page publique pour voir la mise en page du modèle.'
                                 : 'Astuce : utilisez ⌘/Ctrl + S pour enregistrer sans quitter l’éditeur.'
                         }}
                     </p>
@@ -401,6 +497,49 @@ onUnmounted(() => removeNavigationListener?.());
                     class="min-w-0 space-y-5"
                     aria-label="Paramètres de la page"
                 >
+                    <section
+                        class="bg-background space-y-4 rounded-xl border p-5"
+                    >
+                        <Field
+                            ><FieldLabel for="page-template"
+                                >Modèle de page</FieldLabel
+                            >
+                            <Select
+                                v-model="templateSelection"
+                                :disabled="form.processing"
+                                ><SelectTrigger
+                                    id="page-template"
+                                    class="w-full"
+                                    ><SelectValue
+                                        placeholder="Modèle indisponible" /></SelectTrigger
+                                ><SelectContent
+                                    ><SelectItem value="default"
+                                        >Page standard</SelectItem
+                                    ><SelectItem
+                                        v-for="template in templates"
+                                        :key="template.id"
+                                        :value="String(template.id)"
+                                        >{{ template.name }}</SelectItem
+                                    ></SelectContent
+                                ></Select
+                            >
+                            <FieldDescription
+                                >Le modèle détermine la mise en page publique et
+                                ses champs. Changer de modèle réinitialise les
+                                champs personnalisés.</FieldDescription
+                            >
+                            <FieldError v-if="form.errors.page_template_id">{{
+                                form.errors.page_template_id
+                            }}</FieldError>
+                        </Field>
+                        <p
+                            v-if="form.page_template_id && !selectedTemplate"
+                            class="text-destructive text-sm"
+                        >
+                            Ce modèle n’est plus disponible. Choisissez un autre
+                            modèle pour enregistrer.
+                        </p>
+                    </section>
                     <section
                         class="bg-background space-y-5 rounded-xl border p-5"
                     >
@@ -413,7 +552,11 @@ onUnmounted(() => removeNavigationListener?.());
                                 />Publication
                             </h2>
                             <Badge variant="secondary">{{
-                                page?.is_published ? 'En ligne' : 'Brouillon'
+                                page?.has_draft
+                                    ? 'Modifications privées'
+                                    : page?.is_published
+                                      ? 'En ligne'
+                                      : 'Brouillon'
                             }}</Badge>
                         </div>
                         <Field
@@ -421,34 +564,33 @@ onUnmounted(() => removeNavigationListener?.());
                                 form.errors.is_published ? true : undefined
                             "
                         >
-                            <FieldLabel for="publication-status"
-                                >Statut de publication</FieldLabel
-                            >
-                            <Select
-                                v-model="publicationStatus"
+                            <FieldDescription>{{
+                                page?.is_published
+                                    ? 'Enregistrer conserve vos modifications en privé. Publiez-les lorsque vous êtes prêt ; la version actuelle reste en ligne.'
+                                    : 'Enregistrez et prévisualisez votre brouillon. La page sera visible sur le site uniquement après publication.'
+                            }}</FieldDescription>
+                            <Button
+                                type="submit"
+                                name="intent"
+                                value="publish"
                                 :disabled="form.processing"
                             >
-                                <SelectTrigger
-                                    id="publication-status"
-                                    class="w-full"
-                                    :aria-invalid="
-                                        Boolean(form.errors.is_published)
-                                    "
-                                    ><SelectValue
-                                /></SelectTrigger>
-                                <SelectContent
-                                    ><SelectItem value="draft"
-                                        >Brouillon</SelectItem
-                                    ><SelectItem value="published"
-                                        >Publiée</SelectItem
-                                    ></SelectContent
-                                >
-                            </Select>
-                            <FieldDescription>{{
-                                form.is_published
-                                    ? 'La page sera visible sur le site après enregistrement.'
-                                    : 'La page reste privée et ne sera pas visible sur le site.'
-                            }}</FieldDescription>
+                                <Globe class="size-4" />{{
+                                    page?.is_published
+                                        ? 'Publier les modifications'
+                                        : 'Publier la page'
+                                }}
+                            </Button>
+                            <Button
+                                v-if="page?.is_published"
+                                type="submit"
+                                name="intent"
+                                value="unpublish"
+                                variant="outline"
+                                :disabled="form.processing"
+                            >
+                                Retirer du site
+                            </Button>
                             <FieldError v-if="form.errors.is_published">{{
                                 form.errors.is_published
                             }}</FieldError>

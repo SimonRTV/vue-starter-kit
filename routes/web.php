@@ -9,6 +9,8 @@ use App\Http\Controllers\MediaFileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageAttachmentController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PageFieldSetController;
+use App\Http\Controllers\PageTemplateController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\RoleController;
@@ -41,6 +43,9 @@ Route::middleware(EnsureFeatureEnabled::class.':starter.features.media')->group(
 });
 
 Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('pages/{page}/preview', [PublicPageController::class, 'preview'])
+        ->middleware([EnsureFeatureEnabled::class.':starter.features.pages', EnsureFeatureEnabled::class.':starter.features.public_site', 'cache.headers:private;no_store'])
+        ->name('content.preview');
     Route::middleware(EnsureFeatureEnabled::class.':starter.features.public_site')->group(function () {
         Route::get('seo/{target?}', [SeoController::class, 'edit'])->where('target', 'defaults|home|[0-9]+')->name('seo.edit')->withHead(title: 'Référencement SEO');
         Route::put('seo/{target}', [SeoController::class, 'update'])->where('target', 'defaults|home|[0-9]+')->name('seo.update');
@@ -63,6 +68,11 @@ Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(functio
     Route::get('roles-export', [TableExportController::class, 'roles'])->middleware('throttle:10,1')->name('table-exports.roles');
     Route::patch('pages-bulk', BulkPageController::class)
         ->middleware(EnsureFeatureEnabled::class.':starter.features.pages')->name('pages.bulk');
+
+    Route::middleware(EnsureFeatureEnabled::class.':starter.features.pages')->group(function () {
+        Route::resource('page-templates', PageTemplateController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('page-field-sets', PageFieldSetController::class)->only(['store', 'update', 'destroy']);
+    });
 
     Route::resource('pages', PageController::class)
         ->middleware(EnsureFeatureEnabled::class.':starter.features.pages');

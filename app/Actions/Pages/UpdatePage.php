@@ -21,7 +21,7 @@ class UpdatePage
             ? ($page->published_at ?? now())
             : null;
 
-        $page->update($attributes);
+        $page->update([...$attributes, 'draft' => null]);
 
         return $page->refresh();
     }
