@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Settings\AnalyticsSettingsController;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\ApplicationLogoController;
 use App\Http\Controllers\Settings\FrontendNavigationController;
@@ -73,6 +74,14 @@ Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(functio
     Route::put('settings/frontend-navigation', [FrontendNavigationController::class, 'update'])
         ->middleware(EnsureFeatureEnabled::class.':starter.features.public_site')
         ->name('frontend-navigation.update');
+
+    Route::get('settings/analytics', [AnalyticsSettingsController::class, 'edit'])
+        ->middleware(EnsureFeatureEnabled::class.':starter.features.public_site')
+        ->name('analytics-settings.edit')
+        ->withHead(title: 'Google Analytics');
+    Route::put('settings/analytics', [AnalyticsSettingsController::class, 'update'])
+        ->middleware(EnsureFeatureEnabled::class.':starter.features.public_site')
+        ->name('analytics-settings.update');
 });
 
 Route::get('.well-known/passkey-endpoints', function () {

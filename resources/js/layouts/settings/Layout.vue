@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/application';
 import { Button } from '@/components/ui/button';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { toUrl } from '@/lib/utils';
+import { edit as editAnalytics } from '@/routes/analytics-settings';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editApplicationLogo } from '@/routes/application-logo';
 import { edit as editFrontendNavigation } from '@/routes/frontend-navigation';
@@ -52,6 +53,10 @@ const sidebarNavItems = computed<NavItem[]>(() => [
                         {
                             title: 'Navigation publique',
                             href: editFrontendNavigation(),
+                        },
+                        {
+                            title: 'Google Analytics',
+                            href: editAnalytics(),
                         },
                     ]
                   : []),

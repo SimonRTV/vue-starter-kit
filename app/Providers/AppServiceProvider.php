@@ -2,13 +2,16 @@
 
 namespace App\Providers;
 
+use App\Actions\ApplicationSettings\AnalyticsSettings;
 use App\Observers\ActivityObserver;
 use App\Policies\RolePolicy;
 use Carbon\CarbonImmutable;
+use Illuminate\Contracts\View\View as ViewContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Head\Enums\ImageType;
@@ -44,6 +47,17 @@ class AppServiceProvider extends ServiceProvider
 
         $this->configureHead();
         $this->configureDefaults();
+        $this->configureAnalytics();
+    }
+
+    /**
+     * Share the Google Analytics measurement ID with the root view for public pages.
+     */
+    protected function configureAnalytics(): void
+    {
+        View::composer('app', function (ViewContract $view): void {
+            $view->with('googleAnalyticsId', app(AnalyticsSettings::class)->measurementIdFor(request()));
+        });
     }
 
     /**
