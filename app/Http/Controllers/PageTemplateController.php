@@ -46,7 +46,7 @@ class PageTemplateController extends Controller
     public function destroy(PageTemplate $pageTemplate): RedirectResponse
     {
         Gate::authorize('manageTemplates', Page::class);
-        if ($pageTemplate->pages()->exists() || Page::query()->where('draft->page_template_id', $pageTemplate->id)->exists()) {
+        if ($pageTemplate->pages()->withTrashed()->exists() || Page::withTrashed()->where('draft->page_template_id', $pageTemplate->id)->exists()) {
             throw ValidationException::withMessages(['template' => 'Ce modèle est utilisé par des pages. Changez leur modèle avant de le supprimer.']);
         }
         $pageTemplate->delete();

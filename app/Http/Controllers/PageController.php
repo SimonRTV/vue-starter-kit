@@ -51,6 +51,7 @@ class PageController extends Controller
         return Inertia::render('pages/Index', [
             'pages' => $pages,
             'filters' => $filters,
+            'canViewTrash' => Gate::allows('viewTrash', Page::class),
             'canBulkUpdate' => auth()->user()?->can(PagePolicy::UPDATE) ?? false,
             'canManageTemplates' => Gate::allows('manageTemplates', Page::class),
             'canImport' => auth()->user()?->can('create', Page::class) ?? false,
@@ -140,7 +141,7 @@ class PageController extends Controller
 
         $this->deletePage->handle($page);
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Page deleted.')]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'La page a été déplacée dans la corbeille.']);
 
         return to_route('pages.index');
     }

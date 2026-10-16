@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { Plus, Upload } from '@lucide/vue';
+import { Plus, Trash2, Upload } from '@lucide/vue';
 import { create as importPages } from '@/actions/App/Http/Controllers/CsvImportController';
 import PageController from '@/actions/App/Http/Controllers/PageController';
 import { index as templatesIndex } from '@/actions/App/Http/Controllers/PageTemplateController';
+import { index as trashIndex } from '@/actions/App/Http/Controllers/PageTrashController';
 import { PageHeader } from '@/components/application';
 import PageDataTable from '@/components/pages/PageDataTable.vue';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import type { PageIndexFilters, PagePagination } from '@/types';
 defineProps<{
     pages: PagePagination;
     filters: PageIndexFilters;
+    canViewTrash: boolean;
     canBulkUpdate: boolean;
     canImport: boolean;
     canManageTemplates: boolean;
@@ -39,6 +41,11 @@ defineOptions({
                 description="Créez, publiez et maintenez le contenu de votre site."
             >
                 <template #actions>
+                    <Button v-if="canViewTrash" variant="outline" as-child
+                        ><Link :href="trashIndex()"
+                            ><Trash2 class="size-4" />Corbeille</Link
+                        ></Button
+                    >
                     <Button v-if="canManageTemplates" variant="outline" as-child
                         ><Link :href="templatesIndex()"
                             >Modèles et champs</Link

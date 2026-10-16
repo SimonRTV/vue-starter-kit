@@ -90,6 +90,14 @@ class PagePolicy
     }
 
     /**
+     * Determine whether the user can access the trash.
+     */
+    public function viewTrash(User $user): bool
+    {
+        return $user->can(self::VIEW) && $user->can(self::DELETE);
+    }
+
+    /**
      * Determine whether the user can restore the model.
      */
     public function restore(User $user, Page $page): bool

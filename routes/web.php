@@ -10,7 +10,9 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageAttachmentController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PageFieldSetController;
+use App\Http\Controllers\PageRevisionController;
 use App\Http\Controllers\PageTemplateController;
+use App\Http\Controllers\PageTrashController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\RoleController;
@@ -70,6 +72,11 @@ Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(functio
         ->middleware(EnsureFeatureEnabled::class.':starter.features.pages')->name('pages.bulk');
 
     Route::middleware(EnsureFeatureEnabled::class.':starter.features.pages')->group(function () {
+        Route::get('pages/trash', [PageTrashController::class, 'index'])->name('page-trash.index');
+        Route::post('pages/trash/{page}/restore', [PageTrashController::class, 'restore'])->withTrashed()->name('page-trash.restore');
+        Route::delete('pages/trash/{page}', [PageTrashController::class, 'destroy'])->withTrashed()->name('page-trash.destroy');
+        Route::get('pages/{page}/history', [PageRevisionController::class, 'index'])->name('page-revisions.index');
+        Route::post('pages/{page}/history/{revision}/restore', [PageRevisionController::class, 'restore'])->name('page-revisions.restore');
         Route::resource('page-templates', PageTemplateController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('page-field-sets', PageFieldSetController::class)->only(['store', 'update', 'destroy']);
     });

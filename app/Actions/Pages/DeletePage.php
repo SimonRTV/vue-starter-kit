@@ -14,7 +14,7 @@ class DeletePage
     {
         DB::transaction(function () use ($page): void {
             $locked = Page::query()->lockForUpdate()->findOrFail($page->id);
-            $locked->attachments()->detach();
+            app(RecordPageRevision::class)->handle($locked, 'baseline');
             $locked->delete();
         });
     }

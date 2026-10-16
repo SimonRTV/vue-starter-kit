@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import AppLogoFull from '@/components/AppLogoFull.vue';
 import { home } from '@/routes';
+import authBackground from '../../../images/auth-background.jpg';
 
 const page = usePage();
 const name = page.props.name;
@@ -26,6 +27,14 @@ defineProps<{
             class="bg-muted relative hidden h-full flex-col p-10 text-white lg:flex dark:border-r"
         >
             <div class="absolute inset-0 bg-zinc-900" />
+            <img
+                :src="authBackground"
+                alt=""
+                class="absolute inset-0 size-full object-cover"
+            />
+            <div
+                class="absolute inset-0 bg-linear-to-b from-black/60 via-black/10 to-black/40"
+            />
             <Link
                 :href="home()"
                 class="relative z-20 flex items-center gap-2 text-lg font-medium"

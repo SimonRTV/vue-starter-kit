@@ -260,9 +260,28 @@ class PageImportTest extends TestCase
         });
         $this->confirm($batch)->assertStatus(500);
         $this->assertDatabaseCount('pages', 0);
+        $this->assertDatabaseCount('page_revisions', 0);
         $this->assertSame($before, Activity::query()->count());
         $this->assertNull($batch->refresh()->completed_at);
         $this->assertNotNull($batch->document);
+    }
+
+    public function test_imports_reject_trashed_slugs_and_record_revisions_for_updates(): void
+    {
+        $this->operator();
+        $trashed = Page::factory()->create(['slug' => 'trashed']);
+        $trashed->delete();
+        $batch = $this->upload("title;slug\nReplacement;trashed\n");
+        $this->preview($batch, mode: 'update');
+        $this->assertSame(1, $batch->refresh()->preview['counts']['error']);
+        $this->confirm($batch)->assertSessionHasErrors();
+        $this->assertSoftDeleted($trashed);
+
+        $page = Page::factory()->create(['slug' => 'existing', 'title' => 'Original']);
+        $batch = $this->upload("title;slug\nUpdated;existing\n");
+        $this->preview($batch, mode: 'update');
+        $this->confirm($batch)->assertSessionHasNoErrors();
+        $this->assertSame(['Original', 'Updated'], $page->revisions()->orderBy('id')->get()->map(fn ($revision): string => $revision->content['title'])->all());
     }
 
     private function operator(): User

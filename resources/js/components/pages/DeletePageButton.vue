@@ -33,9 +33,9 @@ function deletePage(): void {
 <template>
     <ConfirmationAction
         v-model:open="isOpen"
-        :title="'Supprimer « ' + page.title + ' » ?'"
-        description="Cette page sera supprimée définitivement. Cette action est irréversible."
-        confirm-label="Supprimer la page"
+        :title="'Mettre à la corbeille « ' + page.title + ' » ?'"
+        description="Cette page ne sera plus visible sur le site. Son contenu, ses versions et ses pièces jointes seront conservés dans la corbeille."
+        confirm-label="Mettre à la corbeille"
         pending-label="Suppression…"
         :processing="processing"
         @confirm="deletePage"
@@ -43,7 +43,7 @@ function deletePage(): void {
         <template #trigger>
             <Button variant="destructive">
                 <Trash2 data-icon="inline-start" />
-                Supprimer la page
+                Mettre à la corbeille
             </Button>
         </template>
     </ConfirmationAction>

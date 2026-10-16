@@ -27,9 +27,12 @@ class ImportPages extends ImportResource
     public function prepare(array $mapped, bool $lock, string $mode): array
     {
         $slug = $mapped['slug'] ?? '';
-        $query = Page::query()->where('slug', $slug);
+        $query = Page::withTrashed()->where('slug', $slug);
         $existing = ($lock ? $query->lockForUpdate() : $query)->first();
         $errors = [];
+        if ($existing?->trashed()) {
+            $errors[] = 'Cette adresse appartient à une page dans la corbeille. Restaurez-la ou choisissez une autre adresse.';
+        }
         $attributes = [
             'title' => $mapped['title'] ?? '',
             'slug' => $slug,

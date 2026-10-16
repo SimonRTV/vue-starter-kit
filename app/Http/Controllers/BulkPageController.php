@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Pages\RecordPageRevision;
 use App\Actions\Pages\UpdatePage;
 use App\Http\Requests\BulkPageRequest;
 use App\Models\Page;
@@ -28,7 +29,7 @@ class BulkPageController extends Controller
             }
             foreach ($pages as $page) {
                 if ($publish && $page->draft !== null) {
-                    if (Page::query()->where('slug', $page->draft['slug'])->whereKeyNot($page->id)->exists()) {
+                    if (Page::withTrashed()->where('slug', $page->draft['slug'])->whereKeyNot($page->id)->exists()) {
                         throw ValidationException::withMessages(['ids' => 'Une adresse de brouillon est déjà utilisée. Modifiez la page avant de la publier.']);
                     }
 
@@ -37,10 +38,12 @@ class BulkPageController extends Controller
                     continue;
                 }
 
+                app(RecordPageRevision::class)->handle($page, 'baseline');
                 $page->update([
                     'is_published' => $publish,
                     'published_at' => $publish ? ($page->published_at ?? now()) : null,
                 ]);
+                app(RecordPageRevision::class)->handle($page);
             }
         });
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Les pages sélectionnées ont été mises à jour.']);

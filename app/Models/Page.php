@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -26,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $published_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  */
 #[Fillable(['title', 'slug', 'excerpt', 'body', 'body_format', 'is_published', 'published_at', 'seo', 'page_template_id', 'template_fields', 'draft'])]
 class Page extends Model
@@ -34,6 +37,13 @@ class Page extends Model
     use HasFactory;
 
     use HasMediaAttachments;
+    use SoftDeletes;
+
+    /** @return HasMany<PageRevision, $this> */
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(PageRevision::class);
+    }
 
     /**
      * The model's default values for attributes.

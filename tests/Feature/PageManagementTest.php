@@ -453,7 +453,7 @@ class PageManagementTest extends TestCase
             ->delete(route('pages.destroy', $managedPage));
 
         $response->assertRedirect(route('pages.index'));
-        $this->assertModelMissing($managedPage);
+        $this->assertSoftDeleted($managedPage);
     }
 
     private function authorizedUser(): User

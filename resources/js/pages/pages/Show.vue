@@ -11,6 +11,7 @@ import {
     Eye,
     FileText,
     Info,
+    History,
     Maximize2,
     Minimize2,
     Paperclip,
@@ -22,6 +23,7 @@ import {
     index,
     show,
 } from '@/actions/App/Http/Controllers/PageController';
+import { index as historyIndex } from '@/actions/App/Http/Controllers/PageRevisionController';
 import DeletePageButton from '@/components/pages/DeletePageButton.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -155,6 +157,11 @@ setLayoutProps({
                             v-if="readingMode"
                             class="size-4" /><Maximize2 v-else class="size-4"
                     /></Button>
+                    <Button variant="outline" as-child
+                        ><Link :href="historyIndex(page.id)"
+                            ><History class="size-4" />Historique</Link
+                        ></Button
+                    >
                     <Sheet v-model:open="detailsOpen">
                         <SheetTrigger as-child
                             ><Button

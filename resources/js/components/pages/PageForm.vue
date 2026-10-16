@@ -35,6 +35,7 @@ import type {
     TemplateValues,
 } from '@/types/page-templates';
 import RichTextEditor from '@/components/RichTextEditor.vue';
+import { index as historyIndex } from '@/actions/App/Http/Controllers/PageRevisionController';
 import { Button } from '@/components/ui/button';
 import {
     Field,
@@ -304,6 +305,14 @@ onUnmounted(() => removeNavigationListener?.());
                     <div
                         class="flex w-full flex-wrap items-center gap-2 sm:w-auto"
                     >
+                        <Button
+                            v-if="page && shared.props.auth.can.managePages"
+                            variant="outline"
+                            as-child
+                            ><Link :href="historyIndex(page.id)"
+                                >Historique</Link
+                            ></Button
+                        >
                         <Button
                             type="button"
                             variant="outline"

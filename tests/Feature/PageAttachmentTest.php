@@ -119,7 +119,7 @@ class PageAttachmentTest extends TestCase
             ->assertInertia(fn (Assert $response) => $response->where('attachments', []));
     }
 
-    public function test_deleting_a_page_cleans_its_links_but_preserves_shared_media(): void
+    public function test_trashing_a_page_preserves_its_links_and_shared_media(): void
     {
         $page = Page::factory()->create();
         $other = Page::factory()->create();
@@ -127,7 +127,8 @@ class PageAttachmentTest extends TestCase
         $page->attachments()->attach($media);
         $other->attachments()->attach($media);
         app(DeletePage::class)->handle($page);
-        $this->assertDatabaseCount('media_attachments', 1);
+        $this->assertDatabaseCount('media_attachments', 2);
+        $this->assertSoftDeleted($page);
         $this->assertSame($media->id, $other->attachments()->sole()->id);
         $this->assertModelExists($media);
     }

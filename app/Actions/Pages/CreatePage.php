@@ -3,6 +3,7 @@
 namespace App\Actions\Pages;
 
 use App\Models\Page;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CreatePage
@@ -27,7 +28,14 @@ class CreatePage
             $suffix = $suffixNumber === 1 ? '' : '-'.$suffixNumber;
             $attributes['slug'] = Str::substr($baseSlug, 0, 255 - Str::length($suffix)).$suffix;
 
-            $page = Page::query()->firstOrCreate(['slug' => $attributes['slug']], $attributes);
+            $page = DB::transaction(function () use ($attributes): Page {
+                $page = Page::withTrashed()->firstOrCreate(['slug' => $attributes['slug']], $attributes);
+                if ($page->wasRecentlyCreated) {
+                    app(RecordPageRevision::class)->handle($page, 'created');
+                }
+
+                return $page;
+            });
             $suffixNumber++;
         } while (! $page->wasRecentlyCreated);
 

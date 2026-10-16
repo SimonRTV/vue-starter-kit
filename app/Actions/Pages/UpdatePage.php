@@ -3,6 +3,7 @@
 namespace App\Actions\Pages;
 
 use App\Models\Page;
+use Illuminate\Support\Facades\DB;
 
 class UpdatePage
 {
@@ -13,16 +14,22 @@ class UpdatePage
      */
     public function handle(Page $page, array $attributes): Page
     {
-        if (($attributes['body_format'] ?? 'text') === 'html') {
-            $attributes['body'] = app(PageContent::class)->sanitize($attributes['body']);
-        }
+        return DB::transaction(function () use ($page, $attributes): Page {
+            $page = Page::query()->lockForUpdate()->findOrFail($page->id);
+            app(RecordPageRevision::class)->handle($page, 'baseline');
+            if (($attributes['body_format'] ?? 'text') === 'html') {
+                $attributes['body'] = app(PageContent::class)->sanitize($attributes['body']);
+            }
 
-        $attributes['published_at'] = $attributes['is_published']
-            ? ($page->published_at ?? now())
-            : null;
+            $attributes['published_at'] = $attributes['is_published']
+                ? ($page->published_at ?? now())
+                : null;
 
-        $page->update([...$attributes, 'draft' => null]);
+            $page->update([...$attributes, 'draft' => null]);
 
-        return $page->refresh();
+            app(RecordPageRevision::class)->handle($page);
+
+            return $page->refresh();
+        });
     }
 }
