@@ -51,6 +51,10 @@ Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(functio
     Route::middleware(EnsureFeatureEnabled::class.':starter.features.public_site')->group(function () {
         Route::get('seo/{target?}', [SeoController::class, 'edit'])->where('target', 'defaults|home|[0-9]+')->name('seo.edit')->withHead(title: 'Référencement SEO');
         Route::put('seo/{target}', [SeoController::class, 'update'])->where('target', 'defaults|home|[0-9]+')->name('seo.update');
+        Route::post('seo/{target}/images/{field}', [SeoController::class, 'storeImage'])
+            ->where(['target' => 'defaults|home|[0-9]+', 'field' => 'og_image|twitter_image'])->middleware('throttle:30,1')->name('seo.images.store');
+        Route::delete('seo/{target}/images/{field}', [SeoController::class, 'destroyImage'])
+            ->where(['target' => 'defaults|home|[0-9]+', 'field' => 'og_image|twitter_image'])->name('seo.images.destroy');
     });
     Route::inertia('dashboard', 'Dashboard')
         ->name('dashboard')

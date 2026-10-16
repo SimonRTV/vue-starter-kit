@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\ApplicationSettings\DeleteSeoImage;
 use App\Actions\ApplicationSettings\SeoSettings;
+use App\Actions\ApplicationSettings\UpdateSeoImage;
 use App\Actions\ApplicationSettings\UpdateSeoSettings;
+use App\Http\Requests\Settings\UpdateSeoImageRequest;
 use App\Http\Requests\Settings\UpdateSeoSettingsRequest;
 use App\Models\ApplicationSetting;
 use App\Models\Page;
@@ -23,6 +26,8 @@ class SeoController extends Controller
             'target' => $target,
             'settings' => $target === 'defaults' ? $seo->defaults() : $seo->values($page),
             'defaults' => $seo->defaults(),
+            'images' => $seo->uploadedImages($target, $page),
+            'defaultImages' => $seo->defaultImages(),
             'fallback' => ['title' => $page?->title, 'description' => $page?->excerpt],
             'publicUrl' => $seo->publicUrl($page),
             'isPublished' => $page === null || ($page->is_published && $page->published_at?->isPast()),
@@ -35,6 +40,23 @@ class SeoController extends Controller
     {
         $update->handle($target, $request->settings(), $this->page($target));
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Les paramètres SEO ont été enregistrés.']);
+
+        return to_route('seo.edit', ['target' => $target]);
+    }
+
+    public function storeImage(UpdateSeoImageRequest $request, UpdateSeoImage $update, string $target, string $field): RedirectResponse
+    {
+        $update->handle($target, $field, $request->uploadedImage(), $this->page($target));
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'L’image de partage a été téléversée.']);
+
+        return to_route('seo.edit', ['target' => $target]);
+    }
+
+    public function destroyImage(DeleteSeoImage $delete, string $target, string $field): RedirectResponse
+    {
+        Gate::authorize('update', ApplicationSetting::class);
+        $delete->handle($target, $field, $this->page($target));
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'L’image de partage a été supprimée.']);
 
         return to_route('seo.edit', ['target' => $target]);
     }

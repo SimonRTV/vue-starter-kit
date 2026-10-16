@@ -3,6 +3,7 @@ import { router, useForm } from '@inertiajs/vue3';
 import { ArrowUpRight, Globe, Search, Share2 } from '@lucide/vue';
 import { computed, ref } from 'vue';
 import { PageHeader } from '@/components/application';
+import SeoImageField from '@/components/seo/SeoImageField.vue';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -24,12 +25,13 @@ import { sitemap, robots } from '@/routes';
 import { edit, update } from '@/routes/seo';
 
 type Values = Record<string, string>;
+type ImageField = 'og_image' | 'twitter_image';
 type FieldDefinition = {
     key: string;
     label: string;
     hint?: string;
     max?: number;
-    kind?: 'textarea' | 'url' | 'json';
+    kind?: 'textarea' | 'url' | 'json' | 'image';
     options?: { value: string; label: string }[];
 };
 
@@ -37,6 +39,8 @@ const props = defineProps<{
     target: string;
     settings: Values;
     defaults: Values;
+    images: Record<ImageField, string | null>;
+    defaultImages: Record<ImageField, string>;
     fallback: { title: string | null; description: string | null };
     publicUrl: string;
     isPublished: boolean;
@@ -80,8 +84,20 @@ const previewDescription = computed(
         props.fallback.description ||
         (isGlobal.value ? '' : props.defaults.meta_description),
 );
+const ownImage = (key: ImageField) => form[key] || props.images[key] || '';
+const inheritedImages = computed<Record<ImageField, string>>(() => {
+    const ogImage = isGlobal.value ? '' : props.defaultImages.og_image;
+
+    return {
+        og_image: ogImage,
+        twitter_image:
+            (isGlobal.value ? '' : props.defaultImages.twitter_image) ||
+            ownImage('og_image') ||
+            ogImage,
+    };
+});
 const previewImage = computed(
-    () => form.og_image || (isGlobal.value ? '' : props.defaults.og_image),
+    () => ownImage('og_image') || inheritedImages.value.og_image,
 );
 const isIndexable = computed(() => inherit('robots_index') === 'index');
 
@@ -94,6 +110,11 @@ function navigate() {
         return;
     }
     router.get(edit.url({ target: selection.value }));
+}
+
+function imageUploaded(key: ImageField) {
+    form[key] = '';
+    form.defaults(key, '');
 }
 
 function save() {
@@ -225,9 +246,8 @@ const sections = computed<
                 : []),
             {
                 key: 'og_image',
-                label: 'URL de l’image de partage',
-                kind: 'url',
-                max: 2048,
+                label: 'Image de partage',
+                kind: 'image',
                 hint: 'URL publique HTTP(S). Une image de 1200 × 630 px convient aux aperçus larges.',
             },
             { key: 'og_image_alt', label: 'Description de l’image', max: 420 },
@@ -277,9 +297,9 @@ const sections = computed<
                   ]),
             {
                 key: 'twitter_image',
-                label: 'URL d’image X / Twitter',
-                kind: 'url',
-                max: 2048,
+                label: 'Image X / Twitter',
+                kind: 'image',
+                hint: 'Laissez vide pour reprendre l’image de partage Open Graph.',
             },
         ],
     },
@@ -412,96 +432,134 @@ const sections = computed<
                         }}</CardDescription></CardHeader
                     >
                     <CardContent class="grid gap-6 sm:grid-cols-2">
-                        <Field
+                        <template
                             v-for="field in section.fields"
                             :key="field.key"
-                            :class="{
-                                'sm:col-span-2':
-                                    field.kind === 'textarea' ||
-                                    field.kind === 'json' ||
-                                    field.kind === 'url',
-                            }"
                         >
-                            <FieldLabel :for="field.key">{{
-                                field.label
-                            }}</FieldLabel>
-                            <select
-                                v-if="field.options"
-                                :id="field.key"
-                                v-model="form[field.key]"
-                                :aria-invalid="Boolean(form.errors[field.key])"
-                                :aria-describedby="`${field.key}-help ${field.key}-error`"
-                                class="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm focus-visible:ring-2"
-                            >
-                                <option v-if="!isGlobal" value="">
-                                    Par défaut ({{
-                                        field.options.find(
-                                            (option) =>
-                                                option.value ===
-                                                defaults[field.key],
-                                        )?.label
-                                    }})
-                                </option>
-                                <option
-                                    v-for="option in field.options"
-                                    :key="option.value"
-                                    :value="option.value"
-                                >
-                                    {{ option.label }}
-                                </option>
-                            </select>
-                            <Textarea
-                                v-else-if="
-                                    field.kind === 'textarea' ||
-                                    field.kind === 'json'
+                            <SeoImageField
+                                v-if="field.kind === 'image'"
+                                v-model:url="form[field.key]"
+                                class="sm:col-span-2"
+                                :target="target"
+                                :field="field.key as ImageField"
+                                :label="field.label"
+                                :hint="field.hint"
+                                :uploaded-url="images[field.key as ImageField]"
+                                :inherited-url="
+                                    inheritedImages[field.key as ImageField]
                                 "
-                                :id="field.key"
-                                v-model="form[field.key]"
-                                :rows="field.kind === 'json' ? 7 : 3"
-                                :class="{
-                                    'font-mono text-xs': field.kind === 'json',
-                                }"
-                                :maxlength="field.max"
-                                :aria-invalid="Boolean(form.errors[field.key])"
-                                :aria-describedby="`${field.key}-help ${field.key}-error`"
-                                :spellcheck="field.kind !== 'json'"
+                                :inherited-label="
+                                    field.key === 'twitter_image' &&
+                                    !(isGlobal
+                                        ? ''
+                                        : defaultImages.twitter_image)
+                                        ? 'Image Open Graph reprise.'
+                                        : 'Image des paramètres par défaut reprise.'
+                                "
+                                :url-error="form.errors[field.key]"
+                                @uploaded="
+                                    imageUploaded(field.key as ImageField)
+                                "
                             />
-                            <Input
+                            <Field
                                 v-else
-                                :id="field.key"
-                                v-model="form[field.key]"
-                                :type="field.kind === 'url' ? 'url' : 'text'"
-                                :maxlength="field.max"
-                                :placeholder="
-                                    field.key === 'canonical_url'
-                                        ? publicUrl
-                                        : undefined
-                                "
-                                :aria-invalid="Boolean(form.errors[field.key])"
-                                :aria-describedby="`${field.key}-help ${field.key}-error`"
-                            />
-                            <FieldDescription :id="`${field.key}-help`"
-                                >{{ field.hint
-                                }}<span
-                                    v-if="
-                                        [
-                                            'meta_title',
-                                            'meta_description',
-                                        ].includes(field.key)
+                                :class="{
+                                    'sm:col-span-2':
+                                        field.kind === 'textarea' ||
+                                        field.kind === 'json' ||
+                                        field.kind === 'url',
+                                }"
+                            >
+                                <FieldLabel :for="field.key">{{
+                                    field.label
+                                }}</FieldLabel>
+                                <select
+                                    v-if="field.options"
+                                    :id="field.key"
+                                    v-model="form[field.key]"
+                                    :aria-invalid="
+                                        Boolean(form.errors[field.key])
                                     "
-                                    class="mt-1 block tabular-nums"
-                                    >{{
-                                        String(form[field.key] || '').length
-                                    }}
-                                    caractères</span
-                                ></FieldDescription
-                            >
-                            <FieldError
-                                v-if="form.errors[field.key]"
-                                :id="`${field.key}-error`"
-                                >{{ form.errors[field.key] }}</FieldError
-                            >
-                        </Field>
+                                    :aria-describedby="`${field.key}-help ${field.key}-error`"
+                                    class="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm focus-visible:ring-2"
+                                >
+                                    <option v-if="!isGlobal" value="">
+                                        Par défaut ({{
+                                            field.options.find(
+                                                (option) =>
+                                                    option.value ===
+                                                    defaults[field.key],
+                                            )?.label
+                                        }})
+                                    </option>
+                                    <option
+                                        v-for="option in field.options"
+                                        :key="option.value"
+                                        :value="option.value"
+                                    >
+                                        {{ option.label }}
+                                    </option>
+                                </select>
+                                <Textarea
+                                    v-else-if="
+                                        field.kind === 'textarea' ||
+                                        field.kind === 'json'
+                                    "
+                                    :id="field.key"
+                                    v-model="form[field.key]"
+                                    :rows="field.kind === 'json' ? 7 : 3"
+                                    :class="{
+                                        'font-mono text-xs':
+                                            field.kind === 'json',
+                                    }"
+                                    :maxlength="field.max"
+                                    :aria-invalid="
+                                        Boolean(form.errors[field.key])
+                                    "
+                                    :aria-describedby="`${field.key}-help ${field.key}-error`"
+                                    :spellcheck="field.kind !== 'json'"
+                                />
+                                <Input
+                                    v-else
+                                    :id="field.key"
+                                    v-model="form[field.key]"
+                                    :type="
+                                        field.kind === 'url' ? 'url' : 'text'
+                                    "
+                                    :maxlength="field.max"
+                                    :placeholder="
+                                        field.key === 'canonical_url'
+                                            ? publicUrl
+                                            : undefined
+                                    "
+                                    :aria-invalid="
+                                        Boolean(form.errors[field.key])
+                                    "
+                                    :aria-describedby="`${field.key}-help ${field.key}-error`"
+                                />
+                                <FieldDescription :id="`${field.key}-help`"
+                                    >{{ field.hint
+                                    }}<span
+                                        v-if="
+                                            [
+                                                'meta_title',
+                                                'meta_description',
+                                            ].includes(field.key)
+                                        "
+                                        class="mt-1 block tabular-nums"
+                                        >{{
+                                            String(form[field.key] || '').length
+                                        }}
+                                        caractères</span
+                                    ></FieldDescription
+                                >
+                                <FieldError
+                                    v-if="form.errors[field.key]"
+                                    :id="`${field.key}-error`"
+                                    >{{ form.errors[field.key] }}</FieldError
+                                >
+                            </Field>
+                        </template>
                     </CardContent>
                 </Card>
                 <div

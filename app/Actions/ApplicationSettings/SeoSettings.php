@@ -4,6 +4,7 @@ namespace App\Actions\ApplicationSettings;
 
 use App\Models\ApplicationSetting;
 use App\Models\Page;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Head\Facades\Head;
 
 class SeoSettings
@@ -19,8 +20,14 @@ class SeoSettings
         'structured_data' => '',
     ];
 
+    /** @var list<string> */
+    public const IMAGE_FIELDS = ['og_image', 'twitter_image'];
+
     /** @var array<string, array<string, string>> */
     private array $storedValues = [];
+
+    /** @var array<string, array<string, mixed>> */
+    private array $rawValues = [];
 
     public function __construct(private GeneralSettings $generalSettings) {}
 
@@ -64,7 +71,10 @@ class SeoSettings
         $resolved['og_description'] = $values['og_description'] ?: $resolved['meta_description'];
         $resolved['twitter_title'] = $values['twitter_title'] ?: $resolved['og_title'];
         $resolved['twitter_description'] = $values['twitter_description'] ?: $resolved['og_description'];
-        $resolved['twitter_image'] = $values['twitter_image'] ?: ($defaults['twitter_image'] ?: $resolved['og_image']);
+        $defaultImages = $this->images($this->raw('defaults'), $defaults);
+        $images = $this->images($this->raw('home', $page), $values);
+        $resolved['og_image'] = $images['og_image'] ?: $defaultImages['og_image'];
+        $resolved['twitter_image'] = $images['twitter_image'] ?: ($defaultImages['twitter_image'] ?: $resolved['og_image']);
 
         return $resolved;
     }
@@ -79,11 +89,11 @@ class SeoSettings
             ? 'all' : $seo['robots_index'].', '.$seo['robots_follow']);
         Head::og(type: $seo['og_type'], title: $seo['og_title'], description: $seo['og_description'], url: $seo['canonical_url'], siteName: $seo['site_name'], locale: $seo['locale']);
         if ($seo['og_image'] !== '') {
-            Head::ogImage($seo['og_image'], alt: $seo['og_image_alt']);
+            Head::ogImage($seo['og_image'], alt: $seo['og_image_alt'] ?: null);
         }
         Head::twitter(card: $seo['twitter_card'], site: $seo['twitter_site'] ?: null, title: $seo['twitter_title'], description: $seo['twitter_description']);
         if ($seo['twitter_image'] !== '') {
-            Head::twitterImage($seo['twitter_image'], alt: $seo['og_image_alt']);
+            Head::twitterImage($seo['twitter_image'], alt: $seo['og_image_alt'] ?: null);
         }
         foreach (['google_verification' => 'google-site-verification', 'bing_verification' => 'msvalidate.01'] as $key => $name) {
             if ($seo[$key] !== '') {
@@ -96,6 +106,51 @@ class SeoSettings
                 Head::schema($schema);
             }
         }
+    }
+
+    /**
+     * Get the public URLs of the images uploaded for a target, keyed by image field.
+     *
+     * @return array<string, string|null>
+     */
+    public function uploadedImages(string $target, ?Page $page = null): array
+    {
+        $paths = self::imagePaths($this->raw($target, $page));
+        $images = [];
+        foreach (self::IMAGE_FIELDS as $field) {
+            $images[$field] = isset($paths[$field]) ? $this->imageUrl($paths[$field]) : null;
+        }
+
+        return $images;
+    }
+
+    /**
+     * Get the effective default images, uploads taking precedence over pasted URLs.
+     *
+     * @return array<string, string>
+     */
+    public function defaultImages(): array
+    {
+        return $this->images($this->raw('defaults'), $this->defaults());
+    }
+
+    /**
+     * Get the public disk paths of uploaded images stored in raw SEO settings, keyed by image field.
+     *
+     * @param  array<string, mixed>  $seo
+     * @return array<string, string>
+     */
+    public static function imagePaths(array $seo): array
+    {
+        $paths = [];
+        foreach (self::IMAGE_FIELDS as $field) {
+            $path = $seo[$field.'_path'] ?? null;
+            if (is_string($path) && $path !== '') {
+                $paths[$field] = $path;
+            }
+        }
+
+        return $paths;
     }
 
     public function publicUrl(?Page $page = null): string
@@ -116,13 +171,45 @@ class SeoSettings
      */
     private function stored(string $target, array $defaults): array
     {
-        if (isset($this->storedValues[$target])) {
-            return $this->storedValues[$target];
-        }
-        $value = ApplicationSetting::query()->where('key', 'seo.'.$target)->value('value');
-        $decoded = is_string($value) ? json_decode($value, true) : null;
+        return $this->storedValues[$target] ??= $this->normalize($this->raw($target), $defaults);
+    }
 
-        return $this->storedValues[$target] = $this->normalize(is_array($decoded) ? $decoded : [], $defaults);
+    /** @return array<string, mixed> */
+    private function raw(string $target, ?Page $page = null): array
+    {
+        if ($page !== null) {
+            return $page->seo ?? [];
+        }
+        if (! isset($this->rawValues[$target])) {
+            $value = ApplicationSetting::query()->where('key', 'seo.'.$target)->value('value');
+            $decoded = is_string($value) ? json_decode($value, true) : null;
+            $this->rawValues[$target] = is_array($decoded) ? $decoded : [];
+        }
+
+        return $this->rawValues[$target];
+    }
+
+    /**
+     * Resolve each image field to its uploaded image URL, falling back to the pasted URL.
+     *
+     * @param  array<string, mixed>  $seo
+     * @param  array<string, string>  $values
+     * @return array<string, string>
+     */
+    private function images(array $seo, array $values): array
+    {
+        $paths = self::imagePaths($seo);
+        $images = [];
+        foreach (self::IMAGE_FIELDS as $field) {
+            $images[$field] = isset($paths[$field]) ? $this->imageUrl($paths[$field]) : $values[$field];
+        }
+
+        return $images;
+    }
+
+    private function imageUrl(string $path): string
+    {
+        return url(Storage::disk('public')->url($path));
     }
 
     /** @param array<string, mixed> $values
