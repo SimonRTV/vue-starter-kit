@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/vue3';
 import type { ComputedRef, Ref } from 'vue';
 import { computed, onMounted, ref } from 'vue';
 import { applyAdminTheme } from '@/composables/useAdminTheme';
@@ -11,6 +12,7 @@ import type { Appearance, ResolvedAppearance } from '@/types';
 export type UseFrontendAppearanceReturn = {
     frontendAppearance: Ref<Appearance>;
     resolvedFrontendAppearance: ComputedRef<ResolvedAppearance>;
+    canChooseFrontendAppearance: ComputedRef<boolean>;
     updateFrontendAppearance: (value: ResolvedAppearance) => void;
 };
 
@@ -56,8 +58,19 @@ function applyFrontendAppearance(value: Appearance): void {
 }
 
 export function useFrontendAppearance(): UseFrontendAppearanceReturn {
+    const page = usePage();
+    const forcedFrontendAppearance = computed<Appearance | null>(() => {
+        const mode = page.props.frontendAppearance?.mode;
+
+        return isAppearance(mode) ? mode : null;
+    });
+    const canChooseFrontendAppearance = computed(
+        () => forcedFrontendAppearance.value === null,
+    );
+
     onMounted(() => {
-        frontendAppearance.value = getStoredFrontendAppearance();
+        frontendAppearance.value =
+            forcedFrontendAppearance.value ?? getStoredFrontendAppearance();
         applyFrontendAppearance(frontendAppearance.value);
     });
 
@@ -66,6 +79,10 @@ export function useFrontendAppearance(): UseFrontendAppearanceReturn {
     );
 
     function updateFrontendAppearance(value: ResolvedAppearance): void {
+        if (!canChooseFrontendAppearance.value) {
+            return;
+        }
+
         frontendAppearance.value = value;
         localStorage.setItem(storageKey, value);
         setCookie(value);
@@ -75,6 +92,7 @@ export function useFrontendAppearance(): UseFrontendAppearanceReturn {
     return {
         frontendAppearance,
         resolvedFrontendAppearance,
+        canChooseFrontendAppearance,
         updateFrontendAppearance,
     };
 }

@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Actions\ApplicationSettings\AnalyticsSettings;
 use App\Actions\ApplicationSettings\FaviconSettings;
+use App\Actions\ApplicationSettings\FrontendAppearanceSettings;
 use App\Actions\ApplicationSettings\GeneralSettings;
 use App\Models\Activity;
 use App\Models\ApplicationSetting;
@@ -23,6 +24,7 @@ class HandleInertiaRequests extends Middleware
         private GeneralSettings $generalSettings,
         private AnalyticsSettings $analyticsSettings,
         private FaviconSettings $faviconSettings,
+        private FrontendAppearanceSettings $frontendAppearanceSettings,
     ) {}
 
     /**
@@ -80,6 +82,7 @@ class HandleInertiaRequests extends Middleware
             ],
             HeadManager::INERTIA_PROP => fn (): array => Head::toInertiaElements(),
             'analytics' => fn (): array => $this->analyticsSettings->clientConfiguration($request),
+            'frontendAppearance' => $this->frontendAppearanceSettings->get(),
             'branding' => [
                 'iconUrl' => ApplicationSetting::iconUrl(),
                 'fullLogoUrl' => ApplicationSetting::fullLogoUrl(),

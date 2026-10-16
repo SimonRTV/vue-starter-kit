@@ -4,6 +4,7 @@ use App\Http\Controllers\Settings\AnalyticsSettingsController;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\ApplicationLogoController;
 use App\Http\Controllers\Settings\FaviconController;
+use App\Http\Controllers\Settings\FrontendAppearanceController;
 use App\Http\Controllers\Settings\FrontendNavigationController;
 use App\Http\Controllers\Settings\GeneralSettingsController;
 use App\Http\Controllers\Settings\ProfileController;
@@ -91,6 +92,14 @@ Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(functio
     Route::put('settings/frontend-navigation', [FrontendNavigationController::class, 'update'])
         ->middleware(EnsureFeatureEnabled::class.':starter.features.public_site')
         ->name('frontend-navigation.update');
+
+    Route::get('settings/frontend-appearance', [FrontendAppearanceController::class, 'edit'])
+        ->middleware(EnsureFeatureEnabled::class.':starter.features.public_site')
+        ->name('frontend-appearance.edit')
+        ->withHead(title: 'Apparence du site public');
+    Route::put('settings/frontend-appearance', [FrontendAppearanceController::class, 'update'])
+        ->middleware(EnsureFeatureEnabled::class.':starter.features.public_site')
+        ->name('frontend-appearance.update');
 
     Route::get('settings/analytics', [AnalyticsSettingsController::class, 'edit'])
         ->middleware(EnsureFeatureEnabled::class.':starter.features.public_site')

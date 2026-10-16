@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Actions\ApplicationSettings\FrontendAppearanceSettings;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -20,6 +21,8 @@ class HandleAppearance
      */
     private const array ADMIN_THEMES = ['neutral', 'ocean', 'forest'];
 
+    public function __construct(private FrontendAppearanceSettings $frontendAppearanceSettings) {}
+
     /**
      * Handle an incoming request.
      *
@@ -32,7 +35,8 @@ class HandleAppearance
             || $request->routeIs('home', 'content.*');
 
         if ($usesFrontendAppearance) {
-            $appearance = $request->cookie('frontend_appearance');
+            $appearance = $this->frontendAppearanceSettings->forcedAppearance()
+                ?? $request->cookie('frontend_appearance');
             $appearance = in_array($appearance, self::APPEARANCES, true)
                 ? $appearance
                 : 'system';

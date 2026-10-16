@@ -4,6 +4,7 @@ import type {
     FrontendNavigationItem,
     SidebarFooterLink,
 } from '@/types/navigation';
+import type { FrontendAppearanceMode } from '@/types/ui';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -37,6 +38,7 @@ declare module '@inertiajs/core' {
                 contact_phone: string;
             };
             analytics: AnalyticsConfiguration;
+            frontendAppearance: { mode: FrontendAppearanceMode };
             branding: {
                 iconUrl: string | null;
                 fullLogoUrl: string | null;

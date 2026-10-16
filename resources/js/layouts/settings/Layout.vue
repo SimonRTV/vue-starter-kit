@@ -11,6 +11,7 @@ import { edit as editAnalytics } from '@/routes/analytics-settings';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editApplicationLogo } from '@/routes/application-logo';
 import { edit as editFavicons } from '@/routes/favicons';
+import { edit as editFrontendAppearance } from '@/routes/frontend-appearance';
 import { edit as editFrontendNavigation } from '@/routes/frontend-navigation';
 import { edit as editGeneral } from '@/routes/general-settings';
 import { edit as editProfile } from '@/routes/profile';
@@ -58,6 +59,10 @@ const sidebarNavItems = computed<NavItem[]>(() => [
                         {
                             title: 'Navigation publique',
                             href: editFrontendNavigation(),
+                        },
+                        {
+                            title: 'Apparence publique',
+                            href: editFrontendAppearance(),
                         },
                         {
                             title: 'Google Analytics',

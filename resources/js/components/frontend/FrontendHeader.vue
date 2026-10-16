@@ -29,6 +29,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
+import { useFrontendAppearance } from '@/composables/useFrontendAppearance';
 import { dashboard, home, login } from '@/routes';
 
 const props = withDefaults(
@@ -42,6 +43,7 @@ const props = withDefaults(
 
 const page = usePage();
 const isMobileMenuOpen = ref(false);
+const { canChooseFrontendAppearance } = useFrontendAppearance();
 
 function isExternal(url: string): boolean {
     return /^https?:\/\//i.test(url);
@@ -201,7 +203,7 @@ function handleAnchorClick(event: MouseEvent, url: string): void {
             </nav>
 
             <div class="flex items-center gap-2">
-                <FrontendAppearanceSwitch />
+                <FrontendAppearanceSwitch v-if="canChooseFrontendAppearance" />
                 <Button
                     v-if="page.props.auth.user"
                     as-child
