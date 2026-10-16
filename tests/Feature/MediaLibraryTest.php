@@ -160,7 +160,7 @@ class MediaLibraryTest extends TestCase
     {
         $user = $this->operator();
         $media = app(UploadMedia::class)->handle($user, UploadedFile::fake()->image('photo.png'));
-        $this->actingAs($user)->delete(route('media.destroy', $media))->assertRedirect(route('media.index'));
+        $this->actingAs($user)->from(route('media.index'))->delete(route('media.destroy', $media))->assertRedirect(route('media.index'));
         $this->assertModelMissing($media);
         $this->assertSame([], Storage::disk('media')->allFiles());
     }

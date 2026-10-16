@@ -19,8 +19,10 @@ class MediaPolicy
 
     public const PUBLISH = 'media.publish';
 
+    public const MANAGE_FOLDERS = 'media.manage_folders';
+
     /** @var list<string> */
-    public const PERMISSIONS = [self::VIEW, self::CREATE, self::UPDATE, self::DELETE, self::MANAGE_ALL, self::PUBLISH];
+    public const PERMISSIONS = [self::VIEW, self::CREATE, self::UPDATE, self::DELETE, self::MANAGE_ALL, self::PUBLISH, self::MANAGE_FOLDERS];
 
     /** @var array<string, string> */
     public const PERMISSION_DESCRIPTIONS = [
@@ -30,6 +32,7 @@ class MediaPolicy
         self::DELETE => 'Supprimer ses fichiers inutilisés.',
         self::MANAGE_ALL => 'Accéder aux fichiers de tous les utilisateurs avec les opérations autorisées.',
         self::PUBLISH => 'Rendre un fichier accessible publiquement.',
+        self::MANAGE_FOLDERS => 'Créer, renommer, déplacer et supprimer les dossiers partagés de la médiathèque.',
     ];
 
     /** @var list<string> */

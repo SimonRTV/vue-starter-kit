@@ -68,6 +68,7 @@ function date(value: string): string {
 const typeLabels: Record<string, string> = {
     pages: 'Pages',
     media: 'Médiathèque',
+    media_folders: 'Dossiers de médias',
     settings: 'Paramètres',
     users: 'Utilisateurs',
     roles: 'Rôles',

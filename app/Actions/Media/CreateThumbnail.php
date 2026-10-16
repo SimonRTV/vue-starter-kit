@@ -8,15 +8,14 @@ use RuntimeException;
 
 class CreateThumbnail
 {
-    public function handle(UploadedFile $file, string $disk, string $directory): ?string
+    public function __construct(private DecodeImage $decoder) {}
+
+    public function handle(UploadedFile $file, string $disk, string $directory, string $name = 'thumbnail.jpg'): ?string
     {
         if (! extension_loaded('gd') || ! in_array($file->getMimeType(), config('media.image_mimes'), true)) {
             return null;
         }
-        $source = @imagecreatefromstring($file->getContent());
-        if ($source === false) {
-            throw new RuntimeException('Unable to decode the image.');
-        }
+        $source = $this->decoder->handle($file);
         $scale = min(1, (int) config('media.thumbnail_size') / max(imagesx($source), imagesy($source)));
         $width = max(1, (int) round(imagesx($source) * $scale));
         $height = max(1, (int) round(imagesy($source) * $scale));
@@ -33,7 +32,7 @@ class CreateThumbnail
         } finally {
             ob_end_clean();
         }
-        $path = $directory.'/thumbnail.jpg';
+        $path = $directory.'/'.$name;
         if ($contents === false || ! Storage::disk($disk)->put($path, $contents, 'private')) {
             throw new RuntimeException('Unable to save the thumbnail.');
         }

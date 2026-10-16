@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 
 /**
  * @property string $id
+ * @property int|null $folder_id
  * @property int|null $uploaded_by
  * @property string $title
  * @property string $original_name
@@ -22,9 +24,10 @@ use Illuminate\Support\Carbon;
  * @property string|null $thumbnail_path
  * @property string|null $alt_text
  * @property string $visibility
+ * @property list<string>|null $tags
  * @property Carbon|null $created_at
  */
-#[Fillable(['id', 'uploaded_by', 'title', 'original_name', 'mime_type', 'size', 'disk', 'path', 'thumbnail_path', 'alt_text', 'visibility'])]
+#[Fillable(['id', 'folder_id', 'uploaded_by', 'title', 'original_name', 'mime_type', 'size', 'disk', 'path', 'thumbnail_path', 'alt_text', 'visibility', 'tags'])]
 class Media extends Model
 {
     /** @use HasFactory<MediaFactory> */
@@ -41,12 +44,29 @@ class Media extends Model
     /** @return array<string, string> */
     protected function casts(): array
     {
-        return ['size' => 'integer'];
+        return ['size' => 'integer', 'tags' => 'array'];
     }
 
     /** @return BelongsTo<User, $this> */
     public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by');
+    }
+
+    /** @return BelongsTo<MediaFolder, $this> */
+    public function folder(): BelongsTo
+    {
+        return $this->belongsTo(MediaFolder::class, 'folder_id');
+    }
+
+    /** @return MorphToMany<Page, $this> */
+    public function pages(): MorphToMany
+    {
+        return $this->morphedByMany(Page::class, 'attachable', 'media_attachments')->withTrashed();
+    }
+
+    public function isImage(): bool
+    {
+        return in_array($this->mime_type, config('media.image_mimes'), true);
     }
 }
