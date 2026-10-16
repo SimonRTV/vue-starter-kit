@@ -21,6 +21,8 @@ defineProps<{
         enabled: boolean;
         measurement_id: string;
         exclude_authenticated: boolean;
+        require_consent: boolean;
+        privacy_policy_url: string;
     };
 }>();
 
@@ -91,6 +93,44 @@ defineOptions({
                         <span>Ne pas suivre les utilisateurs connectés</span>
                     </Label>
                     <FieldError>{{ errors.exclude_authenticated }}</FieldError>
+                </Field>
+                <Field>
+                    <Label
+                        for="require_consent"
+                        class="flex items-center gap-3"
+                    >
+                        <Checkbox
+                            id="require_consent"
+                            name="require_consent"
+                            value="1"
+                            :default-value="settings.require_consent"
+                        />
+                        <span>Demander le consentement des visiteurs</span>
+                    </Label>
+                    <FieldDescription
+                        >Affiche une bannière de cookies et ne charge Google
+                        Analytics qu’après acceptation. Recommandé pour
+                        respecter la nLPD et le RGPD.</FieldDescription
+                    >
+                    <FieldError>{{ errors.require_consent }}</FieldError>
+                </Field>
+                <Field>
+                    <FieldLabel for="privacy_policy_url"
+                        >Lien vers la politique de confidentialité</FieldLabel
+                    >
+                    <Input
+                        id="privacy_policy_url"
+                        name="privacy_policy_url"
+                        :default-value="settings.privacy_policy_url"
+                        placeholder="/content/confidentialite"
+                        maxlength="2048"
+                        :aria-invalid="Boolean(errors.privacy_policy_url)"
+                    />
+                    <FieldDescription
+                        >Facultatif. Affiché dans la bannière de
+                        cookies.</FieldDescription
+                    >
+                    <FieldError>{{ errors.privacy_policy_url }}</FieldError>
                 </Field>
             </FieldGroup>
             <div class="flex items-center gap-4">

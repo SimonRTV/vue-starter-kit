@@ -2,6 +2,8 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import AppLogoFull from '@/components/AppLogoFull.vue';
+import CookieConsentBanner from '@/components/frontend/CookieConsentBanner.vue';
+import { useCookieConsent } from '@/composables/useCookieConsent';
 import { home, login } from '@/routes';
 
 const props = withDefaults(
@@ -14,6 +16,7 @@ const props = withDefaults(
 );
 
 const page = usePage();
+const { isConsentRequired, openPreferences } = useCookieConsent();
 const footerItems = computed(() =>
     page.props.navigation.frontend.flatMap((item) =>
         item.type === 'group'
@@ -93,7 +96,16 @@ function resolvedUrl(url: string): string {
                 >
                     Log in
                 </Link>
+                <button
+                    v-if="isConsentRequired"
+                    type="button"
+                    class="hover:text-foreground transition-colors"
+                    @click="openPreferences"
+                >
+                    Gérer les cookies
+                </button>
             </nav>
         </div>
+        <CookieConsentBanner />
     </footer>
 </template>

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 
 class UpdateAnalyticsSettings
 {
-    /** @param array{enabled: bool, measurement_id: string, exclude_authenticated: bool} $attributes */
+    /** @param array{enabled: bool, measurement_id: string, exclude_authenticated: bool, require_consent: bool, privacy_policy_url: string} $attributes */
     public function handle(array $attributes): void
     {
         ApplicationSetting::query()->updateOrCreate(

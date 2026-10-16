@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Actions\ApplicationSettings\AnalyticsSettings;
 use App\Actions\ApplicationSettings\GeneralSettings;
 use App\Models\Activity;
 use App\Models\ApplicationSetting;
@@ -17,7 +18,7 @@ use Spatie\Permission\Models\Role;
 
 class HandleInertiaRequests extends Middleware
 {
-    public function __construct(private GeneralSettings $generalSettings) {}
+    public function __construct(private GeneralSettings $generalSettings, private AnalyticsSettings $analyticsSettings) {}
 
     /**
      * The root template that's loaded on the first page visit.
@@ -72,6 +73,7 @@ class HandleInertiaRequests extends Middleware
                     ? $user->unreadNotifications()->where('type', 'workspace')->count() : 0,
             ],
             HeadManager::INERTIA_PROP => fn (): array => Head::toInertiaElements(),
+            'analytics' => fn (): array => $this->analyticsSettings->clientConfiguration($request),
             'branding' => [
                 'iconUrl' => ApplicationSetting::iconUrl(),
                 'fullLogoUrl' => ApplicationSetting::fullLogoUrl(),

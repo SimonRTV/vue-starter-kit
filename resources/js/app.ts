@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { initializeFlashToast } from '@/lib/flashToast';
+import { initializeGoogleAnalytics } from '@/lib/googleAnalytics';
 
 void createInertiaApp({
     serverHead: true,
@@ -25,3 +26,6 @@ void createInertiaApp({
 
 // This will listen for flash toast data from the server...
 initializeFlashToast();
+
+// This will load Google Analytics on public pages once consent allows it...
+initializeGoogleAnalytics();

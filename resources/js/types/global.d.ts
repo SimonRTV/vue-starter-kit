@@ -1,3 +1,4 @@
+import type { AnalyticsConfiguration } from '@/types/analytics';
 import type { Auth } from '@/types/auth';
 import type {
     FrontendNavigationItem,
@@ -35,6 +36,7 @@ declare module '@inertiajs/core' {
                 contact_email: string;
                 contact_phone: string;
             };
+            analytics: AnalyticsConfiguration;
             branding: {
                 iconUrl: string | null;
                 fullLogoUrl: string | null;
