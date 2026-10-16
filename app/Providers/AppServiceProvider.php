@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
-use Laravel\Head\Enums\ImageType;
 use Laravel\Head\Enums\OgType;
 use Laravel\Head\Enums\TwitterCard;
 use Laravel\Head\ErrorPages;
@@ -65,15 +64,9 @@ class AppServiceProvider extends ServiceProvider
 
         Head::inertiaGlobals(fn (HeadBuilder $head) => $head
             ->viewport('width=device-width, initial-scale=1')
-            ->themeColor('#ff2d20')
             ->applicationName($appName)
             ->colorScheme('light dark')
-            ->appleWebAppTitle($appName)
-            ->favicon(asset('favicon.svg'), type: ImageType::Svg, sizes: 'any')
-            ->favicon(asset('favicon-96x96.png'), type: ImageType::Png, sizes: '96x96')
-            ->link('shortcut icon', asset('favicon.ico'), ['type' => ImageType::Ico->value])
-            ->appleTouchIcon(asset('apple-touch-icon.png'), sizes: '180x180')
-            ->manifest(asset('site.webmanifest')));
+            ->appleWebAppTitle($appName));
 
         Head::errors(function (ErrorPages $errors): void {
             $errors->defaults(robots: 'none');

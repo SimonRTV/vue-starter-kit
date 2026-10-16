@@ -20,6 +20,7 @@ use App\Http\Controllers\SeoController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TableExportController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WebManifestController;
 use App\Http\Middleware\EnsureFeatureEnabled;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -38,6 +39,7 @@ Route::get('content/{page:slug}', PublicPageController::class)
 Route::get('sitemap.xml', SitemapController::class)
     ->middleware(EnsureFeatureEnabled::class.':starter.features.public_site')->name('sitemap');
 Route::get('robots.txt', RobotsController::class)->name('robots');
+Route::get('manifest.webmanifest', WebManifestController::class)->name('web-manifest');
 
 Route::middleware(EnsureFeatureEnabled::class.':starter.features.media')->group(function () {
     Route::get('files/{media}/download', [MediaFileController::class, 'download'])->name('media-files.download');

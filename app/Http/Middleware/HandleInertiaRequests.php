@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Actions\ApplicationSettings\AnalyticsSettings;
+use App\Actions\ApplicationSettings\FaviconSettings;
 use App\Actions\ApplicationSettings\GeneralSettings;
 use App\Models\Activity;
 use App\Models\ApplicationSetting;
@@ -18,7 +19,11 @@ use Spatie\Permission\Models\Role;
 
 class HandleInertiaRequests extends Middleware
 {
-    public function __construct(private GeneralSettings $generalSettings, private AnalyticsSettings $analyticsSettings) {}
+    public function __construct(
+        private GeneralSettings $generalSettings,
+        private AnalyticsSettings $analyticsSettings,
+        private FaviconSettings $faviconSettings,
+    ) {}
 
     /**
      * The root template that's loaded on the first page visit.
@@ -54,6 +59,7 @@ class HandleInertiaRequests extends Middleware
         $settings = $this->generalSettings->get();
         Head::defaults(fn (HeadBuilder $head) => $head->title($settings['name'], suffix: ' - '.$settings['name'])->og(siteName: $settings['name']));
         Head::inertiaGlobals(fn (HeadBuilder $head) => $head->applicationName($settings['name'])->appleWebAppTitle($settings['name']));
+        $this->faviconSettings->apply();
         $resources = [];
         /** @var array<string, array{model: class-string, label: string, enabled: bool}> $definitions */
         $definitions = config('resources', []);

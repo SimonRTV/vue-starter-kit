@@ -34,7 +34,8 @@ class HeadMetadataTest extends TestCase
             ->assertSee('href="'.asset('favicon-96x96.png').'"', false)
             ->assertSee('href="'.asset('favicon.ico').'"', false)
             ->assertSee('href="'.asset('apple-touch-icon.png').'"', false)
-            ->assertSee('href="'.asset('site.webmanifest').'"', false);
+            ->assertSee('name="theme-color" content="#ff2d20"', false)
+            ->assertSee('href="'.route('web-manifest').'"', false);
 
         $documentHead = Str::before($response->getContent(), '</head>');
 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Settings\AnalyticsSettingsController;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\ApplicationLogoController;
+use App\Http\Controllers\Settings\FaviconController;
 use App\Http\Controllers\Settings\FrontendNavigationController;
 use App\Http\Controllers\Settings\GeneralSettingsController;
 use App\Http\Controllers\Settings\ProfileController;
@@ -60,6 +61,22 @@ Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(functio
         ->name('application-logo.full.dark.update');
     Route::delete('settings/application-logo/full/dark', [ApplicationLogoController::class, 'destroyDarkFullLogo'])
         ->name('application-logo.full.dark.destroy');
+
+    Route::get('settings/favicons', [FaviconController::class, 'edit'])
+        ->name('favicons.edit')
+        ->withHead(title: 'Favicons');
+    Route::post('settings/favicons', [FaviconController::class, 'update'])
+        ->middleware('throttle:30,1')
+        ->name('favicons.update');
+    Route::put('settings/favicons/colors', [FaviconController::class, 'updateColors'])
+        ->name('favicons.colors.update');
+    Route::delete('settings/favicons', [FaviconController::class, 'destroy'])
+        ->name('favicons.destroy');
+    Route::post('settings/favicons/svg', [FaviconController::class, 'updateSvg'])
+        ->middleware('throttle:30,1')
+        ->name('favicons.svg.update');
+    Route::delete('settings/favicons/svg', [FaviconController::class, 'destroySvg'])
+        ->name('favicons.svg.destroy');
 
     Route::get('settings/sidebar-menu', [SidebarFooterLinkController::class, 'edit'])
         ->name('sidebar-footer-links.edit')
