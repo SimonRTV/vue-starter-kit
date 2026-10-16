@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Policies\MediaPolicy;
 use App\Policies\PagePolicy;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Role;
@@ -142,6 +143,23 @@ class PageAttachmentTest extends TestCase
         $page->attachments()->attach($media->take(50)->modelKeys());
         $this->post(route('page-attachments.store', $page), ['media_id' => $media->last()->id])->assertSessionHasErrors('media_id');
         $this->assertSame(50, $page->attachments()->count());
+    }
+
+    public function test_page_editor_receives_attachment_previews_when_a_thumbnail_exists(): void
+    {
+        $user = $this->editor();
+        $page = Page::factory()->create();
+        $photo = Media::factory()->create([
+            'uploaded_by' => $user->id, 'title' => 'Photo', 'original_name' => 'photo.png', 'mime_type' => 'image/png',
+            'thumbnail_path' => 'photo/thumbnail.webp',
+        ]);
+        $document = Media::factory()->create(['uploaded_by' => $user->id, 'title' => 'Document']);
+        $page->attachments()->attach([$photo->id, $document->id]);
+
+        $this->actingAs($user)->get(route('pages.edit', $page))->assertInertia(fn (Assert $response) => $response
+            ->has('attachments', 2)
+            ->where('attachments', fn (Collection $attachments): bool => $attachments->pluck('thumbnail_url', 'id')->sortKeys()->all()
+                === collect([$photo->id => route('media-files.thumbnail', $photo), $document->id => null])->sortKeys()->all()));
     }
 
     private function editor(): User

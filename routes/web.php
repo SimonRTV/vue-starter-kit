@@ -68,7 +68,7 @@ Route::withHead(robots: 'none')->middleware(['auth', 'verified'])->group(functio
         Route::post('media', [MediaController::class, 'store'])->middleware('throttle:30,1')->name('media.store');
         Route::post('media/{media}/file', [MediaController::class, 'replace'])->middleware('throttle:30,1')->name('media.replace');
         Route::patch('media-bulk', BulkMediaController::class)->name('media.bulk');
-        Route::resource('media-folders', MediaFolderController::class)->parameters(['media-folders' => 'folder'])->only(['store', 'update', 'destroy']);
+        Route::resource('media-folders', MediaFolderController::class)->parameters(['media-folders' => 'folder'])->only(['index', 'store', 'update', 'destroy']);
         Route::post('pages/{page}/attachments', [PageAttachmentController::class, 'store'])
             ->middleware(EnsureFeatureEnabled::class.':starter.features.pages')->name('page-attachments.store');
         Route::delete('pages/{page}/attachments/{media}', [PageAttachmentController::class, 'destroy'])

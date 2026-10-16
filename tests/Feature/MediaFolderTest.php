@@ -171,6 +171,26 @@ class MediaFolderTest extends TestCase
         $this->assertNull($mine->first()->fresh()->folder_id);
     }
 
+    public function test_the_folder_tree_is_available_as_json_for_the_media_picker(): void
+    {
+        $user = $this->operator([MediaPolicy::VIEW]);
+        $marketing = MediaFolder::factory()->create(['name' => 'Marketing']);
+        $logos = MediaFolder::factory()->create(['name' => 'Logos', 'parent_id' => $marketing->id]);
+        Media::factory()->count(2)->create(['uploaded_by' => $user->id, 'folder_id' => $logos->id]);
+        Media::factory()->create(['uploaded_by' => $user->id]);
+        Media::factory()->create(['folder_id' => $logos->id]);
+
+        $this->getJson(route('media-folders.index'))->assertUnauthorized();
+        $this->actingAs(User::factory()->create())->getJson(route('media-folders.index'))->assertForbidden();
+
+        $this->actingAs($user)->getJson(route('media-folders.index'))->assertOk()
+            ->assertJsonCount(2, 'folders')
+            ->assertJsonPath('folders.0.name', 'Marketing')->assertJsonPath('folders.0.files_count', 0)
+            ->assertJsonPath('folders.1.path', 'Marketing › Logos')->assertJsonPath('folders.1.depth', 2)
+            ->assertJsonPath('folders.1.files_count', 2)
+            ->assertJsonPath('stats.count', 3)->assertJsonPath('stats.unfiled', 1);
+    }
+
     /** @param list<string>|null $permissions */
     private function operator(?array $permissions = null): User
     {

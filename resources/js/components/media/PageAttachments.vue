@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Link, router, useForm } from '@inertiajs/vue3';
+import { FileText, Globe, Lock } from '@lucide/vue';
 import { ref } from 'vue';
 import { index } from '@/actions/App/Http/Controllers/MediaController';
 import {
@@ -15,6 +16,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { fileExtension, formatFileSize } from '@/lib/media';
 import type { MediaItem } from '@/types/media';
 const props = defineProps<{ pageId: number; attachments: MediaItem[] }>();
 const pickerOpen = ref(false);
@@ -86,15 +88,64 @@ function detach(item: MediaItem): void {
                     :key="item.id"
                     class="flex items-center justify-between gap-3 py-3"
                 >
-                    <div class="min-w-0">
-                        <a
-                            :href="item.download_url"
-                            class="block truncate text-sm font-medium underline underline-offset-4"
-                            >{{ item.title }}</a
-                        ><span class="text-muted-foreground text-xs">{{
-                            item.visibility === 'public' ? 'Public' : 'Privé'
-                        }}</span>
-                    </div>
+                    <a
+                        :href="item.download_url"
+                        class="group focus-visible:ring-ring flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:ring-2 focus-visible:outline-none"
+                    >
+                        <span
+                            class="bg-muted flex aspect-[4/3] w-20 shrink-0 items-center justify-center overflow-hidden rounded-md border"
+                        >
+                            <img
+                                v-if="item.thumbnail_url"
+                                :src="item.thumbnail_url"
+                                :alt="item.alt_text ?? ''"
+                                loading="lazy"
+                                class="size-full object-contain"
+                            />
+                            <span
+                                v-else
+                                class="flex flex-col items-center gap-1"
+                            >
+                                <FileText
+                                    class="text-muted-foreground size-6"
+                                    aria-hidden="true"
+                                />
+                                <span
+                                    class="text-muted-foreground text-[0.625rem] font-semibold tracking-wider"
+                                    >{{ fileExtension(item) }}</span
+                                >
+                            </span>
+                        </span>
+                        <span class="flex min-w-0 flex-col gap-1">
+                            <span
+                                class="truncate text-sm font-medium underline-offset-4 group-hover:underline"
+                                >{{ item.title }}</span
+                            >
+                            <span
+                                class="text-muted-foreground flex items-center gap-1.5 text-xs"
+                            >
+                                <Globe
+                                    v-if="item.visibility === 'public'"
+                                    class="size-3 shrink-0"
+                                    aria-hidden="true"
+                                />
+                                <Lock
+                                    v-else
+                                    class="size-3 shrink-0"
+                                    aria-hidden="true"
+                                />
+                                <span class="truncate"
+                                    >{{
+                                        item.visibility === 'public'
+                                            ? 'Public'
+                                            : 'Privé'
+                                    }}
+                                    · {{ fileExtension(item) }} ·
+                                    {{ formatFileSize(item.size) }}</span
+                                >
+                            </span>
+                        </span>
+                    </a>
                     <Button
                         type="button"
                         variant="outline"
@@ -105,7 +156,11 @@ function detach(item: MediaItem): void {
                     >
                 </li>
             </ul>
-            <MediaPicker v-model:open="pickerOpen" @select="attach" />
+            <MediaPicker
+                v-model:open="pickerOpen"
+                :attached-ids="attachments.map((item) => item.id)"
+                @select="attach"
+            />
         </CardContent>
     </Card>
 </template>
