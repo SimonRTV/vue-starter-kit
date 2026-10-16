@@ -36,7 +36,7 @@ class ExampleTest extends TestCase
             ->assertSee('href="'.asset('favicon-96x96.png').'"', false)
             ->assertSee('href="'.asset('favicon.ico').'"', false)
             ->assertSee('href="'.asset('apple-touch-icon.png').'"', false)
-            ->assertSee('href="'.asset('site.webmanifest').'"', false);
+            ->assertSee('href="'.route('web-manifest').'"', false);
 
         foreach ([
             'favicon.svg',
@@ -45,7 +45,6 @@ class ExampleTest extends TestCase
             'apple-touch-icon.png',
             'web-app-manifest-192x192.png',
             'web-app-manifest-512x512.png',
-            'site.webmanifest',
         ] as $favicon) {
             $this->assertFileExists(public_path($favicon));
         }
