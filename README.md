@@ -63,6 +63,8 @@ composer setup
 php artisan storage:link
 ```
 
+Setup installs dependencies, creates `.env` with an application key, runs the migrations, seeds the demo data described in [Demo data](#demo-data), and builds the frontend assets. Skip `composer setup` and run the steps individually if you do not want demo accounts and pages in the database.
+
 Choose your project preset before continuing (see [Project presets and modules](#project-presets-and-modules)):
 
 ```bash
