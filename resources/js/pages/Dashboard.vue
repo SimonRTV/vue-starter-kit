@@ -523,16 +523,6 @@ defineOptions({
                     </ol>
                 </article>
             </section>
-            <footer
-                class="text-muted-foreground flex flex-wrap items-center justify-between gap-3 border-t pt-5 text-[10px]"
-            >
-                <span>Votre espace de travail. Votre perspective.</span
-                ><Link
-                    :href="editAppearance()"
-                    class="hover:text-primary inline-flex items-center gap-2"
-                    >Un espace à votre image <ArrowRight class="size-3"
-                /></Link>
-            </footer>
         </div>
     </div>
 </template>
