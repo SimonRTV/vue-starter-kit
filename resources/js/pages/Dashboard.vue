@@ -174,21 +174,12 @@ defineOptions({
                         <span class="bg-primary size-1.5 rounded-full" /> Votre
                         espace, en un regard
                     </p>
-                    <h1
-                        class="text-4xl font-medium tracking-[-0.055em] sm:text-5xl lg:text-6xl"
-                    >
+                    <h1 class="text-4xl font-medium tracking-[-0.055em] sm:text-5xl lg:text-6xl">
                         Bonjour, {{ firstName
                         }}<span class="text-primary">.</span>
                     </h1>
-                    <p class="text-muted-foreground mt-3 text-sm">
-                        Une vue claire pour garder une longueur d’avance.
-                    </p>
                 </div>
                 <div class="flex shrink-0 flex-wrap items-center gap-3">
-                    <span
-                        class="text-muted-foreground rounded-full border px-3 py-1.5 text-[11px]"
-                        >Données d’exemple</span
-                    >
                     <Button variant="outline" size="sm" as-child
                         ><Link :href="editAppearance()"
                             ><SlidersHorizontal class="size-3.5" />
@@ -290,7 +281,7 @@ defineOptions({
                         <span class="text-primary text-xs">+12,5 %</span>
                     </div>
                     <p class="text-muted-foreground px-6 pt-1 text-xs">
-                        Chiffre d’affaires · août, données d’exemple
+                        Chiffre d’affaires · août
                     </p>
                     <div class="px-6 pt-6 pb-5">
                         <div

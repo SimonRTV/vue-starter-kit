@@ -597,10 +597,7 @@ onMounted(() => {
         @dragover="pageDragOver"
         @drop="pageDrop"
     >
-        <PageHeader
-            title="Médiathèque"
-            description="Importez, organisez et réutilisez vos images et documents."
-        >
+        <PageHeader title="Médiathèque">
             <template #meta>
                 <p class="text-muted-foreground text-sm tabular-nums">
                     {{

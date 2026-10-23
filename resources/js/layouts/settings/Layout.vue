@@ -81,10 +81,7 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
     <div
         class="admin-page mx-auto flex w-full max-w-[1400px] flex-col gap-8 p-5 md:p-8 lg:p-10"
     >
-        <PageHeader
-            title="Paramètres"
-            description="Un espace qui s’adapte à vous. Gérez votre compte et personnalisez votre application."
-        />
+        <PageHeader title="Paramètres" />
         <div
             class="grid items-start gap-6 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10"
         >

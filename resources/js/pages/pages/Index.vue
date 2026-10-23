@@ -36,10 +36,7 @@ defineOptions({
         <main
             class="admin-page mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8"
         >
-            <PageHeader
-                title="Pages"
-                description="Créez, publiez et maintenez le contenu de votre site."
-            >
+            <PageHeader title="Pages">
                 <template #actions>
                     <Button v-if="canViewTrash" variant="outline" as-child
                         ><Link :href="trashIndex()"

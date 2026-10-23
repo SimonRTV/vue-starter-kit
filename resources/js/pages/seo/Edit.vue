@@ -346,10 +346,7 @@ const sections = computed<
     <div
         class="admin-page mx-auto flex w-full max-w-[1500px] flex-col gap-8 p-5 md:p-8 lg:p-10"
     >
-        <PageHeader
-            title="Référencement SEO"
-            description="Gérez la visibilité de vos pages, leurs métadonnées et leurs aperçus de partage depuis un seul endroit."
-        >
+        <PageHeader title="Référencement SEO">
             <template #actions>
                 <Button variant="outline" as-child
                     ><a
