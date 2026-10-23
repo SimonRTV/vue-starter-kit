@@ -1,3 +1,5 @@
+import { FileText, Film, Music } from '@lucide/vue';
+import type { Component } from 'vue';
 import type { MediaItem } from '@/types/media';
 
 export function formatFileSize(bytes: number): string {
@@ -30,6 +32,16 @@ export function isMissingAltText(
     item: Pick<MediaItem, 'is_image' | 'alt_text'>,
 ): boolean {
     return item.is_image && !item.alt_text?.trim();
+}
+
+export function fileIcon(
+    item: Pick<MediaItem, 'is_audio' | 'is_video'>,
+): Component {
+    if (item.is_video) {
+        return Film;
+    }
+
+    return item.is_audio ? Music : FileText;
 }
 
 export const MEDIA_DRAG_TYPE = 'application/x-media-ids';

@@ -1,4 +1,4 @@
-import { FileText, Folder, TriangleAlert } from '@lucide/vue';
+import { Folder, TriangleAlert } from '@lucide/vue';
 import { createColumnHelper } from '@tanstack/vue-table';
 import { h } from 'vue';
 import { renderDataTableSortHeader } from '@/components/data-table';
@@ -6,6 +6,7 @@ import type { DataTableFeatures } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
 import {
     fileExtension,
+    fileIcon,
     formatFileSize,
     formatMediaDate,
     isMissingAltText,
@@ -36,7 +37,7 @@ export function mediaColumns(
                               {
                                   class: 'flex size-10 shrink-0 items-center justify-center rounded bg-muted',
                               },
-                              h(FileText, {
+                              h(fileIcon(row.original), {
                                   class: 'size-5 text-muted-foreground',
                                   'aria-hidden': 'true',
                               }),

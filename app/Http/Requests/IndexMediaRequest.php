@@ -24,7 +24,7 @@ class IndexMediaRequest extends FormRequest
     {
         return [
             'search' => ['nullable', 'string', 'max:100'],
-            'type' => ['nullable', Rule::in(['image', 'document'])],
+            'type' => ['nullable', Rule::in(['image', 'audio', 'video', 'document'])],
             'visibility' => ['nullable', Rule::in(['private', 'public'])],
             'tag' => ['nullable', 'string', 'max:'.config('media.max_tag_length')],
             'folder' => ['nullable', 'regex:/^(none|[1-9][0-9]*)$/'],
@@ -38,7 +38,7 @@ class IndexMediaRequest extends FormRequest
     /**
      * Get the normalized filters for the media listing.
      *
-     * @return array{search: string|null, type: 'image'|'document'|null, visibility: 'private'|'public'|null, tag: string|null, folder: int|'none'|null, sort: 'created_at'|'title'|'size', direction: 'asc'|'desc', per_page: int}
+     * @return array{search: string|null, type: 'image'|'audio'|'video'|'document'|null, visibility: 'private'|'public'|null, tag: string|null, folder: int|'none'|null, sort: 'created_at'|'title'|'size', direction: 'asc'|'desc', per_page: int}
      */
     public function filters(): array
     {
@@ -50,6 +50,8 @@ class IndexMediaRequest extends FormRequest
             'search' => is_string($search) && $search !== '' ? $search : null,
             'type' => match ($validated['type'] ?? null) {
                 'image' => 'image',
+                'audio' => 'audio',
+                'video' => 'video',
                 'document' => 'document',
                 default => null,
             },

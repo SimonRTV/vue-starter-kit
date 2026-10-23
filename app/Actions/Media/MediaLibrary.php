@@ -11,7 +11,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * @phpstan-type MediaFilters array{search: string|null, type: 'image'|'document'|null, visibility: 'private'|'public'|null, tag: string|null, folder: int|'none'|null, sort: 'created_at'|'title'|'size', direction: 'asc'|'desc', per_page: int}
+ * @phpstan-type MediaFilters array{search: string|null, type: 'image'|'audio'|'video'|'document'|null, visibility: 'private'|'public'|null, tag: string|null, folder: int|'none'|null, sort: 'created_at'|'title'|'size', direction: 'asc'|'desc', per_page: int}
  */
 class MediaLibrary
 {
@@ -30,7 +30,10 @@ class MediaLibrary
                 ->orWhereLike('original_name', '%'.$filters['search'].'%')
                 ->orWhereLike('alt_text', '%'.$filters['search'].'%')))
             ->when($filters['type'] === 'image', fn (Builder $query) => $query->whereIn('mime_type', $imageMimes))
-            ->when($filters['type'] === 'document', fn (Builder $query) => $query->whereNotIn('mime_type', $imageMimes))
+            ->when($filters['type'] === 'audio', fn (Builder $query) => $query->whereLike('mime_type', 'audio/%'))
+            ->when($filters['type'] === 'video', fn (Builder $query) => $query->whereLike('mime_type', 'video/%'))
+            ->when($filters['type'] === 'document', fn (Builder $query) => $query->whereNotIn('mime_type', $imageMimes)
+                ->whereNotLike('mime_type', 'audio/%')->whereNotLike('mime_type', 'video/%'))
             ->when($filters['visibility'] !== null, fn (Builder $query) => $query->where('visibility', $filters['visibility']))
             ->when($filters['tag'] !== null, fn (Builder $query) => $query->whereJsonContains('tags', $filters['tag']))
             ->when($filters['folder'] === 'none', fn (Builder $query) => $query->whereNull('folder_id'))
@@ -60,7 +63,7 @@ class MediaLibrary
         ];
     }
 
-    /** @return array{id: string, folder_id: int|null, title: string, original_name: string, mime_type: string, size: int, alt_text: string|null, visibility: string, tags: list<string>, is_image: bool, created_at: string|null, uploader: string|null, download_url: string, thumbnail_url: string|null, usages: list<array{id: int, title: string, url: string|null, trashed: bool}>, can: array{update: bool, delete: bool}} */
+    /** @return array{id: string, folder_id: int|null, title: string, original_name: string, mime_type: string, size: int, alt_text: string|null, visibility: string, tags: list<string>, is_image: bool, is_audio: bool, is_video: bool, created_at: string|null, uploader: string|null, download_url: string, stream_url: string|null, thumbnail_url: string|null, usages: list<array{id: int, title: string, url: string|null, trashed: bool}>, can: array{update: bool, delete: bool}} */
     public function item(Media $media): array
     {
         return [
@@ -68,9 +71,11 @@ class MediaLibrary
             'mime_type' => $media->mime_type, 'size' => $media->size,
             'alt_text' => $media->alt_text, 'visibility' => $media->visibility,
             'tags' => $media->tags ?? [], 'is_image' => $media->isImage(),
+            'is_audio' => $media->isAudio(), 'is_video' => $media->isVideo(),
             'created_at' => $media->created_at?->toIso8601String(),
             'uploader' => $media->uploader?->name,
             'download_url' => route('media-files.download', $media),
+            'stream_url' => $media->isPlayable() ? route('media-files.stream', $media) : null,
             'thumbnail_url' => $media->thumbnail_path !== null ? route('media-files.thumbnail', $media) : null,
             'usages' => array_values($media->pages->map(fn (Page $page): array => [
                 'id' => $page->id, 'title' => $page->title, 'trashed' => $page->trashed(),

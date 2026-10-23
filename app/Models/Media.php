@@ -69,4 +69,22 @@ class Media extends Model
     {
         return in_array($this->mime_type, config('media.image_mimes'), true);
     }
+
+    public function isAudio(): bool
+    {
+        return str_starts_with($this->mime_type, 'audio/');
+    }
+
+    public function isVideo(): bool
+    {
+        return str_starts_with($this->mime_type, 'video/');
+    }
+
+    /**
+     * Whether the file can be played inline by the browser's media elements.
+     */
+    public function isPlayable(): bool
+    {
+        return $this->isAudio() || $this->isVideo();
+    }
 }

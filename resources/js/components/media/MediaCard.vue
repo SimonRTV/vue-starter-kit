@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-    FileText,
     Folder,
     Globe,
     Link2,
@@ -10,6 +9,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import {
     fileExtension,
+    fileIcon,
     formatFileSize,
     formatMediaDate,
     isMissingAltText,
@@ -70,7 +70,8 @@ const emit = defineEmits<{
                 class="size-full object-contain transition-transform group-hover:scale-[1.02]"
             />
             <span v-else class="flex flex-col items-center gap-2">
-                <FileText
+                <component
+                    :is="fileIcon(item)"
                     class="text-muted-foreground size-10"
                     aria-hidden="true"
                 />

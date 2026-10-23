@@ -797,6 +797,8 @@ onMounted(() => {
                                     >Tous les types</SelectItem
                                 >
                                 <SelectItem value="image">Images</SelectItem>
+                                <SelectItem value="audio">Audio</SelectItem>
+                                <SelectItem value="video">Vidéos</SelectItem>
                                 <SelectItem value="document"
                                     >Documents</SelectItem
                                 >

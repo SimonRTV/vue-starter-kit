@@ -3,7 +3,6 @@ import { useHttp } from '@inertiajs/vue3';
 import {
     Check,
     ChevronRight,
-    FileText,
     Folder,
     FolderTree,
     Globe,
@@ -26,7 +25,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { fileExtension, formatFileSize } from '@/lib/media';
+import { fileExtension, fileIcon, formatFileSize } from '@/lib/media';
 import type {
     MediaFilters,
     MediaFolder,
@@ -423,7 +422,8 @@ onUnmounted(() => {
                                         v-else
                                         class="flex flex-col items-center gap-2"
                                     >
-                                        <FileText
+                                        <component
+                                            :is="fileIcon(item)"
                                             class="text-muted-foreground size-10"
                                             aria-hidden="true"
                                         />

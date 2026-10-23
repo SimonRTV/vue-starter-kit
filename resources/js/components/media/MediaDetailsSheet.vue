@@ -3,7 +3,7 @@ import { Link, router, useForm } from '@inertiajs/vue3';
 import {
     Copy,
     Download,
-    FileText,
+    Music,
     RefreshCw,
     Trash2,
     TriangleAlert,
@@ -45,6 +45,7 @@ import {
 } from '@/components/ui/sheet';
 import {
     fileExtension,
+    fileIcon,
     formatFileSize,
     formatMediaDate,
     isMissingAltText,
@@ -93,6 +94,11 @@ const replaceAccept = computed(() =>
         : props.extensions.map((extension) => '.' + extension).join(','),
 );
 const isUsed = computed(() => (props.item?.usages.length ?? 0) > 0);
+const playerKey = computed(() =>
+    props.item
+        ? [props.item.id, props.item.original_name, props.item.size].join(':')
+        : '',
+);
 
 watch(
     () => props.item,
@@ -236,13 +242,41 @@ async function copyLink(): Promise<void> {
                     <div
                         class="bg-muted flex aspect-video items-center justify-center overflow-hidden rounded-lg"
                     >
+                        <video
+                            v-if="item.is_video && item.stream_url"
+                            :key="playerKey"
+                            :src="item.stream_url"
+                            :poster="item.thumbnail_url ?? undefined"
+                            :aria-label="'Lecteur vidéo : ' + item.title"
+                            controls
+                            preload="metadata"
+                            class="size-full bg-black object-contain"
+                        />
+                        <div
+                            v-else-if="item.is_audio && item.stream_url"
+                            class="flex w-full flex-col items-center gap-4 px-4"
+                        >
+                            <Music
+                                class="text-muted-foreground size-14"
+                                aria-hidden="true"
+                            />
+                            <audio
+                                :key="playerKey"
+                                :src="item.stream_url"
+                                :aria-label="'Lecteur audio : ' + item.title"
+                                controls
+                                preload="metadata"
+                                class="w-full"
+                            />
+                        </div>
                         <img
-                            v-if="item.thumbnail_url"
+                            v-else-if="item.thumbnail_url"
                             :src="item.thumbnail_url"
                             :alt="item.alt_text ?? ''"
                             class="size-full object-contain"
                         />
-                        <FileText
+                        <component
+                            :is="fileIcon(item)"
                             v-else
                             class="text-muted-foreground size-14"
                             aria-hidden="true"

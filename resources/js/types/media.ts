@@ -18,15 +18,18 @@ export type MediaItem = {
     visibility: 'private' | 'public';
     tags: string[];
     is_image: boolean;
+    is_audio: boolean;
+    is_video: boolean;
     created_at: string | null;
     uploader: string | null;
     download_url: string;
+    stream_url: string | null;
     thumbnail_url: string | null;
     usages: MediaUsage[];
     can: { update: boolean; delete: boolean };
 };
 
-export type MediaType = 'image' | 'document';
+export type MediaType = 'image' | 'audio' | 'video' | 'document';
 
 export type MediaSort = 'created_at' | 'title' | 'size';
 

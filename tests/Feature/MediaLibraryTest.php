@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Actions\Media\DeleteMedia;
+use App\Actions\Media\MediaLibrary;
 use App\Actions\Media\UploadMedia;
 use App\Actions\Permissions\SyncPolicyPermissions;
 use App\Models\Media;
@@ -189,6 +190,52 @@ class MediaLibraryTest extends TestCase
         $this->post(route('media.store'), [])->assertNotFound();
         $this->get(route('dashboard'))->assertInertia(fn (Assert $page) => $page->where('auth.can.manageMedia', false));
         $this->assertModelExists($media);
+    }
+
+    public function test_audio_and_video_uploads_can_be_played_inline_with_range_requests(): void
+    {
+        $this->actingAs($this->operator());
+        $wav = "RIFF\x24\x00\x00\x00WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00\x44\xAC\x00\x00\x88\x58\x01\x00\x02\x00\x10\x00data\x00\x00\x00\x00";
+        $mp4 = "\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00mp42isom\x00\x00\x00\x08free";
+        $this->postJson(route('media.store'), ['file' => UploadedFile::fake()->createWithContent('voix.wav', $wav)->mimeType('audio/x-wav')])->assertCreated()
+            ->assertJsonPath('media.is_audio', true)->assertJsonPath('media.is_video', false)->assertJsonPath('media.is_image', false);
+        $this->postJson(route('media.store'), ['file' => UploadedFile::fake()->createWithContent('clip.mp4', $mp4)->mimeType('video/mp4')])->assertCreated()
+            ->assertJsonPath('media.is_video', true)->assertJsonPath('media.mime_type', 'video/mp4')->assertJsonPath('media.thumbnail_url', null);
+        $audio = Media::query()->where('mime_type', 'audio/x-wav')->sole();
+        $video = Media::query()->where('mime_type', 'video/mp4')->sole();
+        $this->getJson(route('media.index', ['type' => 'video']))->assertJsonCount(1, 'data')->assertJsonPath('data.0.stream_url', route('media-files.stream', $video));
+        $this->getJson(route('media.index', ['type' => 'audio']))->assertJsonCount(1, 'data')->assertJsonPath('data.0.id', $audio->id);
+        $this->getJson(route('media.index', ['type' => 'document']))->assertJsonCount(0, 'data');
+
+        $full = $this->get(route('media-files.stream', $video))->assertOk()
+            ->assertHeader('Content-Type', 'video/mp4')->assertHeader('Accept-Ranges', 'bytes')->assertHeader('X-Content-Type-Options', 'nosniff')
+            ->assertHeader('Content-Disposition', 'inline; filename=clip.mp4')->assertHeader('Content-Length', (string) strlen($mp4));
+        $this->assertSame($mp4, $full->streamedContent());
+        $partial = $this->get(route('media-files.stream', $video), ['Range' => 'bytes=4-7'])->assertStatus(206)
+            ->assertHeader('Content-Range', 'bytes 4-7/'.strlen($mp4))->assertHeader('Content-Length', '4');
+        $this->assertSame('ftyp', $partial->streamedContent());
+        $this->assertSame(substr($mp4, -8), $this->get(route('media-files.stream', $video), ['Range' => 'bytes=-8'])->assertStatus(206)->streamedContent());
+        $this->assertSame(substr($mp4, 10), $this->get(route('media-files.stream', $video), ['Range' => 'bytes=10-'])->assertStatus(206)->streamedContent());
+        $this->get(route('media-files.stream', $video), ['Range' => 'bytes=999-'])->assertStatus(416)->assertHeader('Content-Range', 'bytes */'.strlen($mp4));
+        $this->get(route('media-files.download', $video))->assertDownload('clip.mp4');
+    }
+
+    public function test_only_playable_files_can_be_streamed_and_private_streams_stay_protected(): void
+    {
+        $owner = $this->operator();
+        $document = $this->file($owner);
+        $audio = Media::factory()->create(['uploaded_by' => $owner->id, 'original_name' => 'son.mp3', 'mime_type' => 'audio/mpeg']);
+        Storage::disk('media')->put($audio->path, 'Example');
+        $shared = Media::factory()->publiclyShared()->create(['uploaded_by' => $owner->id, 'original_name' => 'clip.mp4', 'mime_type' => 'video/mp4']);
+        Storage::disk('media')->put($shared->path, 'Example');
+
+        $this->get(route('media-files.stream', $audio))->assertNotFound();
+        $this->get(route('media-files.stream', $shared))->assertOk()->assertHeader('Cache-Control', 'no-store, private');
+        $this->actingAs($this->operator())->get(route('media-files.stream', $audio))->assertNotFound();
+        $this->actingAs($owner)->get(route('media-files.stream', $audio))->assertOk()->assertHeader('Content-Type', 'audio/mpeg');
+        $this->get(route('media-files.stream', $document))->assertNotFound();
+        $this->get(route('media-files.download', $document))->assertDownload('document.txt');
+        $this->assertNull(app(MediaLibrary::class)->item($document)['stream_url']);
     }
 
     public function test_search_and_pagination_remain_scoped(): void

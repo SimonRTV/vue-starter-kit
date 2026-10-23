@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Media\StreamMediaFile;
 use App\Models\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -20,6 +21,14 @@ class MediaFileController extends Controller
             'X-Content-Type-Options' => 'nosniff', 'Cache-Control' => 'private, no-store',
             'Content-Security-Policy' => "sandbox; default-src 'none'",
         ]);
+    }
+
+    public function stream(Request $request, Media $media, StreamMediaFile $stream): StreamedResponse
+    {
+        $this->authorizeFile($request, $media);
+        abort_unless($media->isPlayable() && Storage::disk($media->disk)->exists($media->path), 404);
+
+        return $stream->handle($media, $request->headers->get('Range'));
     }
 
     public function thumbnail(Request $request, Media $media): StreamedResponse

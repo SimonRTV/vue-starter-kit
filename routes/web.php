@@ -45,6 +45,7 @@ Route::get('manifest.webmanifest', WebManifestController::class)->name('web-mani
 
 Route::middleware(EnsureFeatureEnabled::class.':starter.features.media')->group(function () {
     Route::get('files/{media}/download', [MediaFileController::class, 'download'])->name('media-files.download');
+    Route::get('files/{media}/stream', [MediaFileController::class, 'stream'])->name('media-files.stream');
     Route::get('files/{media}/thumbnail', [MediaFileController::class, 'thumbnail'])->name('media-files.thumbnail');
 });
 

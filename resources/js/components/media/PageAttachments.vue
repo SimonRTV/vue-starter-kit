@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, router, useForm } from '@inertiajs/vue3';
-import { FileText, Globe, Lock } from '@lucide/vue';
+import { Globe, Lock } from '@lucide/vue';
 import { ref } from 'vue';
 import { index } from '@/actions/App/Http/Controllers/MediaController';
 import {
@@ -16,7 +16,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { fileExtension, formatFileSize } from '@/lib/media';
+import { fileExtension, fileIcon, formatFileSize } from '@/lib/media';
 import type { MediaItem } from '@/types/media';
 const props = defineProps<{ pageId: number; attachments: MediaItem[] }>();
 const pickerOpen = ref(false);
@@ -106,7 +106,8 @@ function detach(item: MediaItem): void {
                                 v-else
                                 class="flex flex-col items-center gap-1"
                             >
-                                <FileText
+                                <component
+                                    :is="fileIcon(item)"
                                     class="text-muted-foreground size-6"
                                     aria-hidden="true"
                                 />

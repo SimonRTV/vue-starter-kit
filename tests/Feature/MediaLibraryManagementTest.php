@@ -34,10 +34,14 @@ class MediaLibraryManagementTest extends TestCase
         $photo = $this->file($user, ['title' => 'Photo', 'mime_type' => 'image/png', 'visibility' => 'public', 'tags' => ['Équipe', 'Été']]);
         $report = $this->file($user, ['title' => 'Rapport', 'original_name' => 'bilan-annuel.pdf', 'mime_type' => 'application/pdf', 'tags' => ['Finances']]);
         $logo = $this->file($user, ['title' => 'Logo', 'mime_type' => 'image/webp', 'alt_text' => 'Marque officielle']);
+        $song = $this->file($user, ['title' => 'Jingle', 'original_name' => 'jingle.mp3', 'mime_type' => 'audio/mpeg']);
+        $clip = $this->file($user, ['title' => 'Clip', 'original_name' => 'clip.mp4', 'mime_type' => 'video/mp4']);
         $this->file(User::factory()->create(), ['title' => 'Bilan étranger', 'original_name' => 'bilan.pdf']);
         $this->actingAs($user);
 
         $this->assertIds(['type' => 'image'], [$photo, $logo]);
+        $this->assertIds(['type' => 'audio'], [$song]);
+        $this->assertIds(['type' => 'video'], [$clip]);
         $this->assertIds(['type' => 'document'], [$report]);
         $this->assertIds(['visibility' => 'public'], [$photo]);
         $this->assertIds(['tag' => 'Équipe'], [$photo]);
@@ -58,7 +62,7 @@ class MediaLibraryManagementTest extends TestCase
         $this->getJson(route('media.index', ['per_page' => 48]))->assertOk()->assertJsonPath('per_page', 48);
         $this->getJson(route('media.index', ['per_page' => 1000]))->assertJsonValidationErrors('per_page');
         $this->getJson(route('media.index', ['sort' => 'path']))->assertJsonValidationErrors('sort');
-        $this->getJson(route('media.index', ['type' => 'video']))->assertJsonValidationErrors('type');
+        $this->getJson(route('media.index', ['type' => 'archive']))->assertJsonValidationErrors('type');
     }
 
     public function test_page_receives_scoped_stats_tags_and_normalized_filters(): void
