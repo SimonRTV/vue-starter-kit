@@ -31,3 +31,14 @@ export type FrontendNavigationItem = {
     url: string | null;
     children: FrontendNavigationChild[];
 };
+
+export type FrontendNavigationDestination = {
+    label: string;
+    url: string;
+};
+
+export type FrontendNavigationDestinations = {
+    home: FrontendNavigationDestination;
+    sections: FrontendNavigationDestination[];
+    pages: FrontendNavigationDestination[];
+};

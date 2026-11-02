@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Actions\ApplicationSettings\FrontendNavigationDestinations;
 use App\Actions\ApplicationSettings\UpdateFrontendNavigation;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\UpdateFrontendNavigationRequest;
@@ -17,12 +18,14 @@ class FrontendNavigationController extends Controller
         private UpdateFrontendNavigation $updateFrontendNavigation,
     ) {}
 
-    public function edit(): Response
+    public function edit(FrontendNavigationDestinations $destinations): Response
     {
         Gate::authorize('viewAny', ApplicationSetting::class);
 
         return Inertia::render('settings/FrontendNavigation', [
             'items' => ApplicationSetting::frontendNavigation(),
+            'defaultItems' => ApplicationSetting::DEFAULT_FRONTEND_NAVIGATION,
+            'destinations' => $destinations->all(),
         ]);
     }
 

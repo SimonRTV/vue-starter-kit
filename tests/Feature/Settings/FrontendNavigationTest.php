@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Settings;
 
+use App\Actions\ApplicationSettings\FrontendNavigationDestinations;
 use App\Models\ApplicationSetting;
+use App\Models\Page;
 use App\Models\User;
 use App\Policies\RolePolicy;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -43,8 +45,71 @@ class FrontendNavigationTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('settings/FrontendNavigation')
-                ->where('items', ApplicationSetting::DEFAULT_FRONTEND_NAVIGATION),
+                ->where('items', ApplicationSetting::DEFAULT_FRONTEND_NAVIGATION)
+                ->where('defaultItems', ApplicationSetting::DEFAULT_FRONTEND_NAVIGATION)
+                ->where('destinations.home', ['label' => 'Accueil', 'url' => '/'])
+                ->where('destinations.sections', FrontendNavigationDestinations::HOME_SECTIONS),
             );
+    }
+
+    public function test_the_builder_offers_only_live_published_pages_as_destinations(): void
+    {
+        Page::factory()->published()->create(['title' => 'Tarifs', 'slug' => 'tarifs']);
+        Page::factory()->published()->create(['title' => 'À propos', 'slug' => 'a-propos']);
+        Page::factory()->draft()->create(['title' => 'Brouillon', 'slug' => 'brouillon']);
+        Page::factory()->create([
+            'title' => 'Programmée',
+            'slug' => 'programmee',
+            'is_published' => true,
+            'published_at' => now()->addWeek(),
+        ]);
+        Page::factory()->published()->create(['title' => 'Supprimée', 'slug' => 'supprimee'])->delete();
+
+        $this->actingAs($this->administrator())
+            ->get(route('frontend-navigation.edit'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('destinations.pages', [
+                    ['label' => 'À propos', 'url' => '/content/a-propos'],
+                    ['label' => 'Tarifs', 'url' => '/content/tarifs'],
+                ]),
+            );
+    }
+
+    public function test_the_builder_offers_no_pages_when_the_pages_feature_is_disabled(): void
+    {
+        Page::factory()->published()->create();
+        config(['starter.features.pages' => false]);
+
+        $this->actingAs($this->administrator())
+            ->get(route('frontend-navigation.edit'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('destinations.pages', []),
+            );
+    }
+
+    public function test_every_offered_destination_is_accepted_by_the_validator(): void
+    {
+        Page::factory()->published()->create(['title' => 'Tarifs', 'slug' => 'tarifs']);
+        $destinations = app(FrontendNavigationDestinations::class)->all();
+        $children = array_map(
+            static fn (array $destination): array => [...$destination, 'description' => ''],
+            [$destinations['home'], ...$destinations['pages'], ...array_slice($destinations['sections'], 0, 6)],
+        );
+
+        $this->actingAs($this->administrator())
+            ->put(route('frontend-navigation.update'), ['items' => [
+                [
+                    'type' => 'group',
+                    'label' => 'Tout',
+                    'url' => null,
+                    'children' => $children,
+                ],
+            ]])
+            ->assertSessionHasNoErrors();
+
+        $this->assertCount(count($children), ApplicationSetting::frontendNavigation()[0]['children']);
     }
 
     public function test_an_administrator_can_customize_nested_frontend_navigation(): void
